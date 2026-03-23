@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Home } from '@/pages/Home';
 import { toolRegistry } from '@/tools/toolRegistry';
+import { ToolPageTemplate } from '@/components/tools/ToolPageTemplate';
 
 // Minimal, Vercel-like Suspense fallback
 const PageLoader = () => (
@@ -22,10 +23,16 @@ export const router = createBrowserRouter([
       },
       ...toolRegistry.map((tool) => ({
         path: tool.path,
-        element: (
+        element: tool.type === 'heavy' ? (
           <Suspense fallback={<PageLoader />}>
-            <tool.component />
+            <ToolPageTemplate tool={tool}>
+              <tool.component />
+            </ToolPageTemplate>
           </Suspense>
+        ) : (
+          <ToolPageTemplate tool={tool}>
+            <tool.component />
+          </ToolPageTemplate>
         ),
       })),
       {

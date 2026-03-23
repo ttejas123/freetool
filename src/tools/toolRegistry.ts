@@ -17,11 +17,27 @@ import {
   FileDown,
   FileDiff,
   Minimize2,
-  BarChart2
+  BarChart2,
+  Workflow
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export type IOType = 'text' | 'json' | 'csv' | 'url' | 'image' | 'number' | 'pdf' | 'word';
+// Light tools static imports (fast load - main bundle)
+import JsonFormatter from './json-formatter';
+import PasswordGenerator from './password-generator';
+import TextToSlug from './text-to-slug';
+import Base64Encoder from './base64-encoder';
+import TimestampConverter from './timestamp-converter';
+import UnitConverter from './unit-converter';
+import BmiCalculator from './bmi-calculator';
+import ColorPalette from './color-palette';
+import RandomData from './random-data';
+import HashGenerator from './hash-generator';
+import TextCaseConverter from './text-case-converter';
+import WordCounter from './word-counter';
+import TinyurlGenerator from './tinyurl-generator';
+
+export type IOType = 'text' | 'json' | 'csv' | 'url' | 'image' | 'number' | 'pdf' | 'word' | 'any';
 
 export interface RegistryTool {
   id: string;
@@ -33,10 +49,24 @@ export interface RegistryTool {
   inputType: IOType[];
   outputType: IOType[];
   icon: LucideIcon;
-  component: React.LazyExoticComponent<any>;
+  type: 'light' | 'heavy';
+  component: React.ComponentType<any> | React.LazyExoticComponent<any>;
 }
 
 export const toolRegistry: RegistryTool[] = [
+  {
+    id: 'pipeline-builder',
+    name: 'Pipeline Builder',
+    description: 'Visually connect tools to form a powerful data processing pipeline.',
+    path: 'pipeline-builder',
+    category: 'Developer',
+    tags: ['pipeline', 'workflow', 'chain'],
+    inputType: ['any'],
+    outputType: ['any'],
+    icon: Workflow,
+    type: 'heavy',
+    component: lazy(() => import('../features/pipeline/index')),
+  },
   {
     id: 'json-formatter',
     name: 'JSON Formatter',
@@ -47,7 +77,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['json', 'text'],
     outputType: ['json', 'text'],
     icon: FileJson,
-    component: lazy(() => import('./json-formatter')),
+    type: 'light',
+    component: JsonFormatter,
   },
   {
     id: 'password-generator',
@@ -59,7 +90,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: [],
     outputType: ['text'],
     icon: Key,
-    component: lazy(() => import('./password-generator')),
+    type: 'light',
+    component: PasswordGenerator,
   },
   {
     id: 'text-to-slug',
@@ -71,7 +103,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text'],
     outputType: ['text'],
     icon: Type,
-    component: lazy(() => import('./text-to-slug')),
+    type: 'light',
+    component: TextToSlug,
   },
   {
     id: 'base64-encoder',
@@ -83,7 +116,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text'],
     outputType: ['text'],
     icon: Hash,
-    component: lazy(() => import('./base64-encoder')),
+    type: 'light',
+    component: Base64Encoder,
   },
   {
     id: 'qr-generator',
@@ -95,6 +129,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text', 'url'],
     outputType: ['image'],
     icon: QrCode,
+    type: 'heavy',
     component: lazy(() => import('./qr-generator')),
   },
   {
@@ -107,7 +142,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['number', 'text'],
     outputType: ['text'],
     icon: Clock,
-    component: lazy(() => import('./timestamp-converter')),
+    type: 'light',
+    component: TimestampConverter,
   },
   {
     id: 'unit-converter',
@@ -119,7 +155,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['number'],
     outputType: ['number'],
     icon: Ruler,
-    component: lazy(() => import('./unit-converter')),
+    type: 'light',
+    component: UnitConverter,
   },
   {
     id: 'bmi-calculator',
@@ -131,7 +168,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['number'],
     outputType: ['number'],
     icon: Activity,
-    component: lazy(() => import('./bmi-calculator')),
+    type: 'light',
+    component: BmiCalculator,
   },
   {
     id: 'color-palette',
@@ -143,7 +181,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: [],
     outputType: ['text'],
     icon: Palette,
-    component: lazy(() => import('./color-palette')),
+    type: 'light',
+    component: ColorPalette,
   },
   {
     id: 'random-data',
@@ -155,7 +194,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: [],
     outputType: ['json', 'csv'],
     icon: Database,
-    component: lazy(() => import('./random-data')),
+    type: 'light',
+    component: RandomData,
   },
   {
     id: 'hash-generator',
@@ -167,7 +207,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text'],
     outputType: ['text'],
     icon: Hash,
-    component: lazy(() => import('./hash-generator')),
+    type: 'light',
+    component: HashGenerator,
   },
   {
     id: 'text-case-converter',
@@ -179,7 +220,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text'],
     outputType: ['text'],
     icon: Type,
-    component: lazy(() => import('./text-case-converter')),
+    type: 'light',
+    component: TextCaseConverter,
   },
   {
     id: 'word-counter',
@@ -191,7 +233,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text'],
     outputType: ['number'],
     icon: FileText,
-    component: lazy(() => import('./word-counter')),
+    type: 'light',
+    component: WordCounter,
   },
   {
     id: 'tinyurl-generator',
@@ -203,7 +246,8 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['url'],
     outputType: ['url'],
     icon: Link2,
-    component: lazy(() => import('./tinyurl-generator')),
+    type: 'light',
+    component: TinyurlGenerator,
   },
   {
     id: 'image-to-gif',
@@ -215,6 +259,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['image'],
     outputType: ['image'],
     icon: ImagePlay,
+    type: 'heavy',
     component: lazy(() => import('./image-to-gif')),
   },
   {
@@ -227,6 +272,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['pdf'],
     outputType: ['pdf'],
     icon: Files,
+    type: 'heavy',
     component: lazy(() => import('./merge-pdf')),
   },
   {
@@ -239,6 +285,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['word'],
     outputType: ['pdf'],
     icon: FileDown,
+    type: 'heavy',
     component: lazy(() => import('./word-to-pdf')),
   },
   {
@@ -251,6 +298,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text', 'json'],
     outputType: ['text', 'json'],
     icon: FileDiff,
+    type: 'heavy',
     component: lazy(() => import('./diff-checker')),
   },
   {
@@ -263,6 +311,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['text', 'json'],
     outputType: ['text', 'json'],
     icon: Minimize2,
+    type: 'heavy',
     component: lazy(() => import('./compression-tool')),
   },
   {
@@ -275,6 +324,7 @@ export const toolRegistry: RegistryTool[] = [
     inputType: ['json', 'csv'],
     outputType: ['image'],
     icon: BarChart2,
+    type: 'heavy',
     component: lazy(() => import('./data-visualizer')),
   },
 ];
