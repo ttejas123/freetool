@@ -26,7 +26,7 @@ export class R2Storage implements StorageService {
 
   private async getClient() {
     if (this.s3) return this.s3;
-    // Dynamic import — only bundled when provider = 'r2'
+    // @ts-expect-error — optional peer dep: install @aws-sdk/client-s3 to use R2 provider
     const { S3Client } = await import('@aws-sdk/client-s3');
     this.s3 = new S3Client({
       region: 'auto',
@@ -41,6 +41,7 @@ export class R2Storage implements StorageService {
 
   async upload(file: File | Blob, path = 'uploads/'): Promise<UploadResult> {
     const s3 = await this.getClient();
+    // @ts-expect-error — optional peer dep
     const { PutObjectCommand } = await import('@aws-sdk/client-s3');
     const name = file instanceof File ? file.name : `blob-${Date.now()}`;
     const key = `${path}${Date.now()}-${name}`;
@@ -59,6 +60,7 @@ export class R2Storage implements StorageService {
 
   async delete(key: string): Promise<void> {
     const s3 = await this.getClient();
+    // @ts-expect-error — optional peer dep
     const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
     await s3.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
   }
