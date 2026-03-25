@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+
 import type { RegistryTool } from '@/tools/toolRegistry';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { trackEvent } from '@/lib/analytics';
@@ -28,6 +28,12 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
       <Helmet>
         <title>{tool.name} - Ozone Tools</title>
         <meta name="description" content={tool.description} />
+        <meta property="og:title" content={`${tool.name} - Ozone Tools`} />
+        <meta property="og:description" content={tool.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://ozonetools.com/${tool.path}`} />
+        <meta name="keywords" content={tool.tags?.join(', ') || ''} />
+        <link rel="canonical" href={`https://ozonetools.com/${tool.path}`} />
       </Helmet>
 
       {/* Tool UI */}
@@ -68,9 +74,9 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {relatedTools.map((relatedTool) => (
-              <Link
+              <a
                 key={relatedTool.id}
-                to={`/${relatedTool.path}`}
+                href={`/${relatedTool.path}`}
                 className="group p-4 bg-white dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-brand-500/50 transition-all block"
               >
                 <div className="flex items-center space-x-3 mb-2">
@@ -84,7 +90,7 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">
                   {relatedTool.description}
                 </p>
-              </Link>
+              </a>
             ))}
           </div>
         </section>

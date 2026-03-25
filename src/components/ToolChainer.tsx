@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+
 import { useToolStore } from '@/store/toolStore';
 import { toolRegistry } from '@/tools/toolRegistry';
-import { Link } from 'react-router-dom';
+
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -10,7 +10,7 @@ interface ToolChainerProps {
 }
 
 export const ToolChainer = ({ currentToolId }: ToolChainerProps) => {
-  const navigate = useNavigate();
+
   const currentOutput = useToolStore((state) => state.currentOutput);
   const passOutputToInput = useToolStore((state) => state.passOutputToInput);
 
@@ -36,7 +36,7 @@ export const ToolChainer = ({ currentToolId }: ToolChainerProps) => {
 
   const handleSendToTool = (targetToolId: string, path: string) => {
     passOutputToInput(targetToolId);
-    navigate(`/${path}`);
+    window.location.href = `/${path}`;
   };
 
   return (
@@ -81,10 +81,9 @@ export const ToolChainer = ({ currentToolId }: ToolChainerProps) => {
             {relatedTools.map(tool => {
               const Icon = tool.icon;
               return (
-                <Link
+                <a
                   key={tool.id}
-                  to={`/${tool.path}`}
-                  onClick={() => window.scrollTo(0, 0)}
+                  href={`/${tool.path}`}
                   className="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-brand-500 hover:shadow-md transition-all flex items-start gap-3 group"
                 >
                   <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 group-hover:bg-brand-50 dark:group-hover:bg-brand-900/20 group-hover:text-brand-600 dark:group-hover:text-brand-400">
@@ -98,7 +97,7 @@ export const ToolChainer = ({ currentToolId }: ToolChainerProps) => {
                       {tool.description}
                     </p>
                   </div>
-                </Link>
+                </a>
               );
             })}
           </div>

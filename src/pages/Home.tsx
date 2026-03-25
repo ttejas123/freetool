@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+
 import { toolRegistry, type RegistryTool } from '../tools/toolRegistry';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { Search, Compass, Clock, Star, LayoutGrid } from 'lucide-react';
@@ -49,9 +49,9 @@ export const Home = () => {
   const ToolCard = ({ tool }: { tool: RegistryTool }) => {
     const Icon = tool.icon;
     return (
-      <Link
+      <a
         key={tool.id}
-        to={`/${tool.path}`}
+        href={`/${tool.path}`}
         className="group relative flex flex-col p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-lg transition-all"
       >
         <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-brand-50 dark:bg-gray-700/50 text-brand-600 dark:text-brand-400 group-hover:scale-110 transition-transform">
@@ -73,7 +73,7 @@ export const Home = () => {
             </span>
           ))}
         </div>
-      </Link>
+      </a>
     );
   };
 
