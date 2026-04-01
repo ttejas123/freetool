@@ -202,7 +202,7 @@ export const usePipelineStore = create<PipelineState>()(
       },
     }),
     {
-      name: 'ozone-pipeline-storage',
+      name: 'freetool-pipeline-storage',
     }
   )
 );

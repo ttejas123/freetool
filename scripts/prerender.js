@@ -21,14 +21,53 @@ async function prerender() {
   const indexTmpl = fs.readFileSync(INDEX_HTML_PATH, 'utf-8');
   const registryContent = fs.readFileSync(TOOL_REGISTRY_PATH, 'utf-8');
 
+  // List of additional static pages to prerender
+  const staticPages = [
+    {
+      name: 'Privacy Policy',
+      description: 'Privacy Policy for Free Tool - DevTools Hub',
+      path: 'privacy-policy'
+    },
+    {
+      name: 'Contact',
+      description: 'Contact us for any queries or feedback regarding Free Tool',
+      path: 'contact'
+    }
+  ];
+
+  let count = 0;
+  const processedPaths = new Set();
+
+  // Process Static Pages
+  for (const page of staticPages) {
+    if (processedPaths.has(page.path)) continue;
+    
+    const pageDir = path.resolve(DIST_DIR, page.path);
+    if (!fs.existsSync(pageDir)) {
+      fs.mkdirSync(pageDir, { recursive: true });
+    }
+
+    let html = indexTmpl.replace(
+      /<title>.*?<\/title>/,
+      `<title>${page.name} - Free Tool</title>\n    <meta name="description" content="${page.description}">`
+    );
+
+    const outPath = path.resolve(pageDir, 'index.html');
+    fs.writeFileSync(outPath, html);
+    console.log(`✅ Generated: /${page.path}/index.html`);
+    processedPaths.add(page.path);
+    count++;
+  }
+
   // Simple regex parser to extract tool info from toolRegistry.ts
   const toolRegex = /id:\s*['"]([^'"]+)['"][\s\S]*?name:\s*['"]([^'"]+)['"][\s\S]*?description:\s*['"]([^'"]+)['"][\s\S]*?path:\s*['"]([^'"]+)['"]/g;
 
   let match;
-  let count = 0;
-
   while ((match = toolRegex.exec(registryContent)) !== null) {
     const [_, id, name, description, toolPath] = match;
+    
+    // Skip if path already processed (static pages or duplicate tool paths)
+    if (processedPaths.has(toolPath)) continue;
 
     const toolDir = path.resolve(DIST_DIR, toolPath);
     if (!fs.existsSync(toolDir)) {
@@ -38,12 +77,13 @@ async function prerender() {
     // Replace the default title and inject meta tags
     let html = indexTmpl.replace(
       /<title>.*?<\/title>/,
-      `<title>${name} - Ozone Tools</title>\n    <meta name="description" content="${description}">`
+      `<title>${name} - Free Tool</title>\n    <meta name="description" content="${description}">`
     );
 
     const outPath = path.resolve(toolDir, 'index.html');
     fs.writeFileSync(outPath, html);
     console.log(`✅ Generated: /${toolPath}/index.html`);
+    processedPaths.add(toolPath);
     count++;
   }
 

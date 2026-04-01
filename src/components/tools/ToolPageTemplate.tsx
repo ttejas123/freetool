@@ -26,14 +26,14 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       <Helmet>
-        <title>{tool.name} - Ozone Tools</title>
+        <title>{tool.name} - Free Tool</title>
         <meta name="description" content={tool.description} />
-        <meta property="og:title" content={`${tool.name} - Ozone Tools`} />
+        <meta property="og:title" content={`${tool.name} - Free Tool`} />
         <meta property="og:description" content={tool.description} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://ozonetools.com/${tool.path}`} />
+        <meta property="og:url" content={`https://freetool.shop/${tool.path}`} />
         <meta name="keywords" content={tool.tags?.join(', ') || ''} />
-        <link rel="canonical" href={`https://ozonetools.com/${tool.path}`} />
+        <link rel="canonical" href={`https://freetool.shop/${tool.path}`} />
       </Helmet>
 
       {/* Tool UI */}
@@ -60,7 +60,7 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
             </div>
             <div>
               <h4 className="font-medium text-zinc-900 dark:text-zinc-200">Is {tool.name} completely free?</h4>
-              <p className="text-sm">Yes! Ozone Tools is a completely free suite of developer utilities.</p>
+              <p className="text-sm">Yes! Free Tool is a completely free suite of developer utilities.</p>
             </div>
           </div>
         </div>
