@@ -9,6 +9,13 @@ export interface ShortLink {
   createdAt: number;
 }
 
+export interface ToolStats {
+  id: string;
+  views: number;
+  upvotes: number;
+  uniqueUsers: number;
+}
+
 export interface DatabaseService {
   /**
    * Create and persist a new short URL entry.
@@ -27,4 +34,15 @@ export interface DatabaseService {
 
   /** Wipe all stored short links. */
   clearHistory(): Promise<void>;
+
+  /** ─── Tool Statistics ─── */
+  
+  /** Get metrics for a specific tool. */
+  getToolStats(toolId: string): Promise<ToolStats>;
+
+  /** Get all tool metrics (useful for ranking/sorting). */
+  getAllToolStats(): Promise<ToolStats[]>;
+
+  /** Record a view or upvote with optional unique user tracking. */
+  recordToolAction(toolId: string, action: 'view' | 'upvote', userId?: string): Promise<void>;
 }

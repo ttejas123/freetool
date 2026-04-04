@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { SEOHelmet } from '@/components/SEOHelmet';
-import { generateShortLink, getHistory, clearHistory, type ShortLink } from './utils';
+import { generateShortLink, getHistory, clearHistory, resolveShortLink, type ShortLink } from './utils';
 
 // ── Expand tab logic ──────────────────────────────────────────────────────────
 type ExpandResult = {
@@ -19,14 +19,10 @@ type ExpandResult = {
 async function expandUrl(url: string): Promise<ExpandResult> {
   const curl = `curl -sI "${url}" | grep -i location`;
   try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    const data = await res.json();
-    // allorigins returns the final destination URL after following redirects
-    const resolved = (data.status?.url as string | undefined) || url;
+    const resolved = await resolveShortLink(url);
     return { short: url, resolved, curl };
-  } catch {
-    return { short: url, resolved: 'Error: could not resolve', curl, error: true };
+  } catch (error: any) {
+    return { short: url, resolved: error.message || 'Error: could not resolve', curl, error: true };
   }
 }
 
@@ -172,6 +168,19 @@ function ShortenTab() {
             className="w-full md:w-auto mt-1 md:mt-0 py-6 px-8 bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 gap-2">
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Shorten <ArrowRight className="w-5 h-5" /></>}
           </Button>
+        </div>
+      </Card>
+
+      <Card className="p-4 md:p-5 border-brand-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 shadow-md">
+        <div className="flex items-center gap-2 mb-2">
+          <Terminal className="w-5 h-5 text-gray-500" />
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Shorten via CLI</h3>
+        </div>
+        <p className="text-xs text-gray-500 mb-3">You can use our Supabase Edge Function directly from your terminal. (Replace the URL below)</p>
+        <div className="flex items-center gap-3 bg-zinc-950 dark:bg-black rounded-lg px-3 py-2">
+          <code className="flex-1 text-xs text-green-400 font-mono truncate">
+            curl "https://[YOUR_PROJECT_REF].supabase.co/functions/v1/shorten?url=https://example.com"
+          </code>
         </div>
       </Card>
 

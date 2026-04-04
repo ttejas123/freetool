@@ -27,7 +27,8 @@ import {
   Archive,
   LinkIcon,
   Unlink,
-  Eraser
+  Eraser,
+  UploadCloud
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -493,5 +494,18 @@ export const toolRegistry: RegistryTool[] = [
     icon: Archive,
     type: 'heavy',
     component: lazy(() => import('../features/pipeline')),
+  },
+  {
+    id: 'file-share',
+    name: 'Temporary File Share',
+    description: 'Securely upload and share files, images, and videos. Links expire in 2 days automatically.',
+    path: 'file-share',
+    category: 'Network',
+    tags: ['file', 'share', 'upload', 'cloud', 'storage'],
+    inputType: ['any'],
+    outputType: ['url'],
+    icon: UploadCloud,
+    type: 'heavy',
+    component: lazy(() => import('./file-share')),
   },
 ];

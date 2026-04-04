@@ -16,7 +16,7 @@
  *     created_at   BIGINT NOT NULL
  *   );
  */
-import type { DatabaseService, ShortLink } from './types';
+import type { DatabaseService, ShortLink, ToolStats } from './types';
 
 export class SupabaseDatabase implements DatabaseService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,8 +71,7 @@ export class SupabaseDatabase implements DatabaseService {
     const supabase = await this.getClient();
     const { data, error } = await supabase
       .from('short_links')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
 
     if (error || !data) return [];
 
@@ -88,5 +87,60 @@ export class SupabaseDatabase implements DatabaseService {
     const supabase = await this.getClient();
     const { error } = await supabase.from('short_links').delete().neq('id', '');
     if (error) throw new Error(`Supabase clearHistory: ${error.message}`);
+  }
+
+  /** ─── Tool Statistics Implementation ─── */
+
+  async getToolStats(toolId: string): Promise<ToolStats> {
+    const supabase = await this.getClient();
+    const { data, error } = await supabase
+      .from('tool_stats')
+      .select('*')
+      .eq('id', toolId)
+      .single();
+
+    if (error || !data) {
+      return { id: toolId, views: 0, upvotes: 0, uniqueUsers: 0 };
+    }
+
+    return {
+      id: data.id,
+      views: Number(data.views),
+      upvotes: Number(data.upvotes),
+      uniqueUsers: Number(data.unique_users),
+    };
+  }
+
+  async getAllToolStats(): Promise<ToolStats[]> {
+    const supabase = await this.getClient();
+    const { data, error } = await supabase
+      .from('tool_stats')
+      .select('*');
+
+    if (error || !data) return [];
+
+    return (data as any[]).map(row => ({
+      id: row.id,
+      views: Number(row.views),
+      upvotes: Number(row.upvotes),
+      uniqueUsers: Number(row.unique_users),
+    }));
+  }
+
+  async recordToolAction(toolId: string, action: 'view' | 'upvote', userId?: string): Promise<void> {
+    const supabase = await this.getClient();
+    
+    // Call the RPC function we defined in the migration
+    const { error } = await supabase.rpc('record_tool_action', {
+      p_tool_id: toolId,
+      p_action: action,
+      p_user_id: userId || null
+    });
+
+    if (error) {
+      console.error(`Supabase recordToolAction ERROR: ${error.message}`);
+      // Fallback to manual if RPC fails (e.g. migration not run yet)
+      throw new Error(`Failed to record tool action: ${error.message}`);
+    }
   }
 }

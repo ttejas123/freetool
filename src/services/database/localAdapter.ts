@@ -5,9 +5,11 @@
  * This is the default adapter — zero external dependencies.
  * Drop-in replacement for the legacy tinyurl-generator/utils.ts logic.
  */
-import type { DatabaseService, ShortLink } from './types';
+import type { DatabaseService, ShortLink, ToolStats } from './types';
 
 const STORAGE_KEY = 'tinyurl_history';
+const STATS_KEY = 'ozone_tool_stats';
+const VISITOR_KEY = 'ozone_tool_visitors';
 
 export class LocalDatabase implements DatabaseService {
   async createShortUrl(data: { originalUrl: string; shortUrl: string }): Promise<ShortLink> {
@@ -45,5 +47,63 @@ export class LocalDatabase implements DatabaseService {
 
   async clearHistory(): Promise<void> {
     localStorage.removeItem(STORAGE_KEY);
+  }
+
+  /** ─── Tool Statistics Implementation ─── */
+
+  async getToolStats(toolId: string): Promise<ToolStats> {
+    const allStats = await this.getAllStatsMap();
+    return allStats[toolId] || { id: toolId, views: 0, upvotes: 0, uniqueUsers: 0 };
+  }
+
+  async getAllToolStats(): Promise<ToolStats[]> {
+    const allStats = await this.getAllStatsMap();
+    return Object.values(allStats);
+  }
+
+  async recordToolAction(toolId: string, action: 'view' | 'upvote', userId?: string): Promise<void> {
+    const allStats = await this.getAllStatsMap();
+    const stats = allStats[toolId] || { id: toolId, views: 0, upvotes: 0, uniqueUsers: 0 };
+
+    if (action === 'view') {
+      stats.views += 1;
+    } else if (action === 'upvote') {
+      stats.upvotes += 1;
+    }
+
+    if (userId) {
+      const visitors = this.getVisitors();
+      const visitorKey = `${toolId}:${userId}`;
+      if (!visitors.has(visitorKey)) {
+        visitors.add(visitorKey);
+        stats.uniqueUsers += 1;
+        this.saveVisitors(visitors);
+      }
+    }
+
+    allStats[toolId] = stats;
+    localStorage.setItem(STATS_KEY, JSON.stringify(allStats));
+  }
+
+  private async getAllStatsMap(): Promise<Record<string, ToolStats>> {
+    try {
+      const raw = localStorage.getItem(STATS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  private getVisitors(): Set<string> {
+    try {
+      const raw = localStorage.getItem(VISITOR_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  private saveVisitors(visitors: Set<string>): void {
+    localStorage.setItem(VISITOR_KEY, JSON.stringify(Array.from(visitors)));
   }
 }
