@@ -25,14 +25,22 @@ const getDeviceId = () => {
 };
 
 /**
- * Record a tool view globally.
+ * Record a tool view globally and locally for 'Recent Tools'.
  */
 export const recordToolView = async (toolId: string) => {
   try {
+    // Local Recent Tracking
+    if (typeof window !== 'undefined') {
+       const recentRaw = localStorage.getItem('recentTools');
+       let recent: string[] = recentRaw ? JSON.parse(recentRaw) : [];
+       recent = [toolId, ...recent.filter(id => id !== toolId)].slice(0, 8);
+       localStorage.setItem('recentTools', JSON.stringify(recent));
+    }
+
     const db = await getDatabase();
     await db.recordToolAction(toolId, 'view', getDeviceId());
   } catch (e) {
-    console.warn("Failed to record global view, falling back to local", e);
+    console.warn("Failed to record view", e);
   }
 };
 

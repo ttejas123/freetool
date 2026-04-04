@@ -6,18 +6,73 @@
   --color-brand-100: #dbeafe;
   --color-brand-500: #3b82f6;
   --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
   --color-brand-900: #1e3a8a;
   
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --color-accent-purple: #a855f7;
+  --color-accent-pink: #ec4899;
+  --color-accent-blue: #3b82f6;
+  
+  /* Category Colors */
+  --color-cat-dev: #3b82f6;
+  --color-cat-ai: #8b5cf6;
+  --color-cat-media: #f43f5e;
+  --color-cat-security: #10b981;
+  --color-cat-seo: #f59e0b;
+  --color-cat-text: #6366f1;
+
+  --font-sans: 'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 8s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-ripple: ripple 0.6s linear;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 10px -5px var(--color-brand-500); }
+    to { box-shadow: 0 0 20px 2px var(--color-brand-500); }
+  }
+  @keyframes ripple {
+    to { transform: scale(4); opacity: 0; }
+  }
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 antialiased;
+    @apply bg-white text-gray-900 dark:bg-[#050505] dark:text-gray-100 antialiased selection:bg-brand-500/30;
   }
 }
 
 @layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-[#0A0A0A]/70 backdrop-blur-xl border border-white/20 dark:border-white/5;
+  }
+  .glass-darker {
+    @apply bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/10 dark:border-white/5;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-500 via-accent-purple to-accent-pink;
+  }
+  .bg-glow {
+    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+  }
+  .mesh-grid {
+    background-image: 
+      linear-gradient(to right, rgba(128, 128, 128, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(128, 128, 128, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .mesh-grid-faded {
+    mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+  }
   .hide-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -26,3 +81,4 @@
     display: none; /* Chrome, Safari and Opera */
   }
 }
+

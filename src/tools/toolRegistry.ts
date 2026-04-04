@@ -32,21 +32,6 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-// Light tools static imports (fast load - main bundle)
-import JsonFormatter from './json-formatter';
-import PasswordGenerator from './password-generator';
-import TextToSlug from './text-to-slug';
-import Base64Encoder from './base64-encoder';
-import TimestampConverter from './timestamp-converter';
-import UnitConverter from './unit-converter';
-import BmiCalculator from './bmi-calculator';
-import ColorPalette from './color-palette';
-import RandomData from './random-data';
-import HashGenerator from './hash-generator';
-import TextCaseConverter from './text-case-converter';
-import WordCounter from './word-counter';
-import TinyurlGenerator from './tinyurl-generator';
-
 export type IOType = 'text' | 'json' | 'csv' | 'url' | 'image' | 'number' | 'pdf' | 'word' | 'any';
 
 export interface RegistryTool {
@@ -88,7 +73,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['json', 'text'],
     icon: FileJson,
     type: 'light',
-    component: JsonFormatter,
+    component: lazy(() => import('./json-formatter')),
   },
   {
     id: 'password-generator',
@@ -101,7 +86,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Key,
     type: 'light',
-    component: PasswordGenerator,
+    component: lazy(()=> import('./password-generator')),
   },
   {
     id: 'text-to-slug',
@@ -114,7 +99,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Type,
     type: 'light',
-    component: TextToSlug,
+    component: lazy(()=> import('./text-to-slug')),
   },
   {
     id: 'base64-encoder',
@@ -127,7 +112,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Hash,
     type: 'light',
-    component: Base64Encoder,
+    component: lazy(()=> import('./base64-encoder')),
   },
   {
     id: 'qr-generator',
@@ -153,7 +138,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Clock,
     type: 'light',
-    component: TimestampConverter,
+    component: lazy(()=> import('./timestamp-converter')),
   },
   {
     id: 'unit-converter',
@@ -166,7 +151,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['number'],
     icon: Ruler,
     type: 'light',
-    component: UnitConverter,
+    component: lazy(()=> import('./unit-converter')),
   },
   {
     id: 'bmi-calculator',
@@ -179,7 +164,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['number'],
     icon: Activity,
     type: 'light',
-    component: BmiCalculator,
+    component: lazy(()=> import('./bmi-calculator')),
   },
   {
     id: 'color-palette',
@@ -192,7 +177,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Palette,
     type: 'light',
-    component: ColorPalette,
+    component: lazy(()=> import('./color-palette')),
   },
   {
     id: 'random-data',
@@ -205,7 +190,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['json', 'csv'],
     icon: Database,
     type: 'light',
-    component: RandomData,
+    component: lazy(()=> import('./random-data')),
   },
   {
     id: 'hash-generator',
@@ -218,7 +203,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Hash,
     type: 'light',
-    component: HashGenerator,
+    component: lazy(()=> import('./hash-generator')),
   },
   {
     id: 'text-case-converter',
@@ -231,7 +216,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['text'],
     icon: Type,
     type: 'light',
-    component: TextCaseConverter,
+    component: lazy(()=> import('./text-case-converter')),
   },
   {
     id: 'word-counter',
@@ -244,7 +229,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['number'],
     icon: FileText,
     type: 'light',
-    component: WordCounter,
+    component: lazy(()=> import('./word-counter')),
   },
   {
     id: 'tinyurl-generator',
@@ -257,7 +242,7 @@ export const toolRegistry: RegistryTool[] = [
     outputType: ['url'],
     icon: Link2,
     type: 'light',
-    component: TinyurlGenerator,
+    component: lazy(()=> import('./tinyurl-generator')),
   },
   {
     id: 'image-to-gif',
