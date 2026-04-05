@@ -1,31 +1,58 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useAppStore } from '../../store';
-import { Moon, Sun, Search, Plus, CheckCircle2, Menu, X, Github, Twitter } from 'lucide-react';
+import { Moon, Sun, Search, Plus, CheckCircle2, Menu, X, Github, Twitter, Eye } from 'lucide-react';
 import { ToastContainer } from '../ui/Toast';
 import { trackPageView } from '@/lib/analytics';
 import { CookieConsent } from '../ui/CookieConsent';
+import { getCachedMetrics } from '@/lib/toolStats';
+import { useMemo } from 'react';
 
 import { CommandPalette } from '../ui/CommandPalette';
+
+const getCategoryColor = (category: string) => {
+  const cat = category.toLowerCase();
+  if (cat.includes('dev')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+  if (cat.includes('ai')) return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+  if (cat.includes('media')) return 'bg-pink-500/10 text-pink-500 border-pink-500/20';
+  if (cat.includes('security')) return 'bg-green-500/10 text-green-500 border-green-500/20';
+  return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+};
 
 export const AppLayout = () => {
   const { theme, toggleTheme } = useAppStore();
   const location = useLocation();
-  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (navSearch.trim()) {
-       navigate(`/?search=${encodeURIComponent(navSearch.trim())}`);
-       setNavSearch('');
-    }
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const term = navSearch.trim();
+    const url = term 
+      ? `/?search=${encodeURIComponent(term)}#browse` 
+      : `/#browse`;
+    
+    setShowSearchDropdown(false);
+    setNavSearch('');
+    window.location.href = url;
   };
+
+  const filteredTools = useMemo(() => {
+    const term = navSearch.toLowerCase().trim();
+    if (!term) return toolRegistry;
+    return toolRegistry.filter(t => 
+      t.name.toLowerCase().includes(term) || 
+      t.category.toLowerCase().includes(term) ||
+      t.tags.some(tag => tag.toLowerCase().includes(term))
+    );
+  }, [navSearch]);
+
+  const metrics = useMemo(() => getCachedMetrics(), []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +85,16 @@ export const AppLayout = () => {
       }
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowSearchDropdown(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -112,9 +149,89 @@ export const AppLayout = () => {
                 type="text" 
                 placeholder="Search tools..." 
                 value={navSearch}
-                onChange={(e) => setNavSearch(e.target.value)}
+                onChange={(e) => {
+                  setNavSearch(e.target.value);
+                  setShowSearchDropdown(true);
+                }}
+                onFocus={() => setShowSearchDropdown(true)}
                 className="w-48 lg:w-72 pl-10 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-full text-sm text-gray-900 dark:text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:bg-white dark:focus:bg-black/50 transition-all duration-200"
                />
+
+              {/* Search Results Dropdown */}
+              <AnimatePresence>
+                {showSearchDropdown && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setShowSearchDropdown(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-full mt-3 right-0 w-[400px] glass border border-gray-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20"
+                    >
+                      <div className="p-2 max-h-[450px] overflow-y-auto custom-scrollbar">
+                        {filteredTools.length > 0 ? (
+                          <div className="flex flex-col gap-1">
+                            {filteredTools.map((tool) => {
+                              const stats = metrics[tool.id] || { views: 0 };
+                              const catClass = getCategoryColor(tool.category);
+                              return (
+                                <button
+                                  key={tool.id}
+                                  onClick={() => {
+                                    window.location.href = `/${tool.path}`;
+                                    setShowSearchDropdown(false);
+                                  }}
+                                  className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
+                                >
+                                  <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]}`}>
+                                    <tool.icon className="w-5 h-5" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                                      <span className="font-bold text-sm text-gray-900 dark:text-white truncate group-hover:text-brand-500 transition-colors">
+                                        {tool.name}
+                                      </span>
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                        {tool.category}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-medium">
+                                        <Eye className="w-3 h-3" />
+                                        {stats.views.toLocaleString()} views
+                                      </div>
+                                    </div>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="py-8 px-4 text-center">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 mb-3 text-gray-400">
+                              <Search className="w-6 h-6" />
+                            </div>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">No tools found</p>
+                            <p className="text-xs text-gray-500 mt-1">Try a different search term</p>
+                          </div>
+                        )}
+                        
+                        <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 px-2 pb-1">
+                          <button 
+                            onClick={() => handleSearch()}
+                            className="w-full py-2 text-xs font-bold text-brand-500 hover:bg-brand-500/10 rounded-xl transition-all"
+                          >
+                            {navSearch.trim() ? `View all results for "${navSearch}"` : 'View all tools'}
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </form>
 
             <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-4 ml-2">
