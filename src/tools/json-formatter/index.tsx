@@ -8,51 +8,189 @@ import { useToolStore } from '../../store/toolStore';
 import { ToolChainer } from '../../components/ToolChainer';
 import { Textarea } from '../../components/ui/Input';
 import { trackEvent } from '../../lib/analytics';
+import { Toggle } from '../../components/ui/Toggle';
+import { Search, X, CheckCircle, Code2, CornerDownRight, ChevronRight, ChevronDown, Check, Copy } from 'lucide-react';
+import { cn } from '../../components/ui/Button';
 
-// Custom recursive viewer
-const JsonViewer = ({ data, level = 0 }: { data: any, level?: number }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  if (data === null) return <span className="text-gray-500">null</span>;
-  if (typeof data === 'boolean') return <span className="text-purple-500">{data ? 'true' : 'false'}</span>;
-  if (typeof data === 'number') return <span className="text-blue-500">{data}</span>;
-  if (typeof data === 'string') return <span className="text-green-600 dark:text-green-400">"{data}"</span>;
+// --- Utilities ---
 
-  if (Array.isArray(data)) {
-    if (data.length === 0) return <span className="text-gray-500">[]</span>;
-    return (
-      <span>
-        <span className="cursor-pointer text-gray-400 select-none mr-1" onClick={() => setIsExpanded(!isExpanded)}>{isExpanded ? '▼' : '▶'}</span>
-        <span className="text-gray-600 dark:text-gray-300">[</span>
-        {isExpanded ? (
-          <div className="pl-4 border-l border-gray-200 dark:border-gray-700 ml-1.5 my-1">
-            {data.map((item, i) => (
-              <div key={i} className="py-0.5"><JsonViewer data={item} level={level+1} />{i<data.length-1 && <span className="text-gray-400">,</span>}</div>
-            ))}
-          </div>
-        ) : (<span className="text-gray-400 px-1 cursor-pointer" onClick={()=>setIsExpanded(true)}>... {data.length} items ...</span>)}
-        <span className="text-gray-600 dark:text-gray-300">]</span>
-      </span>
-    );
+const repairJson = (str: string): string => {
+  let repaired = str.trim();
+  
+  // 1. Fix unquoted keys (js object notation)
+  // Match keys that start with letter/underscore/dollar and are not quoted
+  repaired = repaired.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3');
+  
+  // 2. Convert single quotes to double quotes (only for strings, not within existing double quotes)
+  // This is tricky for nested quotes, but handles simple case
+  repaired = repaired.replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '"$1"');
+  
+  // 3. Remove trailing commas in objects and arrays
+  repaired = repaired.replace(/,\s*([}\]])/g, '$1');
+  
+  // 4. Handle undefined/NaN
+  repaired = repaired.replace(/:\s*undefined/g, ': null');
+  repaired = repaired.replace(/:\s*NaN/g, ': null');
+
+  return repaired;
+};
+
+interface JsonRow {
+  path: string;
+  key: string | null;
+  value: any;
+  type: string;
+  indent: number;
+  isExpandable: boolean;
+  isArrayItem: boolean;
+  itemIndex?: number;
+}
+
+const flattenJson = (
+  data: any,
+  path = '',
+  indent = 0,
+  rows: JsonRow[] = [],
+  visited = new Set()
+): JsonRow[] => {
+  const type = data === null ? 'null' : typeof data;
+  const isArray = Array.isArray(data);
+  const isObject = type === 'object' && !isArray && data !== null;
+
+  if (isObject || isArray) {
+    if (visited.has(data)) {
+      rows.push({ path, key: null, value: '[Circular Reference]', type: 'circular', indent, isExpandable: false, isArrayItem: false });
+      return rows;
+    }
+    visited.add(data);
   }
-  if (typeof data === 'object') {
-    const keys = Object.keys(data);
-    if (keys.length === 0) return <span className="text-gray-500">{"{}"}</span>;
-    return (
-      <span>
-        <span className="cursor-pointer text-gray-400 select-none mr-1" onClick={() => setIsExpanded(!isExpanded)}>{isExpanded ? '▼' : '▶'}</span>
-        <span className="text-gray-600 dark:text-gray-300">{"{"}</span>
-        {isExpanded ? (
-          <div className="pl-4 border-l border-gray-200 dark:border-gray-700 ml-1.5 my-1">
-            {keys.map((k, i) => (
-              <div key={k} className="py-0.5"><span className="text-indigo-600 dark:text-indigo-400">"{k}"</span><span className="text-gray-400 mr-2">:</span><JsonViewer data={data[k]} level={level+1}/>{i<keys.length-1 && <span className="text-gray-400">,</span>}</div>
-            ))}
-          </div>
-        ) : (<span className="text-gray-400 px-1 cursor-pointer" onClick={()=>setIsExpanded(true)}>... {keys.length} keys ...</span>)}
-        <span className="text-gray-600 dark:text-gray-300">{"}"}</span>
-      </span>
-    );
+
+  if (isArray) {
+    rows.push({ path, key: null, value: '[', type: 'array_start', indent, isExpandable: true, isArrayItem: false });
+    data.forEach((item, i) => {
+      const itemPath = path ? `${path}[${i}]` : `[${i}]`;
+      flattenJson(item, itemPath, indent + 1, rows, visited);
+    });
+    rows.push({ path, key: null, value: ']', type: 'array_end', indent, isExpandable: false, isArrayItem: false });
+  } else if (isObject) {
+    rows.push({ path, key: null, value: '{', type: 'object_start', indent, isExpandable: true, isArrayItem: false });
+    Object.keys(data).forEach((key) => {
+      const itemPath = path ? `${path}.${key}` : key;
+      const isComplex = typeof data[key] === 'object' && data[key] !== null;
+      
+      if (!isComplex) {
+        rows.push({ path: itemPath, key, value: data[key], type: data[key] === null ? 'null' : typeof data[key], indent: indent + 1, isExpandable: false, isArrayItem: false });
+      } else {
+        rows.push({ path: itemPath, key, value: null, type: 'key_only', indent: indent + 1, isExpandable: false, isArrayItem: false });
+        flattenJson(data[key], itemPath, indent + 1, rows, visited);
+      }
+    });
+    rows.push({ path, key: null, value: '}', type: 'object_end', indent, isExpandable: false, isArrayItem: false });
+  } else {
+    // Basic root value
+    rows.push({ path, key: null, value: data, type, indent, isExpandable: false, isArrayItem: false });
   }
-  return <span>{String(data)}</span>;
+
+  return rows;
+};
+
+
+// Helper for type highlighting
+const ValueDisplay = ({ 
+  row, 
+  showTypes, 
+  showPaths,
+  searchTerm, 
+  onCopyPath 
+}: { 
+  row: JsonRow, 
+  showTypes: boolean, 
+  showPaths: boolean,
+  searchTerm: string, 
+  onCopyPath: (path: string) => void 
+}) => {
+  const { key, value, type, indent, path } = row;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    onCopyPath(path);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const highlight = (text: string) => {
+    if (!searchTerm) return text;
+    const parts = String(text).split(new RegExp(`(${searchTerm})`, 'gi'));
+    return parts.map((part, i) => 
+      part.toLowerCase() === searchTerm.toLowerCase() 
+        ? <span key={i} className="bg-yellow-200 dark:bg-yellow-800/50 text-black dark:text-white px-0.5 rounded">{part}</span> 
+        : part
+    );
+  };
+
+  const renderValueByStyle = () => {
+    if (type === 'string') return <span className="text-green-600 dark:text-green-400">"{highlight(value)}"</span>;
+    if (type === 'number') return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
+    if (type === 'boolean') return <span className="text-purple-600 dark:text-purple-400 font-medium">{String(value)}</span>;
+    if (type === 'null') return <span className="text-gray-400 italic">null</span>;
+    if (type === 'array_start' || type === 'array_end' || type === 'object_start' || type === 'object_end') {
+      return <span className="text-gray-500 font-bold">{value}</span>;
+    }
+    return <span className="text-gray-700 dark:text-gray-300">{highlight(String(value))}</span>;
+  };
+
+  return (
+    <div 
+      className="group flex items-center py-0.5 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors cursor-default whitespace-pre"
+      style={{ paddingLeft: `${indent * 1.5}rem` }}
+    >
+      {key && (
+        <>
+          <span 
+            className={cn(
+              "text-indigo-600 dark:text-indigo-400 font-semibold",
+              showPaths ? "cursor-pointer hover:underline decoration-brand-500/50 underline-offset-4" : "cursor-default"
+            )}
+            onClick={() => showPaths && handleCopy()}
+            title={showPaths ? "Click to copy JSON path" : undefined}
+          >
+            "{highlight(key)}"
+          </span>
+          <span className="text-gray-400 mx-1">:</span>
+        </>
+      )}
+      
+      {renderValueByStyle()}
+
+      {showTypes && (type !== 'array_start' && type !== 'array_end' && type !== 'object_start' && type !== 'object_end' && type !== 'key_only' && type !== 'circular') && (
+        <span className="ml-2 text-[10px] uppercase tracking-wider text-gray-400 bg-gray-100 dark:bg-gray-800 px-1 rounded border dark:border-gray-700">
+          {type}
+        </span>
+      )}
+      
+      {showPaths && (
+        <button 
+          className={cn(
+            "opacity-0 group-hover:opacity-100 ml-2 p-1 rounded-md transition-all duration-200",
+            copied ? "text-green-500 bg-green-50 dark:bg-green-950/30" : "text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/30"
+          )}
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <div className="flex items-center gap-1 text-[10px] font-bold px-1">
+              <Check className="w-3 h-3" />
+              <span>Copied!</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[10px] font-bold px-1">
+              <Copy className="w-3 h-3" />
+              <span>Copy Path</span>
+            </div>
+          )}
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default function JsonFormatter() {
@@ -62,6 +200,13 @@ export default function JsonFormatter() {
 
   const [input, setInput] = useState(() => currentInput || '');
   const [debouncedInput, setDebouncedInput] = useState('');
+  const [showTypes, setShowTypes] = useState(false);
+  const [showPaths, setShowPaths] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [needsFix, setNeedsFix] = useState(false);
+  const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
+
+  // Consume global input once
 
   // Consume global input once
   useEffect(() => {
@@ -72,7 +217,27 @@ export default function JsonFormatter() {
 
   // Debouncing heavy JSON parsing
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedInput(input), 300);
+    const timer = setTimeout(() => {
+      setDebouncedInput(input);
+      // Check if it might need a fix
+      if (input.trim()) {
+        try {
+          JSON.parse(input);
+          setNeedsFix(false);
+        } catch (e) {
+          // If parsing fails, see if repairing it would help
+          try {
+            const repaired = repairJson(input);
+            JSON.parse(repaired);
+            setNeedsFix(true);
+          } catch (e2) {
+            setNeedsFix(false); 
+          }
+        }
+      } else {
+        setNeedsFix(false);
+      }
+    }, 300);
     return () => clearTimeout(timer);
   }, [input]);
 
@@ -83,6 +248,37 @@ export default function JsonFormatter() {
 
   const isValid = parsedJson && !(parsedJson instanceof Error);
   const formattedString = isValid ? JSON.stringify(parsedJson, null, 2) : '';
+
+  const flatRows = useMemo(() => {
+    if (!isValid) return [];
+    // For very large JSON, flattening is heavy, but much better than recursive components
+    return flattenJson(parsedJson);
+  }, [parsedJson, isValid]);
+
+  const filteredRows = useMemo(() => {
+    // 1. First filter by collapsed paths
+    let rows = flatRows;
+    if (collapsedPaths.size > 0) {
+      rows = flatRows.filter(row => {
+        // If any of the row's parent paths are collapsed, hide it
+        // A parent path for 'a.b.c' would be 'a' or 'a.b'
+        for (const collapsedPath of collapsedPaths) {
+          if (row.path.startsWith(collapsedPath + '.') || row.path.startsWith(collapsedPath + '[')) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // 2. Then filter by search term if present
+    if (!searchTerm) return rows;
+    const term = searchTerm.toLowerCase();
+    return rows.filter(row => 
+      (row.key && row.key.toLowerCase().includes(term)) || 
+      (row.type !== 'array_start' && row.type !== 'array_end' && row.type !== 'object_start' && row.type !== 'object_end' && String(row.value).toLowerCase().includes(term))
+    );
+  }, [flatRows, searchTerm, collapsedPaths]);
 
   // Sync valid output to global store
   useEffect(() => {
@@ -106,50 +302,194 @@ export default function JsonFormatter() {
     URL.revokeObjectURL(url);
   };
 
+  const handleApplyFix = () => {
+    const fixed = repairJson(input);
+    setInput(fixed);
+    setNeedsFix(false);
+    trackEvent('json_fixed', { tool: 'json-formatter' });
+  };
+
+  const toggleCollapse = (path: string) => {
+    setCollapsedPaths(prev => {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setCollapsedPaths(new Set());
+    trackEvent('expand_all_clicked', { tool: 'json-formatter' });
+  };
+
+  const collapseAll = () => {
+    // Collapse all object/array starts
+    const allCollapsible = flatRows
+      .filter(r => r.type === 'object_start' || r.type === 'array_start')
+      .map(r => r.path);
+    setCollapsedPaths(new Set(allCollapsible));
+    trackEvent('collapse_all_clicked', { tool: 'json-formatter' });
+  };
+
+  const copyPath = (path: string) => {
+    navigator.clipboard.writeText(path);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 flex flex-col min-h-[80vh]">
-      <SEOHelmet title="JSON Formatter & Validator" description="Format, prettify, and validate JSON data instantly with debouncing." />
-      <div className="flex justify-between items-center">
+    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 flex flex-col min-h-[85vh]">
+      <SEOHelmet title="Pro JSON Formatter & Search" description="High-performance JSON viewer with search, path copying, and auto-fix capabilities." />
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">JSON Formatter</h1>
-          <p className="mt-1 text-gray-500">Interactive JSON viewer with expand/collapse logic.</p>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-400 dark:to-indigo-400">
+            JSON Formatter Pro
+          </h1>
+          <p className="mt-1 text-gray-500 dark:text-gray-400 flex items-center gap-2">
+            <Code2 className="w-4 h-4 text-brand-500" />
+            Optimized for large files • Search • Path Copy
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-800 p-1.5 px-3 rounded-xl border shadow-sm">
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] uppercase font-bold" onClick={expandAll}>Expand All</Button>
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] uppercase font-bold" onClick={collapseAll}>Collapse All</Button>
+          </div>
+          <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 hidden sm:block" />
+          <Toggle 
+            label="Paths" 
+            checked={showPaths} 
+            onChange={(e) => setShowPaths(e.target.checked)} 
+            className="scale-90"
+          />
+          <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 hidden sm:block" />
+          <Toggle 
+            label="Types" 
+            checked={showTypes} 
+            onChange={(e) => setShowTypes(e.target.checked)} 
+            className="scale-90"
+          />
+          <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 hidden sm:block" />
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-brand-500" />
+            <input 
+              type="text" 
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-8 py-1.5 text-sm bg-gray-50 dark:bg-gray-900 border-none focus:ring-1 focus:ring-brand-500 rounded-lg w-32 md:w-48 transition-all"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-[500px]">
-        <Card className="flex flex-col h-full rounded-2xl overflow-hidden border">
-          <CardHeader className="py-3 px-4 border-b">
-            <CardTitle className="text-sm font-semibold">Input JSON</CardTitle>
-            <Button size="sm" variant="ghost" onClick={() => { setInput(''); trackEvent('clear_clicked', { tool: 'json-formatter' }); }}>Clear</Button>
+      {needsFix && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4 rounded-2xl flex items-center justify-between animate-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <div className="bg-amber-100 dark:bg-amber-800 p-2 rounded-full">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Invalid JSON detected</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400">It looks like a JS object or has syntax errors. I can fix it for you.</p>
+            </div>
+          </div>
+          <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white border-none" onClick={handleApplyFix}>
+            <CheckCircle className="w-4 h-4 mr-2" /> Fix and Format
+          </Button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-[600px]">
+        <Card className="flex flex-col h-full rounded-2xl overflow-hidden border bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm group">
+          <CardHeader className="py-3 px-4 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex items-center gap-2">
+              <CornerDownRight className="w-4 h-4 text-brand-500" />
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-gray-500">Input Editor</CardTitle>
+            </div>
+            <Button size="sm" variant="ghost" className="h-8 text-xs hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20" onClick={() => { setInput(''); trackEvent('clear_clicked', { tool: 'json-formatter' }); }}>Clear</Button>
           </CardHeader>
           <Textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder='{"paste": "json here"}'
-            className="flex-1 border-0 focus:ring-0 resize-none font-mono text-sm bg-gray-50 dark:bg-gray-900/50"
+            placeholder='{paste_json: "here"}'
+            className="flex-1 border-0 focus:ring-0 resize-none font-mono text-sm bg-transparent p-6 leading-relaxed"
             spellCheck="false"
           />
         </Card>
 
-        <Card className="flex flex-col h-full rounded-2xl overflow-hidden border">
-          <CardHeader className="py-3 px-4 border-b flex justify-between">
-            <CardTitle className="text-sm font-semibold">Formatted Output</CardTitle>
+        <Card className="flex flex-col h-full rounded-2xl overflow-hidden border shadow-lg group">
+          <CardHeader className="py-3 px-4 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex items-center gap-2">
+              <div className={cn("w-2 h-2 rounded-full", isValid ? "bg-green-500" : "bg-red-500")} />
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                {isValid ? `Formatted Output (${flatRows.length} nodes)` : "Validation Error"}
+              </CardTitle>
+            </div>
             <div className="flex gap-2">
-              <Button size="sm" variant="ghost" onClick={() => { downloadJson(); trackEvent('download_clicked', { tool: 'json-formatter' }); }} disabled={!isValid}><FileDown className="w-4 h-4 mr-2"/> Download</Button>
-              <CopyButton size="sm" value={formattedString} onClick={() => trackEvent('copy_clicked', { tool: 'json-formatter' })} />
+              <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { downloadJson(); trackEvent('download_clicked', { tool: 'json-formatter' }); }} disabled={!isValid}>
+                <FileDown className="w-3.5 h-3.5 mr-2"/> Download
+              </Button>
+              <CopyButton size="sm" className="h-8 text-xs" value={formattedString} onClick={() => trackEvent('copy_clicked', { tool: 'json-formatter' })} />
             </div>
           </CardHeader>
-          <CardContent className="flex-1 p-0 overflow-auto bg-white dark:bg-[#1e1e1e]">
+          <CardContent className="flex-1 p-0 overflow-auto bg-white dark:bg-[#0d1117] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
             {!debouncedInput.trim() ? (
-              <div className="h-full flex items-center justify-center text-gray-400 italic">Awaiting input...</div>
+              <div className="h-full flex items-center justify-center text-gray-400 italic bg-gray-50 dark:bg-gray-900/20">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center">
+                    <Code2 className="w-6 h-6 opacity-20" />
+                  </div>
+                  <span>Awaiting input...</span>
+                </div>
+              </div>
             ) : !isValid ? (
-              <div className="h-full flex items-center justify-center text-red-500 flex-col gap-2 p-6">
-                <AlertTriangle className="w-8 h-8 opacity-50" />
-                <span className="text-sm font-medium">Invalid JSON</span>
-                <span className="text-xs opacity-75 text-center break-all">{(parsedJson as Error).message}</span>
+              <div className="h-full flex items-center justify-center text-red-500 flex-col gap-3 p-8 bg-red-50/30 dark:bg-red-950/10">
+                <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-2xl">
+                  <AlertTriangle className="w-8 h-8 opacity-50" />
+                </div>
+                <span className="text-sm font-bold uppercase tracking-widest">Syntax Error</span>
+                <span className="text-xs opacity-75 text-center font-mono max-w-sm leading-relaxed bg-white dark:bg-gray-900 p-4 rounded-xl border border-red-100 dark:border-red-900/50 shadow-sm break-all">
+                  {(parsedJson as Error).message}
+                </span>
               </div>
             ) : (
-              <div className="p-4 font-mono text-sm leading-relaxed"><JsonViewer data={parsedJson} /></div>
+              <div className="p-2 font-mono text-[13px] leading-6 min-w-max">
+                {filteredRows.length > 0 ? (
+                  filteredRows.map((row, i) => {
+                    const isCollapsed = collapsedPaths.has(row.path);
+                    const canToggle = row.type === 'object_start' || row.type === 'array_start';
+                    
+                    return (
+                      <div key={`${row.path}-${i}`} className="flex items-start">
+                        <div className="w-6 flex items-center justify-center pt-1.5 cursor-pointer text-gray-400 hover:text-brand-500" onClick={() => canToggle && toggleCollapse(row.path)}>
+                          {canToggle && (
+                            isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />
+                          )}
+                        </div>
+                        <ValueDisplay 
+                          row={row} 
+                          showTypes={showTypes} 
+                          showPaths={showPaths}
+                          searchTerm={searchTerm}
+                          onCopyPath={copyPath}
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="p-8 text-center text-gray-400 italic">No matches found for "{searchTerm}"</div>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>

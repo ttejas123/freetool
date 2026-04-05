@@ -1,106 +1,222 @@
-// Random data field generators
-// Each generator produces a random value for the given field type.
+import { faker } from '@faker-js/faker';
 
-const fNames = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Sam', 'Jamie', 'Riley',
-  'Drew', 'Quinn', 'Avery', 'Blake', 'Cameron', 'Dakota', 'Emerson'];
-const lNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller',
-  'Davis', 'Wilson', 'Moore', 'Anderson', 'Thomas', 'Jackson', 'Lee'];
-const domains = ['example.com', 'test.org', 'demo.net', 'mail.co', 'acme.io', 'webapp.dev'];
-const streets = ['Main St', 'Oak Ave', 'Elm Rd', 'Baker St', 'Park Blvd', 'Cedar Ln', 'Maple Dr'];
-const cities = ['New York', 'San Francisco', 'Chicago', 'Austin', 'Seattle', 'Boston', 'Portland', 'Denver'];
-const countries = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 'India', 'Japan'];
-const companies = ['Acme Corp', 'TechAce', 'Globex', 'Initech', 'Umbrella Corp', 'Stark Industries', 'WayneEnterprises', 'Hooli'];
-const tlds = ['.com', '.org', '.net', '.io', '.dev', '.app', '.co'];
-const words = ['quick', 'brown', 'fox', 'jumps', 'lazy', 'dog', 'hello', 'world', 'foo', 'bar', 'baz', 'qux'];
-
-function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
-function rInt(min: number, max: number) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function rFloat(min: number, max: number, dp = 2) { return parseFloat((Math.random() * (max - min) + min).toFixed(dp)); }
+export type FieldCategory = 'Personal' | 'Contact' | 'Location' | 'Finance' | 'Commerce' | 'System' | 'Date' | 'Text' | 'Specialized';
 
 export type FieldType =
-  | 'id' | 'firstName' | 'lastName' | 'fullName' | 'email' | 'phone'
-  | 'address' | 'city' | 'country' | 'company' | 'boolean'
-  | 'integer' | 'float' | 'date' | 'color' | 'url' | 'ipv4'
-  | 'uuid' | 'sentence' | 'word' | 'creditCard' | 'latitude' | 'longitude';
+  | 'id' | 'uuid' | 'firstName' | 'lastName' | 'fullName' | 'gender' | 'jobTitle' | 'jobArea' | 'bio' | 'prefix' | 'suffix'
+  | 'company' | 'email' | 'exampleEmail' | 'userName' | 'url' | 'ipv4' | 'ipv6' | 'mac' | 'userAgent'
+  | 'street' | 'streetAddress' | 'city' | 'state' | 'country' | 'zipCode' | 'latitude' | 'longitude' | 'timeZone' | 'countryCode'
+  | 'amount' | 'currencyCode' | 'currencyName' | 'creditCardNumber' | 'creditCardCVV' | 'iban' | 'bic' | 'accountName'
+  | 'productName' | 'productDescription' | 'productCategory' | 'productMaterial' | 'price' | 'isbn' | 'sku' | 'department'
+  | 'pastDate' | 'futureDate' | 'recentDate' | 'birthdate'
+  | 'fileName' | 'fileExtension' | 'mimeType' | 'fileType'
+  | 'word' | 'words' | 'sentence' | 'paragraph' | 'slug'
+  | 'dish' | 'cuisine' | 'ingredient'
+  | 'songName' | 'musicGenre' | 'artist'
+  | 'phone' | 'boolean' | 'integer' | 'float' | 'color';
 
-export const FIELD_TYPES: { id: FieldType; label: string }[] = [
-  { id: 'id',        label: 'UUID / ID' },
-  { id: 'uuid',      label: 'UUID v4' },
-  { id: 'firstName', label: 'First Name' },
-  { id: 'lastName',  label: 'Last Name' },
-  { id: 'fullName',  label: 'Full Name' },
-  { id: 'email',     label: 'Email Address' },
-  { id: 'phone',     label: 'Phone Number' },
-  { id: 'address',   label: 'Street Address' },
-  { id: 'city',      label: 'City' },
-  { id: 'country',   label: 'Country' },
-  { id: 'company',   label: 'Company' },
-  { id: 'boolean',   label: 'Boolean' },
-  { id: 'integer',   label: 'Integer' },
-  { id: 'float',     label: 'Float' },
-  { id: 'date',      label: 'Date' },
-  { id: 'color',     label: 'Hex Color' },
-  { id: 'url',       label: 'URL' },
-  { id: 'ipv4',      label: 'IPv4 Address' },
-  { id: 'sentence',  label: 'Sentence' },
-  { id: 'word',      label: 'Word' },
-  { id: 'creditCard',label: 'Credit Card (fake)' },
-  { id: 'latitude',  label: 'Latitude' },
-  { id: 'longitude', label: 'Longitude' },
+export interface FieldTypeInfo {
+  id: FieldType;
+  label: string;
+  category: FieldCategory | 'General';
+}
+
+export const FIELD_TYPES: FieldTypeInfo[] = [
+  // General
+  { id: 'uuid',      label: 'UUID v4', category: 'General' },
+  { id: 'boolean',   label: 'Boolean', category: 'General' },
+  { id: 'integer',   label: 'Integer', category: 'General' },
+  { id: 'float',     label: 'Float', category: 'General' },
+  { id: 'color',     label: 'Hex Color', category: 'General' },
+
+  // Personal
+  { id: 'firstName', label: 'First Name', category: 'Personal' },
+  { id: 'lastName',  label: 'Last Name', category: 'Personal' },
+  { id: 'fullName',  label: 'Full Name', category: 'Personal' },
+  { id: 'company',   label: 'Company / Organization', category: 'Personal' },
+  { id: 'gender',    label: 'Gender', category: 'Personal' },
+  { id: 'jobTitle',  label: 'Job Title', category: 'Personal' },
+  { id: 'jobArea',   label: 'Job Area', category: 'Personal' },
+  { id: 'bio',       label: 'Short Bio', category: 'Personal' },
+  { id: 'prefix',    label: 'Name Prefix', category: 'Personal' },
+  { id: 'suffix',    label: 'Name Suffix', category: 'Personal' },
+
+  // Contact
+  { id: 'email',     label: 'Email', category: 'Contact' },
+  { id: 'exampleEmail', label: 'Example Email', category: 'Contact' },
+  { id: 'phone',     label: 'Phone Number', category: 'Contact' },
+  { id: 'userName',  label: 'Username', category: 'Contact' },
+  { id: 'url',       label: 'Website URL', category: 'Contact' },
+
+  // Location
+  { id: 'street',    label: 'Street Name', category: 'Location' },
+  { id: 'streetAddress', label: 'Street Address', category: 'Location' },
+  { id: 'city',      label: 'City', category: 'Location' },
+  { id: 'state',     label: 'State', category: 'Location' },
+  { id: 'country',   label: 'Country', category: 'Location' },
+  { id: 'countryCode', label: 'Country Code', category: 'Location' },
+  { id: 'zipCode',   label: 'ZIP / Postal Code', category: 'Location' },
+  { id: 'timeZone',  label: 'Timezone', category: 'Location' },
+  { id: 'latitude',  label: 'Latitude', category: 'Location' },
+  { id: 'longitude', label: 'Longitude', category: 'Location' },
+
+  // Finance
+  { id: 'amount',    label: 'Amount', category: 'Finance' },
+  { id: 'price',     label: 'Price', category: 'Finance' },
+  { id: 'currencyCode', label: 'Currency Code', category: 'Finance' },
+  { id: 'currencyName', label: 'Currency Name', category: 'Finance' },
+  { id: 'creditCardNumber', label: 'Credit Card Number', category: 'Finance' },
+  { id: 'creditCardCVV', label: 'Credit Card CVV', category: 'Finance' },
+  { id: 'iban',      label: 'IBAN', category: 'Finance' },
+  { id: 'bic',       label: 'SWIFT / BIC', category: 'Finance' },
+  { id: 'accountName', label: 'Bank Account Name', category: 'Finance' },
+
+  // Commerce
+  { id: 'productName', label: 'Product Name', category: 'Commerce' },
+  { id: 'productDescription', label: 'Product Description', category: 'Commerce' },
+  { id: 'productCategory', label: 'Product Category', category: 'Commerce' },
+  { id: 'productMaterial', label: 'Product Material', category: 'Commerce' },
+  { id: 'isbn',      label: 'ISBN', category: 'Commerce' },
+  { id: 'sku',       label: 'SKU', category: 'Commerce' },
+  { id: 'department', label: 'Department', category: 'Commerce' },
+
+  // Date
+  { id: 'pastDate',   label: 'Past Date', category: 'Date' },
+  { id: 'futureDate', label: 'Future Date', category: 'Date' },
+  { id: 'recentDate', label: 'Recent Date', category: 'Date' },
+  { id: 'birthdate',  label: 'Birth Date', category: 'Date' },
+
+  // System
+  { id: 'ipv4',      label: 'IPv4 Address', category: 'System' },
+  { id: 'ipv6',      label: 'IPv6 Address', category: 'System' },
+  { id: 'mac',       label: 'MAC Address', category: 'System' },
+  { id: 'userAgent', label: 'User Agent', category: 'System' },
+  { id: 'fileName',   label: 'Filename', category: 'System' },
+  { id: 'fileExtension', label: 'File Extension', category: 'System' },
+  { id: 'mimeType',   label: 'MIME Type', category: 'System' },
+  { id: 'fileType',   label: 'File Type', category: 'System' },
+
+  // Text
+  { id: 'word',      label: 'Single Word', category: 'Text' },
+  { id: 'words',     label: 'Multiple Words', category: 'Text' },
+  { id: 'sentence',  label: 'Sentence', category: 'Text' },
+  { id: 'paragraph', label: 'Paragraph', category: 'Text' },
+  { id: 'slug',      label: 'URL Slug', category: 'Text' },
+
+  // Specialized
+  { id: 'dish',      label: 'Dish Name (Food)', category: 'Specialized' },
+  { id: 'cuisine',   label: 'Cuisine (Food)', category: 'Specialized' },
+  { id: 'ingredient', label: 'Ingredient (Food)', category: 'Specialized' },
+  { id: 'songName',   label: 'Song Title', category: 'Specialized' },
+  { id: 'musicGenre', label: 'Music Genre', category: 'Specialized' },
+  { id: 'artist',     label: 'Artist Name', category: 'Specialized' },
 ];
 
 export function generateValue(type: FieldType, config: Record<string, any> = {}): any {
-  const f = pick(fNames);
-  const l = pick(lNames);
-
   switch (type) {
+    // General
     case 'id':
-    case 'uuid':
-      return crypto.randomUUID();
-    case 'firstName': return f;
-    case 'lastName':  return l;
-    case 'fullName':  return `${f} ${l}`;
-    case 'email':     return `${f.toLowerCase()}.${l.toLowerCase()}${rInt(1, 99)}@${pick(domains)}`;
-    case 'phone':     return `+1${rInt(200, 999)}${rInt(100, 999)}${rInt(1000, 9999)}`;
-    case 'address':   return `${rInt(1, 9999)} ${pick(streets)}`;
-    case 'city':      return pick(cities);
-    case 'country':   return pick(countries);
-    case 'company':   return pick(companies);
-    case 'boolean':   return Math.random() > 0.5;
+    case 'uuid':      return faker.string.uuid();
+    case 'boolean':   return faker.datatype.boolean();
     case 'integer': {
       const min = config.min ?? 0, max = config.max ?? 10000;
-      return rInt(min, max);
+      return faker.number.int({ min, max });
     }
     case 'float': {
-      const min = config.min ?? 0, max = config.max ?? 1000, dp = config.decimals ?? 2;
-      return rFloat(min, max, dp);
+      const min = config.min ?? 0, max = config.max ?? 1000, precision = config.decimals ?? 2;
+      return faker.number.float({ min, max, fractionDigits: precision });
     }
-    case 'date': {
-      const start = new Date('2000-01-01').getTime();
-      const end = new Date().getTime();
-      return new Date(start + Math.random() * (end - start)).toISOString().split('T')[0];
+    case 'color':     return faker.internet.color();
+
+    // Personal
+    case 'firstName': return faker.person.firstName();
+    case 'lastName':  return faker.person.lastName();
+    case 'fullName':  return faker.person.fullName();
+    case 'gender':    return faker.person.gender();
+    case 'jobTitle':  return faker.person.jobTitle();
+    case 'jobArea':   return faker.person.jobArea();
+    case 'bio':       return faker.person.bio();
+    case 'prefix':    return faker.person.prefix();
+    case 'suffix':    return faker.person.suffix();
+    case 'company':   return faker.company.name();
+
+    // Contact
+    case 'email':     return faker.internet.email();
+    case 'exampleEmail': return faker.internet.exampleEmail();
+    case 'phone':     return faker.phone.number();
+    case 'userName':  return faker.internet.userName();
+    case 'url':       return faker.internet.url();
+
+    // Location
+    case 'street':    return faker.location.street();
+    case 'streetAddress': return faker.location.streetAddress();
+    case 'city':      return faker.location.city();
+    case 'state':     return faker.location.state();
+    case 'country':   return faker.location.country();
+    case 'countryCode': return faker.location.countryCode();
+    case 'zipCode':   return faker.location.zipCode();
+    case 'timeZone':  return faker.location.timeZone();
+    case 'latitude':  return faker.location.latitude();
+    case 'longitude': return faker.location.longitude();
+
+    // Finance
+    case 'amount':    return faker.finance.amount();
+    case 'price':     return faker.commerce.price();
+    case 'currencyCode': return faker.finance.currencyCode();
+    case 'currencyName': return faker.finance.currencyName();
+    case 'creditCardNumber': return faker.finance.creditCardNumber();
+    case 'creditCardCVV': return faker.finance.creditCardCVV();
+    case 'iban':      return faker.finance.iban();
+    case 'bic':       return faker.finance.bic();
+    case 'accountName': return faker.finance.accountName();
+
+    // Commerce
+    case 'productName': return faker.commerce.productName();
+    case 'productDescription': return faker.commerce.productDescription();
+    case 'productCategory': return (faker.commerce as any).department?.() || faker.commerce.department();
+    case 'productMaterial': return faker.commerce.productMaterial();
+    case 'isbn': {
+      try {
+        // @ts-ignore - isbn might be moved or missing in some versions
+        return (faker as any).commerce?.isbn?.() || (faker as any).helpers?.replaceSymbols?.('###-##########') || faker.string.numeric(13);
+      } catch {
+        return faker.string.numeric(13);
+      }
     }
-    case 'color': {
-      const hex = Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
-      return `#${hex}`;
-    }
-    case 'url': {
-      const word = pick(words);
-      return `https://${word}${rInt(1, 99)}${pick(tlds)}`;
-    }
-    case 'ipv4': return `${rInt(1,254)}.${rInt(0,254)}.${rInt(0,254)}.${rInt(1,254)}`;
-    case 'sentence': {
-      const len = rInt(4, 10);
-      const sentence = Array.from({ length: len }, () => pick(words)).join(' ');
-      return sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
-    }
-    case 'word': return pick(words);
-    case 'creditCard': {
-      const digits = '4' + Array.from({ length: 15 }, () => rInt(0, 9)).join('');
-      return digits.replace(/(.{4})/g, '$1 ').trim();
-    }
-    case 'latitude':  return rFloat(-90, 90, 6);
-    case 'longitude': return rFloat(-180, 180, 6);
+    case 'sku':       return (faker as any).commerce?.sku?.() || faker.string.alphanumeric(8).toUpperCase();
+    case 'department': return faker.commerce.department();
+
+    // Date
+    case 'pastDate':   return faker.date.past().toISOString();
+    case 'futureDate': return faker.date.future().toISOString();
+    case 'recentDate': return faker.date.recent().toISOString();
+    case 'birthdate':  return faker.date.birthdate().toISOString().split('T')[0];
+
+    // System
+    case 'ipv4':      return faker.internet.ipv4();
+    case 'ipv6':      return faker.internet.ipv6();
+    case 'mac':       return faker.internet.mac();
+    case 'userAgent': return faker.internet.userAgent();
+    case 'fileName':   return faker.system.fileName();
+    case 'fileExtension': return (faker.system as any).fileExt?.() || faker.system.fileType();
+    case 'mimeType':   return faker.system.mimeType();
+    case 'fileType':   return faker.system.fileType();
+
+    // Text
+    case 'word':      return faker.lorem.word();
+    case 'words':     return faker.lorem.words();
+    case 'sentence':  return faker.lorem.sentence();
+    case 'paragraph': return faker.lorem.paragraph();
+    case 'slug':      return faker.lorem.slug();
+
+    // Specialized
+    case 'dish':      return (faker as any).food?.dish?.() || faker.lorem.word();
+    case 'cuisine':   return (faker as any).food?.cuisine?.() || faker.lorem.word();
+    case 'ingredient': return (faker as any).food?.ingredient?.() || faker.lorem.word();
+    case 'songName':   return faker.music.songName();
+    case 'musicGenre': return faker.music.genre();
+    case 'artist':     return faker.music.artist();
+
     default: return null;
   }
 }
@@ -127,6 +243,10 @@ export function generateRecord(fields: FieldDef[]): Record<string, any> {
       } else {
         record[field.name] = generateRecord(field.nestedFields!);
       }
+    } else if (field.isArray) {
+      record[field.name] = Array.from({ length: field.arrayCount ?? 2 }, () =>
+        generateValue(field.type, field.config)
+      );
     } else {
       record[field.name] = generateValue(field.type, field.config);
     }
