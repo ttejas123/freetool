@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Globe,
-  Flag,
   Settings2
 } from 'lucide-react';
 
