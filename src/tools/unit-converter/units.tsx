@@ -1,3 +1,18 @@
+import { 
+  Ruler, 
+  Weight, 
+  Thermometer, 
+  Square, 
+  Beaker, 
+  Gauge, 
+  HardDrive, 
+  Clock, 
+  Zap, 
+  CircleDot, 
+  Fuel,
+  type LucideIcon 
+} from 'lucide-react';
+
 // Unit definitions for the full unit converter.
 // Each unit has: id, label, toBase (convert to SI base), fromBase (convert from SI base).
 // Temperature uses function-based conversion instead of linear factors.
@@ -12,6 +27,7 @@ export type UnitDef = {
 export type Category = {
   id: string;
   label: string;
+  icon: LucideIcon;
   units: UnitDef[];
 };
 
@@ -24,6 +40,7 @@ export const categories: Category[] = [
   {
     id: 'length',
     label: 'Length',
+    icon: Ruler,
     units: [
       { id: 'mm',  label: 'Millimetre (mm)',    ...linear(0.001) },
       { id: 'cm',  label: 'Centimetre (cm)',     ...linear(0.01) },
@@ -42,6 +59,7 @@ export const categories: Category[] = [
   {
     id: 'mass',
     label: 'Mass',
+    icon: Weight,
     units: [
       { id: 'mg',  label: 'Milligram (mg)',  ...linear(0.000001) },
       { id: 'g',   label: 'Gram (g)',        ...linear(0.001) },
@@ -57,6 +75,7 @@ export const categories: Category[] = [
   {
     id: 'temperature',
     label: 'Temperature',
+    icon: Thermometer,
     units: [
       {
         id: 'c',  label: '°Celsius (°C)',
@@ -83,6 +102,7 @@ export const categories: Category[] = [
   {
     id: 'area',
     label: 'Area',
+    icon: Square,
     units: [
       { id: 'mm2',  label: 'mm²',         ...linear(0.000001) },
       { id: 'cm2',  label: 'cm²',         ...linear(0.0001) },
@@ -98,6 +118,7 @@ export const categories: Category[] = [
   {
     id: 'volume',
     label: 'Volume',
+    icon: Beaker,
     units: [
       { id: 'ml',   label: 'Millilitre (ml)',   ...linear(0.001) },
       { id: 'l',    label: 'Litre (L)',          ...linear(1) },
@@ -115,6 +136,7 @@ export const categories: Category[] = [
   {
     id: 'speed',
     label: 'Speed',
+    icon: Gauge,
     units: [
       { id: 'ms',   label: 'm/s',          ...linear(1) },
       { id: 'kmh',  label: 'km/h',         ...linear(1 / 3.6) },
@@ -128,6 +150,7 @@ export const categories: Category[] = [
   {
     id: 'digital',
     label: 'Digital Storage',
+    icon: HardDrive,
     units: [
       { id: 'bit',  label: 'Bit',          ...linear(1) },
       { id: 'byte', label: 'Byte (B)',      ...linear(8) },
@@ -144,6 +167,7 @@ export const categories: Category[] = [
   {
     id: 'time',
     label: 'Time',
+    icon: Clock,
     units: [
       { id: 'ns',  label: 'Nanosecond (ns)',  ...linear(1e-9) },
       { id: 'us',  label: 'Microsecond (μs)', ...linear(1e-6) },
@@ -160,6 +184,7 @@ export const categories: Category[] = [
   {
     id: 'energy',
     label: 'Energy',
+    icon: Zap,
     units: [
       { id: 'j',    label: 'Joule (J)',         ...linear(1) },
       { id: 'kj',   label: 'Kilojoule (kJ)',    ...linear(1000) },
@@ -174,6 +199,7 @@ export const categories: Category[] = [
   {
     id: 'pressure',
     label: 'Pressure',
+    icon: CircleDot,
     units: [
       { id: 'pa',   label: 'Pascal (Pa)',       ...linear(1) },
       { id: 'kpa',  label: 'Kilopascal (kPa)',  ...linear(1000) },
@@ -188,6 +214,7 @@ export const categories: Category[] = [
   {
     id: 'fuel',
     label: 'Fuel Economy',
+    icon: Fuel,
     units: [
       { id: 'mpg',    label: 'MPG (US)',         ...linear(1) },
       { id: 'mpg_uk', label: 'MPG (UK)',         ...linear(1 / 1.20095) },

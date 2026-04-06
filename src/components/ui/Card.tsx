@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from './Button';
+import { cn } from '@/lib/utils';
 
 export const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden", className)} {...props}>

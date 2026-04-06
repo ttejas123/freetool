@@ -1,23 +1,57 @@
-export async function sha1(message: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
+export async function sha1(message: string | ArrayBuffer): Promise<string> {
+  const data = typeof message === 'string' ? new TextEncoder().encode(message) : message;
   const hash = await crypto.subtle.digest("SHA-1", data);
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
 
-export async function sha256(message: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
+export async function sha256(message: string | ArrayBuffer): Promise<string> {
+  const data = typeof message === 'string' ? new TextEncoder().encode(message) : message;
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
 
-// Minimal manual MD5 implementation
-export function md5(string: string): string {
+export async function sha512(message: string | ArrayBuffer): Promise<string> {
+  const data = typeof message === 'string' ? new TextEncoder().encode(message) : message;
+  const hash = await crypto.subtle.digest("SHA-512", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function hmac256(message: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const messageData = encoder.encode(message);
+  
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  
+  const signature = await crypto.subtle.sign("HMAC", key, messageData);
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Optimized MD5 implementation that handles string or Uint8Array
+export function md5(input: string | Uint8Array): string {
+  let bytes: Uint8Array;
+  if (typeof input === 'string') {
+    // UTF-8 encode string to bytes
+    const encoder = new TextEncoder();
+    bytes = encoder.encode(input);
+  } else {
+    bytes = input;
+  }
+
   function rotateLeft(lValue: number, iShiftBits: number) {
     return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
   }
@@ -35,18 +69,10 @@ export function md5(string: string): string {
     } else return lResult ^ lX8 ^ lY8;
   }
 
-  function F(x: number, y: number, z: number) {
-    return (x & y) | (~x & z);
-  }
-  function G(x: number, y: number, z: number) {
-    return (x & z) | (y & ~z);
-  }
-  function H(x: number, y: number, z: number) {
-    return x ^ y ^ z;
-  }
-  function I(x: number, y: number, z: number) {
-    return y ^ (x | ~z);
-  }
+  function F(x: number, y: number, z: number) { return (x & y) | (~x & z); }
+  function G(x: number, y: number, z: number) { return (x & z) | (y & ~z); }
+  function H(x: number, y: number, z: number) { return x ^ y ^ z; }
+  function I(x: number, y: number, z: number) { return y ^ (x | ~z); }
 
   function FF(a: number, b: number, c: number, d: number, x: number, s: number, ac: number) {
     a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
@@ -68,23 +94,21 @@ export function md5(string: string): string {
     return addUnsigned(rotateLeft(a, s), b);
   }
 
-  function convertToWordArray(string: string): number[] {
-    let lWordCount;
-    const lMessageLength = string.length;
+  function convertToWordArray(bytes: Uint8Array): number[] {
+    const lMessageLength = bytes.length;
     const lNumberOfWords_temp1 = lMessageLength + 8;
     const lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
     const lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
-    const lWordArray = Array(lNumberOfWords - 1);
-    let lBytePosition = 0;
-    let lByteCount = 0;
-    while (lByteCount < lMessageLength) {
-      lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-      lBytePosition = (lByteCount % 4) * 8;
-      lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
-      lByteCount++;
+    const lWordArray = new Array(lNumberOfWords).fill(0);
+    
+    for (let i = 0; i < lMessageLength; i++) {
+      const lWordCount = (i - (i % 4)) / 4;
+      const lBytePosition = (i % 4) * 8;
+      lWordArray[lWordCount] = (lWordArray[lWordCount] | (bytes[i] << lBytePosition));
     }
-    lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-    lBytePosition = (lByteCount % 4) * 8;
+    
+    const lWordCount = (lMessageLength - (lMessageLength % 4)) / 4;
+    const lBytePosition = (lMessageLength % 4) * 8;
     lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
     lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
     lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
@@ -92,54 +116,28 @@ export function md5(string: string): string {
   }
 
   function wordToHex(lValue: number) {
-    let WordToHexValue = "",
-      WordToHexValue_temp = "",
-      lByte,
-      lCount;
-    for (lCount = 0; lCount <= 3; lCount++) {
-      lByte = (lValue >>> (lCount * 8)) & 255;
-      WordToHexValue_temp = "0" + lByte.toString(16);
+    let WordToHexValue = "";
+    for (let lCount = 0; lCount <= 3; lCount++) {
+      const lByte = (lValue >>> (lCount * 8)) & 255;
+      const WordToHexValue_temp = "0" + lByte.toString(16);
       WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
     }
     return WordToHexValue;
   }
 
-  function utf8Encode(string: string) {
-    string = string.replace(/\r\n/g, "\n");
-    let utftext = "";
-    for (let n = 0; n < string.length; n++) {
-      const c = string.charCodeAt(n);
-      if (c < 128) {
-        utftext += String.fromCharCode(c);
-      } else if (c > 127 && c < 2048) {
-        utftext += String.fromCharCode((c >> 6) | 192);
-        utftext += String.fromCharCode((c & 63) | 128);
-      } else {
-        utftext += String.fromCharCode((c >> 12) | 224);
-        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-        utftext += String.fromCharCode((c & 63) | 128);
-      }
-    }
-    return utftext;
-  }
+  const x = convertToWordArray(bytes);
+  let a = 0x67452301;
+  let b = 0xefcdab89;
+  let c = 0x98badcfe;
+  let d = 0x10325476;
 
-  let x = [];
-  let k, AA, BB, CC, DD, a, b, c, d;
   const S11 = 7, S12 = 12, S13 = 17, S14 = 22;
   const S21 = 5, S22 = 9, S23 = 14, S24 = 20;
   const S31 = 4, S32 = 11, S33 = 16, S34 = 23;
   const S41 = 6, S42 = 10, S43 = 15, S44 = 21;
 
-  string = utf8Encode(string);
-  x = convertToWordArray(string);
-
-  a = 0x67452301;
-  b = 0xefcdab89;
-  c = 0x98badcfe;
-  d = 0x10325476;
-
-  for (k = 0; k < x.length; k += 16) {
-    AA = a; BB = b; CC = c; DD = d;
+  for (let k = 0; k < x.length; k += 16) {
+    const AA = a; const BB = b; const CC = c; const DD = d;
     a = FF(a, b, c, d, x[k + 0], S11, 0xd76aa478);
     d = FF(d, a, b, c, x[k + 1], S12, 0xe8c7b756);
     c = FF(c, d, a, b, x[k + 2], S13, 0x242070db);
@@ -210,6 +208,6 @@ export function md5(string: string): string {
     d = addUnsigned(d, DD);
   }
 
-  const temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
-  return temp.toLowerCase();
+  return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
 }
+

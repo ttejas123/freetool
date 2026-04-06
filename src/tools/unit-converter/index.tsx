@@ -6,11 +6,6 @@ import { ArrowLeftRight, ChevronDown } from 'lucide-react';
 import { categories, convert } from './units';
 import type { UnitDef } from './units';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  length: '📏', mass: '⚖️', temperature: '🌡️', area: '⬜',
-  volume: '🧪', speed: '🏎️', digital: '💾', time: '⏰',
-  energy: '⚡', pressure: '🔵', fuel: '⛽',
-};
 
 function UnitSelect({
   options, value, onChange,
@@ -138,7 +133,7 @@ export default function UnitConverter() {
                 : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-brand-400 hover:text-brand-600'
             }`}
           >
-            <span className="text-base leading-none">{CATEGORY_ICONS[cat.id]}</span>
+            <cat.icon className="w-4 h-4" />
             {cat.label}
           </button>
         ))}
