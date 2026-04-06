@@ -4,7 +4,48 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { SEOHelmet } from '@/components/SEOHelmet';
-import { getDeviceId, getTodaysUploadSize, uploadFileAndLog, type SharedFile } from './schema';
+import { getDeviceId, getTodaysUploadSize, uploadFileAndLog, getUploadHistory, type SharedFile } from './schema';
+
+function FilePreview({ file }: { file: File }) {
+  const [textPreview, setTextPreview] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (file.type.startsWith('text/') || file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setTextPreview((e.target?.result as string).slice(0, 1000));
+      };
+      reader.readAsText(file.slice(0, 1024)); // Only read first 1KB
+    } else if (file.type.startsWith('image/') || file.type.startsWith('video/') || file.type === 'application/pdf') {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [file]);
+
+  if (textPreview) {
+    return (
+      <div className="w-full bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 overflow-hidden border border-gray-200 dark:border-gray-800 shrink-0 mt-3">
+         <pre className="text-xs text-left text-gray-700 dark:text-gray-300 font-mono overflow-auto max-h-48 whitespace-pre-wrap">{textPreview}...</pre>
+      </div>
+    );
+  }
+
+  if (previewUrl) {
+    if (file.type.startsWith('image/')) {
+      return <img src={previewUrl} alt="Preview" className="w-full max-h-48 object-contain rounded-lg shrink-0 mt-3" />;
+    }
+    if (file.type.startsWith('video/')) {
+      return <video src={previewUrl} controls className="w-full max-h-48 rounded-lg shrink-0 mt-3 bg-black" />;
+    }
+    if (file.type === 'application/pdf') {
+      return <iframe src={previewUrl} className="w-full h-48 rounded-lg border border-gray-200 dark:border-gray-800 shrink-0 mt-3" />;
+    }
+  }
+
+  return null;
+}
 
 export default function FileShare() {
   const [file, setFile] = useState<File | null>(null);
@@ -13,13 +54,17 @@ export default function FileShare() {
   const [error, setError] = useState<string | null>(null);
   const [usageBytes, setUsageBytes] = useState(0);
   
+  const [history, setHistory] = useState<SharedFile[]>([]);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 50MB daily limit
   const DAILY_LIMIT_BYTES = 50 * 1024 * 1024;
 
   useEffect(() => {
-    getTodaysUploadSize(getDeviceId()).then(setUsageBytes).catch(console.error);
+    const deviceId = getDeviceId();
+    getTodaysUploadSize(deviceId).then(setUsageBytes).catch(console.error);
+    getUploadHistory(deviceId).then(setHistory).catch(console.error);
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +90,7 @@ export default function FileShare() {
       const result = await uploadFileAndLog(file, deviceId);
       setUploadedFile(result);
       setUsageBytes(b => b + file.size);
+      setHistory(prev => [result, ...prev]);
       setFile(null);
     } catch (err: any) {
       setError(err.message || 'Failed to upload file');
@@ -136,23 +182,26 @@ export default function FileShare() {
 
         {file && (
           <div className="py-6 space-y-6">
-            <div className="bg-brand-50 dark:bg-gray-900 rounded-xl p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
-                  <FileHeart className="w-6 h-6 text-brand-500" />
+            <div className="bg-brand-50 dark:bg-gray-900 rounded-xl p-4 flex flex-col">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
+                    <FileHeart className="w-6 h-6 text-brand-500" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold text-gray-900 dark:text-white truncate max-w-xs">{file.name}</p>
+                    <p className="text-sm text-gray-500">{formatBytes(file.size)}</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="font-semibold text-gray-900 dark:text-white truncate max-w-xs">{file.name}</p>
-                  <p className="text-sm text-gray-500">{formatBytes(file.size)}</p>
-                </div>
+                <button 
+                  onClick={() => setFile(null)} 
+                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full text-gray-500"
+                  disabled={isUploading}
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
-              <button 
-                onClick={() => setFile(null)} 
-                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full text-gray-500"
-                disabled={isUploading}
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <FilePreview file={file} />
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -200,6 +249,30 @@ export default function FileShare() {
             <CopyButton value={uploadedFile.url} className="shrink-0" />
           </div>
         </Card>
+      )}
+
+      {history.length > 0 && (
+        <div className="space-y-4 pt-8">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Clock className="w-5 h-5 text-brand-500" />Recent Uploads
+          </h2>
+          <div className="grid gap-4">
+            {history.map(item => (
+              <Card key={item.id} className="p-4 md:p-5 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center hover:border-brand-500/50 transition-colors">
+                <div className="min-w-0 flex-1 space-y-1 w-full">
+                  <div className="flex items-center justify-between gap-4">
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-600 dark:text-brand-400 truncate hover:underline">{item.url}</a>
+                    <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:inline-block">
+                      {item.expiresAt > new Date() ? `Expires ${item.expiresAt.toLocaleDateString()}` : 'Expired'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{formatBytes(item.size)}</p>
+                </div>
+                <CopyButton value={item.url} className="w-full sm:w-auto flex-shrink-0" />
+              </Card>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

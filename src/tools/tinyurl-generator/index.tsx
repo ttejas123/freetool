@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link2, Trash2, ArrowRight, Loader2, Unlink, Copy, Check, Terminal } from 'lucide-react';
+import { Link2, Trash2, ArrowRight, Loader2, Unlink, Copy, Check, Terminal, Eye, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -26,7 +26,7 @@ async function expandUrl(url: string): Promise<ExpandResult> {
   }
 }
 
-function ExpandTab() {
+function ExpandTab({ onPreview }: { onPreview: (url: string) => void }) {
   const [inputText, setInputText] = useState('');
   const [results, setResults] = useState<ExpandResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -103,9 +103,14 @@ function ExpandTab() {
                       </div>
                     </div>
                     {!r.error && (
-                      <button onClick={() => copyText(r.resolved)} className="shrink-0 text-gray-400 hover:text-brand-500 transition-colors">
-                        {copied === r.resolved ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button onClick={() => onPreview(r.resolved)} className="p-1 text-gray-400 hover:text-brand-500 transition-colors" title="Preview site">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => copyText(r.resolved)} className="p-1 text-gray-400 hover:text-brand-500 transition-colors">
+                          {copied === r.resolved ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
                     )}
                   </div>
                   {/* cURL equivalent */}
@@ -127,7 +132,7 @@ function ExpandTab() {
 }
 
 // ── Shorten Tab (existing, cleaned up) ───────────────────────────────────────
-function ShortenTab() {
+function ShortenTab({ onPreview }: { onPreview: (url: string) => void }) {
   const [url, setUrl] = useState('');
   const [history, setHistory] = useState<ShortLink[]>([]);
   const [error, setError] = useState('');
@@ -207,7 +212,12 @@ function ShortenTab() {
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{item.originalUrl}</p>
                 </div>
-                <CopyButton value={item.shortUrl} className="w-full sm:w-auto flex-shrink-0" />
+                <div className="flex items-center gap-2 w-full sm:w-auto flex-shrink-0 mt-3 sm:mt-0">
+                  <button onClick={() => onPreview(item.shortUrl)} className="h-10 px-3 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-300 transition-colors flex items-center justify-center shrink-0" title="Preview site">
+                    <Eye className="w-4 h-4" />
+                  </button>
+                  <CopyButton value={item.shortUrl} className="flex-1 sm:flex-none h-10" />
+                </div>
               </Card>
             ))}
           </div>
@@ -220,9 +230,10 @@ function ShortenTab() {
 // ── Root component ────────────────────────────────────────────────────────────
 export default function TinyUrlGenerator() {
   const [tab, setTab] = useState<'shorten' | 'expand'>('shorten');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 relative">
       <SEOHelmet
         title="TinyURL Generator & URL Expander"
         description="Shorten long URLs instantly or expand short links to see the original destination, with cURL commands. Fully browser-side."
@@ -264,7 +275,34 @@ export default function TinyUrlGenerator() {
         </button>
       </div>
 
-      {tab === 'shorten' ? <ShortenTab /> : <ExpandTab />}
+      {tab === 'shorten' ? <ShortenTab onPreview={setPreviewUrl} /> : <ExpandTab onPreview={setPreviewUrl} />}
+
+      {previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-6xl h-[85vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 animate-in slide-in-from-bottom-8">
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
+              <div className="flex items-center gap-3 w-full min-w-0 pr-4">
+                <div className="bg-brand-100 dark:bg-brand-900/30 p-2 rounded-lg">
+                  <Eye className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">Preview</h3>
+                  <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-500 hover:text-brand-600 font-mono truncate hover:underline block">{previewUrl}</a>
+                </div>
+              </div>
+              <button onClick={() => setPreviewUrl(null)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-gray-500 shrink-0 border-0">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 bg-gray-100 dark:bg-black relative">
+              <iframe src={previewUrl} className="w-full h-full border-0 absolute inset-0" title="Preview" />
+            </div>
+            <div className="p-3 text-center text-xs text-gray-500 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex justify-center items-center gap-2">
+              <span>Note: Some websites may refuse to connect inside an iframe due to their security settings.</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

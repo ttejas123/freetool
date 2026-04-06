@@ -118,3 +118,34 @@ export async function getTodaysUploadSize(deviceId: string): Promise<number> {
 
   return data.reduce((acc, row) => acc + Number(row.file_size), 0);
 }
+
+/**
+ * Returns the recent upload history for this device
+ */
+export async function getUploadHistory(deviceId: string): Promise<SharedFile[]> {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) return [];
+
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase
+    .from('file_uploads')
+    .select('*')
+    .eq('device_id', deviceId)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error || !data) {
+    console.error('Failed to get upload history', error);
+    return [];
+  }
+
+  return data.map((row) => ({
+    id: row.id,
+    url: row.url,
+    size: Number(row.file_size),
+    expiresAt: new Date(new Date(row.created_at).getTime() + 48 * 60 * 60 * 1000)
+  }));
+}
