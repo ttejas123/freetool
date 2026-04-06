@@ -32,6 +32,11 @@ async function prerender() {
       name: 'Contact',
       description: 'Contact us for any queries or feedback regarding Free Tool',
       path: 'contact'
+    },
+    {
+      name: 'Redirect',
+      description: 'Redirecting to your destination...',
+      path: 't'
     }
   ];
 
