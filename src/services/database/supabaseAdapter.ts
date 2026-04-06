@@ -72,7 +72,8 @@ export class SupabaseDatabase implements DatabaseService {
     const { data, error } = await supabase
       .from('short_links')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(5);
 
     if (error || !data) return [];
 
