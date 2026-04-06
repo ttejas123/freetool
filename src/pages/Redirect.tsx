@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { getDatabase } from '@/services';
 
 export function Redirect() {
-  const { code } = useParams();
+  const [searchParams] = useSearchParams();
+  const code = searchParams.get('c');
 
   useEffect(() => {
     async function performRedirect() {

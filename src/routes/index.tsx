@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: '/t/:code',
+    path: '/t',
     element: <Redirect />,
   },
 ]);

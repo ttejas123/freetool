@@ -36,7 +36,7 @@ export const generateShortLink = async (originalUrl: string) => {
     return {
       id: data.code,
       originalUrl: data.originalUrl || originalUrl,
-      shortUrl: `${window.location.origin}/t/${data.code}`,
+      shortUrl: `${window.location.origin}/t?c=${data.code}`,
       createdAt: Date.now()
     };
   }
@@ -46,7 +46,7 @@ export const generateShortLink = async (originalUrl: string) => {
   const redirect = await getRedirect();
 
   const code = Math.random().toString(36).substring(2, 8);
-  const shortUrl = `${window.location.origin}/t/${code}`;
+  const shortUrl = `${window.location.origin}/t?c=${code}`;
 
   const link = await db.createShortUrl({ originalUrl, shortUrl });
   await redirect.register(code, originalUrl);

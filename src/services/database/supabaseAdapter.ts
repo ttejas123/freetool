@@ -82,7 +82,7 @@ export class SupabaseDatabase implements DatabaseService {
       return {
         id: code,
         originalUrl: row.original_url as string,
-        shortUrl: `${window.location.origin}/t/${code}`,
+        shortUrl: `${window.location.origin}/t?c=${code}`,
         createdAt: typeof row.created_at === 'string' ? new Date(row.created_at).getTime() : (row.created_at as number),
       };
     });
