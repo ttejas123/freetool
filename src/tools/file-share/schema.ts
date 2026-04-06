@@ -1,4 +1,5 @@
 import { getStorage } from '@/services/storage';
+import { generateShortLink } from '@/tools/tinyurl-generator/utils';
 
 export type SharedFile = {
   id: string;
@@ -36,14 +37,23 @@ export async function uploadFileAndLog(file: File, deviceId: string): Promise<Sh
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    // If not configured, we'll gracefully degrade and just return the storage URL without tracking usage
-    // (Helpful if using local storage or R2 without Supabase DB)
-    return {
-      id: result.key,
-      url: result.url,
-      size: file.size,
-      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
-    };
+    // If not configured, we'll gracefully degrade and just return the storage URL
+    try {
+      const shortLink = await generateShortLink(result.url);
+      return {
+        id: result.key,
+        url: shortLink.shortUrl,
+        size: file.size,
+        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+      };
+    } catch {
+      return {
+        id: result.key,
+        url: result.url,
+        size: file.size,
+        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+      };
+    }
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
@@ -59,17 +69,25 @@ export async function uploadFileAndLog(file: File, deviceId: string): Promise<Sh
   });
 
   if (error) {
-    // If DB insert fails, we should ideally delete the file or just ignore it.
-    // We'll throw to inform the user it didn't strictly succeed for tracking.
     console.error('Failed to log upload in DB', error);
   }
 
-  return {
-    id,
-    url: result.url,
-    size: file.size,
-    expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
-  };
+  try {
+    const shortLink = await generateShortLink(result.url);
+    return {
+      id,
+      url: shortLink.shortUrl,
+      size: file.size,
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+    };
+  } catch {
+    return {
+      id,
+      url: result.url,
+      size: file.size,
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+    };
+  }
 }
 
 /**

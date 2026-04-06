@@ -6,7 +6,7 @@
  * Required env vars:
  *   VITE_SUPABASE_URL
  *   VITE_SUPABASE_ANON_KEY
- *   VITE_SUPABASE_STORAGE_BUCKET  (default: 'uploads')
+ *   VITE_SUPABASE_STORAGE_BUCKET  (default: 'upload')
  */
 import type { StorageService, UploadResult } from './types';
 
@@ -16,7 +16,7 @@ export class SupabaseStorageAdapter implements StorageService {
   private readonly bucket: string;
 
   constructor() {
-    this.bucket = (import.meta.env.VITE_SUPABASE_STORAGE_BUCKET as string) || 'uploads';
+    this.bucket = (import.meta.env.VITE_SUPABASE_STORAGE_BUCKET as string) || 'upload';
   }
 
   private async getClient() {
@@ -29,7 +29,7 @@ export class SupabaseStorageAdapter implements StorageService {
     return this.client;
   }
 
-  async upload(file: File | Blob, path = 'uploads/'): Promise<UploadResult> {
+  async upload(file: File | Blob, path = 'upload/'): Promise<UploadResult> {
     const supabase = await this.getClient();
     const name = file instanceof File ? file.name : `blob-${Date.now()}`;
     const key = `${path}${Date.now()}-${name}`;

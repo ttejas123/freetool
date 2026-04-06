@@ -193,7 +193,7 @@ export default function FileShare() {
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <LinkIcon className="w-5 h-5 text-gray-400 shrink-0" />
               <div className="truncate">
-                <p className="text-sm text-gray-900 dark:text-white font-medium truncate">{uploadedFile.url}</p>
+                <a href={uploadedFile.url} target="_blank" rel="noopener noreferrer" className="block text-sm text-brand-600 dark:text-brand-400 font-medium truncate hover:underline">{uploadedFile.url}</a>
                 <p className="text-xs text-gray-500">Expires in 48 hours</p>
               </div>
             </div>
