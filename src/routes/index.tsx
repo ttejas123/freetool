@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Home } from '@/pages/Home';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { Contact } from '@/pages/Contact';
+import { Redirect } from '@/pages/Redirect';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ToolPageTemplate } from '@/components/tools/ToolPageTemplate';
 
@@ -50,5 +51,9 @@ export const router = createBrowserRouter([
         element: <Navigate to="/" replace />,
       },
     ],
+  },
+  {
+    path: '/t/:code',
+    element: <Redirect />,
   },
 ]);

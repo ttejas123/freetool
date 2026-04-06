@@ -36,7 +36,7 @@ export const generateShortLink = async (originalUrl: string) => {
     return {
       id: data.code,
       originalUrl: data.originalUrl || originalUrl,
-      shortUrl: data.shortUrl,
+      shortUrl: `${window.location.origin}/t/${data.code}`,
       createdAt: Date.now()
     };
   }

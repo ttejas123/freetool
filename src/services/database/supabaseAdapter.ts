@@ -45,10 +45,10 @@ export class SupabaseDatabase implements DatabaseService {
     };
 
     const { error } = await supabase.from('short_links').insert({
-      id: link.id,
+      code: link.id,
       original_url: link.originalUrl,
       short_url: link.shortUrl,
-      created_at: link.createdAt,
+      // created_at is handled automatically by the DB table default, or we can omit it if it's auto-generated timestamp
     });
 
     if (error) throw new Error(`Supabase createShortUrl: ${error.message}`);
@@ -60,7 +60,7 @@ export class SupabaseDatabase implements DatabaseService {
     const { data, error } = await supabase
       .from('short_links')
       .select('original_url')
-      .eq('id', code)
+      .eq('code', code)
       .single();
 
     if (error || !data) return null;
@@ -71,21 +71,25 @@ export class SupabaseDatabase implements DatabaseService {
     const supabase = await this.getClient();
     const { data, error } = await supabase
       .from('short_links')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: false });
 
     if (error || !data) return [];
 
-    return (data as Array<Record<string, unknown>>).map((row) => ({
-      id: row.id as string,
-      originalUrl: row.original_url as string,
-      shortUrl: row.short_url as string,
-      createdAt: row.created_at as number,
-    }));
+    return (data as Array<Record<string, unknown>>).map((row) => {
+      const code = (row.code || row.id) as string;
+      return {
+        id: code,
+        originalUrl: row.original_url as string,
+        shortUrl: `${window.location.origin}/t/${code}`,
+        createdAt: typeof row.created_at === 'string' ? new Date(row.created_at).getTime() : (row.created_at as number),
+      };
+    });
   }
 
   async clearHistory(): Promise<void> {
     const supabase = await this.getClient();
-    const { error } = await supabase.from('short_links').delete().neq('id', '');
+    const { error } = await supabase.from('short_links').delete().neq('code', '');
     if (error) throw new Error(`Supabase clearHistory: ${error.message}`);
   }
 
