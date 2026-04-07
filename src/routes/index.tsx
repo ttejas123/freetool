@@ -1,11 +1,7 @@
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Home } from '@/pages/Home';
-import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
-import { Contact } from '@/pages/Contact';
-import { About } from '@/pages/About';
-import { Terms } from '@/pages/Terms';
 import { Redirect } from '@/pages/Redirect';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ToolPageTemplate } from '@/components/tools/ToolPageTemplate';
@@ -16,6 +12,12 @@ const PageLoader = () => (
     <div className="w-6 h-6 rounded-full border-2 border-brand-500 border-t-transparent animate-spin"></div>
   </div>
 );
+
+// Legal Pages (Lazy Loaded)
+const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+const About = lazy(() => import('@/pages/About').then(m => ({ default: m.About })));
+const Contact = lazy(() => import('@/pages/Contact').then(m => ({ default: m.Contact })));
+const Terms = lazy(() => import('@/pages/Terms').then(m => ({ default: m.Terms })));
 
 export const router = createBrowserRouter([
   {
@@ -28,33 +30,45 @@ export const router = createBrowserRouter([
       },
       ...toolRegistry.map((tool) => ({
         path: tool.path,
-        element: tool.type === 'heavy' ? (
+        element: (
           <Suspense fallback={<PageLoader />}>
             <ToolPageTemplate tool={tool}>
               <tool.component />
             </ToolPageTemplate>
           </Suspense>
-        ) : (
-          <ToolPageTemplate tool={tool}>
-            <tool.component />
-          </ToolPageTemplate>
         ),
       })),
       {
         path: 'privacy-policy',
-        element: <PrivacyPolicy />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PrivacyPolicy />
+          </Suspense>
+        ),
       },
       {
         path: 'contact',
-        element: <Contact />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Contact />
+          </Suspense>
+        ),
       },
       {
         path: 'about',
-        element: <About />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <About />
+          </Suspense>
+        ),
       },
       {
         path: 'terms',
-        element: <Terms />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Terms />
+          </Suspense>
+        ),
       },
       {
         path: '*',

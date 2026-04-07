@@ -31,7 +31,7 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
     },
     {
       question: `Is ${tool.name} completely free?`,
-      answer: "Yes! Ozone is a completely free suite of developer and creative utilities."
+      answer: "Yes! FreeTool.shop is a completely free suite of developer and creative utilities."
     }
   ];
 
