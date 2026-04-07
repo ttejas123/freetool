@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Textarea } from '../../components/ui/Input';
@@ -8,7 +8,6 @@ import { ArrowLeftRight, DatabaseZap, Loader2, RefreshCcw } from 'lucide-react';
 import { compressData, decompressData, getByteSize, formatBytes } from './utils';
 import { useToolStore } from '../../store/toolStore';
 import { ToolChainer } from '../../components/ToolChainer';
-import { useEffect } from 'react';
 
 export default function CompressionTool() {
   const currentInput = useToolStore(state => state.currentInput);

@@ -9,10 +9,10 @@ import QRCodeStyling, {
   type FileExtension
 } from 'qr-code-styling';
 import { jsPDF } from 'jspdf';
-import { SEOHelmet } from '../../components/SEOHelmet';
-import { Card, CardContent } from '../../components/ui/Card';
-import { Input, Textarea } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
+import { SEOHelmet } from '@/components/SEOHelmet';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Input, Textarea } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 import { 
   Download, 
   Link as LinkIcon, 

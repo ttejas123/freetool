@@ -115,8 +115,8 @@ export const AppLayout = () => {
         <div className="container mx-auto px-6 flex items-center justify-between gap-8">
           <div className="flex items-center gap-10">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-brand-500 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                 <CheckCircle2 className="w-5 h-5 text-white" />
+              <div className="relative flex items-center justify-center w-9 h-9">
+                 <img src="/favicon.png" alt="Logo" className="w-9 h-9" />
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Free<span className="text-gradient">Tool</span>
