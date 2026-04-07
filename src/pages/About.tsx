@@ -1,6 +1,5 @@
 import { Helmet } from 'react-helmet-async';
 import { Rocket, Shield, Zap, Heart, Globe, Cpu, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export const About = () => {
   return (
