@@ -4,6 +4,8 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Home } from '@/pages/Home';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { Contact } from '@/pages/Contact';
+import { About } from '@/pages/About';
+import { Terms } from '@/pages/Terms';
 import { Redirect } from '@/pages/Redirect';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ToolPageTemplate } from '@/components/tools/ToolPageTemplate';
@@ -45,6 +47,14 @@ export const router = createBrowserRouter([
       {
         path: 'contact',
         element: <Contact />,
+      },
+      {
+        path: 'about',
+        element: <About />,
+      },
+      {
+        path: 'terms',
+        element: <Terms />,
       },
       {
         path: '*',

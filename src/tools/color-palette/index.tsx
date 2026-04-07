@@ -294,7 +294,7 @@ export default function ColorPalette() {
             <nav className="flex justify-between items-center mb-12">
               <div className="font-bold text-xl flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: p }} />
-                Ozone
+                FreeTool
               </div>
               <div className="flex gap-4 text-sm font-medium">
                 <span className="opacity-70">Features</span>
@@ -448,7 +448,7 @@ export default function ColorPalette() {
   return (
     <div className="max-w-7xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500" onPaste={handlePaste}>
       <SEOHelmet 
-        title="Smart Color Palette V2 | Ozone" 
+        title="Smart Color Palette V2 | FreeTool" 
         description="Professional color palette generator. keyword to palette, image to palette, and real-time UI preview with contrast checker." 
       />
 
@@ -696,7 +696,7 @@ export default function ColorPalette() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <p className="text-blue-100 text-sm mb-4">Heading Contrast (Primary on Background)</p>
-                            <div className="text-3xl font-bold mb-2" style={{ color: colors.find(c => c.role === 'primary')?.hex }}>Ozone Pro Regular</div>
+                            <div className="text-3xl font-bold mb-2" style={{ color: colors.find(c => c.role === 'primary')?.hex }}>FreeTool Pro Regular</div>
                             <div className="text-sm opacity-80">This heading uses your brand primary color. It should be easily readable against the chosen background.</div>
                         </div>
                         <div className="flex items-center gap-4">

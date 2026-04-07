@@ -279,7 +279,7 @@ export const AppLayout = () => {
               <div className="pt-6 border-t border-gray-200 dark:border-white/10">
                 <div className="flex items-center gap-4 text-gray-500">
                    <Twitter className="w-5 h-5" />
-                   <Github className="w-5 h-5" />
+                   <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} />
                 </div>
               </div>
             </motion.div>
@@ -315,7 +315,7 @@ export const AppLayout = () => {
                   <Twitter className="w-4 h-4" />
                 </a>
                 <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
-                  <Github className="w-4 h-4" />
+                  <Github className="w-4 h-4" onClick={()=> window.open('https://www.github.com/ttejas123')} />
                 </a>
               </div>
             </div>
@@ -323,19 +323,20 @@ export const AppLayout = () => {
             <div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Platform</h4>
               <ul className="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/" className="hover:text-brand-500 transition-colors">Browse Tools</Link></li>
-                <li><Link to="/?tab=featured" className="hover:text-brand-500 transition-colors">Featured</Link></li>
-                <li><Link to="/?tab=top" className="hover:text-brand-500 transition-colors">Trending</Link></li>
-                <li><Link to="/contact" className="hover:text-brand-500 transition-colors">Submit Tool</Link></li>
+                <li><a href="/" className="hover:text-brand-500 transition-colors">Browse Tools</a></li>
+                <li><a href="/?tab=featured" className="hover:text-brand-500 transition-colors">Featured</a></li>
+                <li><a href="/?tab=top" className="hover:text-brand-500 transition-colors">Trending</a></li>
+                <li><a href="/about" className="hover:text-brand-500 transition-colors">About Us</a></li>
+                <li><a href="/contact" className="hover:text-brand-500 transition-colors">Submit Tool</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Legal</h4>
               <ul className="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/privacy-policy" className="hover:text-brand-500 transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/contact" className="hover:text-brand-500 transition-colors">Terms of Service</Link></li>
-                <li><Link to="/contact" className="hover:text-brand-500 transition-colors">Cookie Policy</Link></li>
+                <li><a href="/privacy-policy" className="hover:text-brand-500 transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="hover:text-brand-500 transition-colors">Terms of Service</a></li>
+                <li><a href="/privacy-policy#cookies" className="hover:text-brand-500 transition-colors">Cookie Policy</a></li>
               </ul>
             </div>
           </div>
