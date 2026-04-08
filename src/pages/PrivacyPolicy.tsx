@@ -1,9 +1,11 @@
 import { Helmet } from 'react-helmet-async';
 import { Shield, Eye, Lock, Globe, Bell, UserCheck } from 'lucide-react';
+import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
+      <BackgroundEffects />
       <Helmet>
         <title>Privacy Policy - Ozone</title>
         <meta name="description" content="Your privacy is nuestra Priority. Learn how Ozone protects your data while providing elite developer tools." />

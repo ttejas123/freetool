@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Mail, MessageCircle, Phone, MapPin, Send, Twitter, Github, Linkedin, CheckCircle2 } from 'lucide-react';
+import { Mail, MessageCircle, Phone, MapPin, Send, Twitter, Github, Linkedin, CheckCircle2, Loader2 } from 'lucide-react';
+import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
+import { supabase } from '@/lib/supabase';
 
 export const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,24 +24,54 @@ export const Contact = () => {
     'Other'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, send data to backend
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([{
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phoneNumber,
+          message: formData.message,
+          services: formData.services
+        }]);
+
+      if (error) throw error;
+      
+      setSubmitted(true);
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        message: '',
+        services: []
+      });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Something went wrong. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleService = (service: string) => {
-    setFormData(prev => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       services: prev.services.includes(service)
-        ? prev.services.filter(s => s !== service)
+        ? prev.services.filter((s: string) => s !== service)
         : [...prev.services, service]
     }));
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
+      <BackgroundEffects />
       <Helmet>
         <title>Contact Us - FreeTool.shop</title>
         <meta name="description" content="Get in touch with the FreeTool.shop team. We're here to help with any questions or feedback." />
@@ -153,9 +186,12 @@ export const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-gray-200 dark:shadow-none flex items-center justify-center gap-2 group cursor-pointer"
+                disabled={loading}
+                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-gray-200 dark:shadow-none flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitted ? (
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : submitted ? (
                   <>
                     <CheckCircle2 className="w-5 h-5 animate-in zoom-in" />
                     Sent successfully
@@ -228,11 +264,11 @@ export const Contact = () => {
                 <a href="#" className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white transition-all transform hover:-translate-y-1">
                   <Twitter className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white transition-all transform hover:-translate-y-1">
-                  <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} />
+                <a href="https://www.github.com/ttejas123" className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white transition-all transform hover:-translate-y-1">
+                  <Github className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white transition-all transform hover:-translate-y-1">
-                  <Linkedin className="w-5 h-5" onClick={()=> window.open('https://www.linkedin.com/in/tejas-thakare-041281152/')} />
+                <a href="https://www.linkedin.com/in/tejas-thakare-041281152/" className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-brand-500 hover:text-white transition-all transform hover:-translate-y-1">
+                  <Linkedin className="w-5 h-5" />
                 </a>
               </div>
             </div>

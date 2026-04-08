@@ -1,9 +1,11 @@
 import { Helmet } from 'react-helmet-async';
 import { FileText, ShieldCheck, Scale, AlertCircle } from 'lucide-react';
+import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const Terms = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#050505] py-12 px-4 sm:px-6 lg:px-8">
+      <BackgroundEffects />
       <Helmet>
         <title>Terms of Service - FreeTool.shop</title>
         <meta name="description" content="Terms of Service for FreeTool.shop - Free Developer Tools" />

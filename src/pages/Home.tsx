@@ -3,6 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toolRegistry, type RegistryTool } from '../tools/toolRegistry';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { 
+  Copy,
+  Code,
+  Database,
+  Globe,
+  Type,
+  Palette,
+  FileText,
+  Ruler,
+  Activity,
+  Camera,
+  Wand2,
   Compass, 
   ChevronDown, 
   Eye, 
@@ -16,24 +27,106 @@ import {
   Sparkles,
   Layers,
   Plus,
-  ExternalLink,
-  Copy
+  ExternalLink
 } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
 import { Counter } from '../components/ui/Counter';
-import { GridBackground } from '../components/ui/GridBackground';
+import { BackgroundEffects } from '../components/ui/BackgroundEffects';
 import { UpcomingTools } from '../components/home/UpcomingTools';
 
-const getCategoryColor = (category: string) => {
+const getCategoryConfig = (category: string) => {
   const cat = category.toLowerCase();
-  if (cat.includes('dev')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-  if (cat.includes('ai')) return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-  if (cat.includes('media')) return 'bg-pink-500/10 text-pink-500 border-pink-500/20';
-  if (cat.includes('security')) return 'bg-green-500/10 text-green-500 border-green-500/20';
-  return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+  if (cat === 'all') return { 
+    icon: Layers, 
+    color: 'from-brand-500 to-blue-600', 
+    lightColor: 'bg-brand-500/10 text-brand-500 border-brand-500/20',
+    glow: 'shadow-brand-500/20'
+  };
+  if (cat.includes('dev')) return { 
+    icon: Code, 
+    color: 'from-indigo-500 to-purple-600', 
+    lightColor: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+    glow: 'shadow-indigo-500/20'
+  };
+  if (cat.includes('ai') || cat.includes('creative')) return { 
+    icon: Wand2, 
+    color: 'from-purple-500 to-pink-600', 
+    lightColor: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+    glow: 'shadow-purple-500/20'
+  };
+  if (cat.includes('data')) return { 
+    icon: Database, 
+    color: 'from-blue-500 to-cyan-600', 
+    lightColor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    glow: 'shadow-blue-500/20'
+  };
+  if (cat.includes('security')) return { 
+    icon: Shield, 
+    color: 'from-emerald-500 to-teal-600', 
+    lightColor: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    glow: 'shadow-emerald-500/20'
+  };
+  if (cat.includes('string') || cat.includes('text')) return { 
+    icon: Type, 
+    color: 'from-amber-500 to-orange-600', 
+    lightColor: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    glow: 'shadow-amber-500/20'
+  };
+  if (cat.includes('media')) return { 
+    icon: Camera, 
+    color: 'from-pink-500 to-rose-600', 
+    lightColor: 'bg-pink-500/10 text-pink-500 border-pink-500/20',
+    glow: 'shadow-pink-500/20'
+  };
+  if (cat.includes('network')) return { 
+    icon: Globe, 
+    color: 'from-sky-500 to-blue-600', 
+    lightColor: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
+    glow: 'shadow-sky-500/20'
+  };
+  if (cat.includes('health')) return { 
+    icon: Activity, 
+    color: 'from-red-500 to-orange-600', 
+    lightColor: 'bg-red-500/10 text-red-500 border-red-500/20',
+    glow: 'shadow-red-500/20'
+  };
+  if (cat.includes('design')) return { 
+    icon: Palette, 
+    color: 'from-violet-500 to-fuchsia-600', 
+    lightColor: 'bg-violet-500/10 text-violet-500 border-violet-500/20',
+    glow: 'shadow-violet-500/20'
+  };
+  if (cat.includes('writing') || cat.includes('document')) return { 
+    icon: FileText, 
+    color: 'from-orange-500 to-yellow-600', 
+    lightColor: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+    glow: 'shadow-orange-500/20'
+  };
+  if (cat.includes('time')) return { 
+    icon: Clock, 
+    color: 'from-sky-400 to-indigo-500', 
+    lightColor: 'bg-sky-400/10 text-sky-400 border-sky-400/20',
+    glow: 'shadow-sky-400/20'
+  };
+  if (cat.includes('math')) return { 
+    icon: Ruler, 
+    color: 'from-slate-500 to-slate-700', 
+    lightColor: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+    glow: 'shadow-slate-500/20'
+  };
+  return { 
+    icon: Compass, 
+    color: 'from-gray-500 to-gray-700', 
+    lightColor: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+    glow: 'shadow-gray-500/20'
+  };
+};
+
+const getCategoryColor = (category: string) => {
+  return getCategoryConfig(category).lightColor;
 };
 
 export const Home = () => {
@@ -244,7 +337,7 @@ export const Home = () => {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-48 overflow-hidden bg-glow">
-        <GridBackground />
+        <BackgroundEffects />
 
         <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div variants={container} initial="hidden" animate="show">
@@ -383,55 +476,108 @@ export const Home = () => {
         )}
       </AnimatePresence>
 
-      {/* Categories Discovery */}
       <section className="container mx-auto px-6 mb-40" id="browse">
-        <div className="flex items-end justify-between mb-16 px-2">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-16 px-2 gap-8">
            <div className="max-w-xl text-left border-l-4 border-brand-500 pl-8">
-             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4 leading-none">Discovery</h2>
-             <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">Browse our tools by category or use cases.</p>
+             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4 leading-none">Discover</h2>
+             <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">Explore professional-grade utilities across specialized domains.</p>
+           </div>
+           <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-white/5 px-4 py-2 rounded-full border border-gray-200 dark:border-white/10">
+              <Sparkles className="w-3.5 h-3.5 text-brand-500" />
+              <span>{toolRegistry.length} Tools Available</span>
            </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-24">
-           <button 
-             onClick={() => setSelectedCategory('All')}
-             className={`flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-2 transition-all group ${
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-24">
+           {/* All Tools Card */}
+           <motion.button 
+             whileHover={{ y: -5, scale: 1.02 }}
+             whileTap={{ scale: 0.98 }}
+             onClick={() => {
+               setSelectedCategory('All');
+               document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+             }}
+             className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] ${
                selectedCategory === 'All' 
-                 ? 'bg-brand-500 border-brand-500 text-white shadow-2xl shadow-brand-500/20 scale-105' 
-                 : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5 hover:border-brand-500/50 dark:text-white'
+                 ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-black shadow-2xl' 
+                 : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-brand-500/50'
              }`}
            >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 ${selectedCategory === 'All' ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/5 text-gray-400'} group-hover:scale-110 transition-transform`}>
-                <Layers className="w-8 h-8" />
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${selectedCategory === 'All' ? 'bg-brand-500 text-white' : 'bg-gray-100 dark:bg-white/5 text-gray-400'} group-hover:scale-110 transition-transform`}>
+                <Layers className="w-6 h-6" />
               </div>
-              <span className="text-sm font-black uppercase tracking-widest">All Tools</span>
-           </button>
-           {categories.map((cat) => (
-             <button 
-                key={cat.name}
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-2 transition-all group ${
-                  selectedCategory === cat.name
-                    ? 'bg-brand-500 border-brand-500 text-white shadow-2xl shadow-brand-500/20 scale-105' 
-                    : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5 hover:border-brand-500/50 dark:text-white'
-                }`}
-             >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 ${selectedCategory === cat.name ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/5 text-gray-400'} group-hover:scale-110 transition-transform`}>
-                  <Compass className="w-8 h-8" />
-                </div>
-                <span className="text-sm font-black uppercase tracking-widest">{cat.name}</span>
-                <span className={`text-[11px] mt-2 font-bold opacity-60 ${selectedCategory === cat.name ? 'text-white' : ''}`}>{cat.count} tools</span>
-             </button>
-           ))}
+              <div>
+                <span className="block text-sm font-black uppercase tracking-widest mb-1">Standard</span>
+                <span className="text-lg font-black leading-none">All Utils</span>
+              </div>
+              {selectedCategory === 'All' && (
+                <motion.div layoutId="active-pill" className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-500" />
+              )}
+           </motion.button>
+
+           {categories.map((cat) => {
+             const config = getCategoryConfig(cat.name);
+             const Icon = config.icon;
+             const isActive = selectedCategory === cat.name;
+             
+             return (
+               <motion.button 
+                  key={cat.name}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    setSelectedCategory(cat.name);
+                    document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] ${
+                    isActive
+                      ? `bg-white dark:bg-[#0A0A0A] border-transparent shadow-2xl ${config.glow}` 
+                      : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
+                  }`}
+               >
+                  {/* Background Aura for Active State */}
+                  {isActive && (
+                    <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${config.color} opacity-20 blur-2xl rounded-full`} />
+                  )}
+
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ${
+                    isActive 
+                      ? `bg-gradient-to-br ${config.color} text-white shadow-lg` 
+                      : 'bg-gray-100 dark:bg-white/5 text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-white/10'
+                  }`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <span className={`block text-[10px] font-black uppercase tracking-widest mb-1 ${isActive ? 'text-brand-500' : 'text-gray-400'}`}>
+                      {cat.count} Tools
+                    </span>
+                    <span className={`text-lg font-black leading-none ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                      {cat.name}
+                    </span>
+                  </div>
+
+                  {isActive && (
+                    <motion.div layoutId="active-pill" className={`absolute top-4 right-4 w-2 h-2 rounded-full bg-gradient-to-br ${config.color}`} />
+                  )}
+               </motion.button>
+             );
+           })}
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 px-2">
-           <h3 className="text-4xl font-black text-gray-900 dark:text-white capitalize">
-             {selectedCategory === 'All' ? tab === 'top' ? 'Trending Tools' : 'Global collection' : `${selectedCategory}`}
-           </h3>
+        <div id="tool-listing" className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 px-2 scroll-mt-24">
+           <div className="flex flex-col">
+              <h3 className="text-4xl font-black text-gray-900 dark:text-white capitalize leading-tight">
+                {selectedCategory === 'All' ? tab === 'top' ? 'Trending Tools' : 'Global collection' : `${selectedCategory}`}
+              </h3>
+              <p className="text-sm text-gray-400 font-medium mt-1">
+                Showing {filteredTools.length} {filteredTools.length === 1 ? 'utility' : 'utilities'} match your profile.
+              </p>
+           </div>
+           
            <div className="flex items-center gap-4 w-full md:w-auto">
-             <div className="relative flex-1 md:w-96">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+             <div className="relative flex-1 md:w-96 group">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
                 <input 
                   type="text" 
                   placeholder="Search tools, tags, use cases..."
@@ -440,17 +586,17 @@ export const Home = () => {
                   className="w-full pl-14 pr-6 py-4 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-2xl text-base focus:outline-none focus:ring-4 focus:ring-brand-500/10 transition-all dark:text-white shadow-inner"
                 />
              </div>
-             <div className="relative">
+             <div className="relative group">
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="appearance-none pl-6 pr-14 py-4 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-2xl text-sm font-black uppercase tracking-widest focus:outline-none cursor-pointer dark:text-white shadow-inner"
+                  className="appearance-none pl-6 pr-14 py-4 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-2xl text-sm font-black uppercase tracking-widest focus:outline-none cursor-pointer dark:text-white shadow-inner hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all"
                 >
                   <option value="newest">Newest</option>
                   <option value="views">Popular</option>
                   <option value="upvotes">Best Rated</option>
                 </select>
-                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none group-hover:text-brand-500 transition-colors" />
              </div>
            </div>
         </div>

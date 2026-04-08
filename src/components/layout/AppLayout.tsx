@@ -1,17 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useAppStore } from '../../store';
-import { Moon, Sun, Search, Plus, CheckCircle2, Menu, X, Github, Twitter, Eye } from 'lucide-react';
+import { 
+  Moon, 
+  Sun, 
+  Search, 
+  Plus, 
+  CheckCircle2, 
+  Menu, 
+  X, 
+  Github, 
+  Twitter, 
+  Eye, 
+  Compass,
+  ChevronDown,
+  LayoutGrid,
+  Newspaper,
+  Zap,
+  Info,
+  Mail
+} from 'lucide-react';
 import { ToastContainer } from '../ui/Toast';
 import { trackPageView } from '@/lib/analytics';
 import { CookieConsent } from '../ui/CookieConsent';
 import { getCachedMetrics } from '@/lib/toolStats';
-import { useMemo } from 'react';
-
 import { CommandPalette } from '../ui/CommandPalette';
+import { CursorGlow } from '../ui/CursorGlow';
 
 const getCategoryColor = (category: string) => {
   const cat = category.toLowerCase();
@@ -62,7 +79,6 @@ export const AppLayout = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Track page views on route changes
   useEffect(() => {
     const consent = localStorage.getItem('cookie_consent');
     if (consent === 'granted') {
@@ -123,22 +139,52 @@ export const AppLayout = () => {
               </span>
             </Link>
             
-            <nav className="hidden lg:flex items-center gap-8 text-[14px] font-medium">
-              {[
-                { name: 'Tools', path: '/' },
-                { name: 'Trending', path: '/?tab=top' },
-                { name: 'Featured', path: '/?tab=featured' },
-                { name: 'Newest', path: '/?tab=newest' },
-              ].map((item) => (
-                <Link 
-                  key={item.name}
-                  to={item.path} 
-                  className="text-gray-500 dark:text-gray-400 hover:text-brand-500 dark:hover:text-white transition-colors relative group"
-                >
-                  {item.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 rounded-full transition-all group-hover:w-full"></span>
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center gap-10 text-[14px] font-bold">
+              <Link to="/" className="text-gray-900 dark:text-white hover:text-brand-500 transition-colors">
+                Tools
+              </Link>
+              
+              {/* Resources Dropdown */}
+              <div className="relative group/dropdown">
+                <button className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors py-2">
+                  Resources
+                  <ChevronDown className="w-4 h-4 group-hover/dropdown:rotate-180 transition-transform duration-300" />
+                </button>
+                
+                <div className="absolute top-full -left-4 w-64 pt-4 opacity-0 scale-95 group-hover/dropdown:opacity-100 group-hover/dropdown:scale-100 transition-all duration-200 pointer-events-none group-hover/dropdown:pointer-events-auto z-[100]">
+                  <div className="bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/10 rounded-[2rem] shadow-2xl p-4 overflow-hidden">
+                    {[
+                      { name: 'Latest Blogs', desc: 'Expert guides & updates', icon: LayoutGrid, path: '/blogs' },
+                      { name: 'Tech News', desc: 'Daily developer digests', icon: Newspaper, path: '/tech-news' },
+                      { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/?tab=featured' },
+                    ].map((item) => (
+                      <Link 
+                        key={item.name}
+                        to={item.path}
+                        className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group/item"
+                      >
+                        <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 group-hover/item:bg-brand-500 group-hover/item:text-white transition-all">
+                          <item.icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">{item.name}</div>
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400">{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Link to="/about" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+                <Info className="w-4 h-4" />
+                About
+              </Link>
+              
+              <Link to="/contact" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+                <Mail className="w-4 h-4" />
+                Support
+              </Link>
             </nav>
           </div>
 
@@ -270,11 +316,13 @@ export const AppLayout = () => {
               exit={{ opacity: 0, y: -20 }}
               className="lg:hidden absolute top-full left-0 w-full glass border-t border-gray-200 dark:border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl"
             >
-              <nav className="flex flex-col gap-4 text-lg font-medium">
+              <nav className="flex flex-col gap-4 text-xl font-bold">
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</Link>
-                <Link to="/?tab=top" onClick={() => setIsMobileMenuOpen(false)}>Trending Tools</Link>
-                <Link to="/?tab=featured" onClick={() => setIsMobileMenuOpen(false)}>Featured</Link>
-                <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Submit a Tool</Link>
+                <Link to="/?tab=featured" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</Link>
+                <Link to="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</Link>
+                <Link to="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</Link>
+                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</Link>
+                <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Support</Link>
               </nav>
               <div className="pt-6 border-t border-gray-200 dark:border-white/10">
                 <div className="flex items-center gap-4 text-gray-500">
@@ -314,8 +362,8 @@ export const AppLayout = () => {
                 <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
                   <Twitter className="w-4 h-4" />
                 </a>
-                <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
-                  <Github className="w-4 h-4" onClick={()=> window.open('https://www.github.com/ttejas123')} />
+                <a href="https://www.github.com/ttejas123" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
+                  <Github className="w-4 h-4" />
                 </a>
               </div>
             </div>
@@ -357,6 +405,36 @@ export const AppLayout = () => {
       <CommandPalette />
       <ToastContainer />
       <CookieConsent />
+      <CursorGlow />
+
+      {/* Floating Discovery Button */}
+      <AnimatePresence>
+        {isScrolled && (
+          <motion.button
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => {
+              if (location.pathname === '/') {
+                document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                window.location.href = '/#browse';
+              }
+            }}
+            className="fixed right-6 bottom-32 z-40 group flex items-center gap-3"
+            aria-label="Discover Tools"
+          >
+            <div className="absolute right-full mr-3 py-2 px-4 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-black text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">
+              Quick Explore
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/50 backdrop-blur-xl border-2 border-brand-500/50 flex items-center justify-center text-brand-500 shadow-[0_20px_50px_rgba(59,130,246,0.25)] ring-4 ring-brand-500/10 group-hover:bg-brand-500 group-hover:text-white group-hover:border-brand-500 group-hover:shadow-brand-500/40 transition-all duration-300">
+              <Compass className="w-7 h-7" />
+            </div>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
