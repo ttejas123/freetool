@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { Upload, Download, Trash2, Eraser, Loader } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -11,6 +12,11 @@ export default function RemoveBackground() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedColor, setSelectedColor] = useState<[number, number, number] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const handleFile = useCallback((file: File) => {
     setImageUrl(URL.createObjectURL(file));

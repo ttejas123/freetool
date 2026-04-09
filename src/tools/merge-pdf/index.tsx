@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { Files, Upload, Download, Trash2, FileText, Loader2 } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 import { Card } from '@/components/ui/Card';
@@ -18,6 +19,27 @@ export default function MergePdf() {
   const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const addFiles = (files: File[] | FileList) => {
+    const fileArray = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (fileArray.length > 0) {
+      const newPdfs = fileArray.map((file) => ({
+        id: Math.random().toString(36).substring(7),
+        name: file.name,
+        size: file.size,
+        file,
+      }));
+      setPdfs((prev) => [...prev, ...newPdfs]);
+      // Reset generated URL if new files added
+      if (mergedPdfUrl) {
+        setMergedPdfUrl(null);
+      }
+    }
+  };
+
+  useFilePaste((files) => {
+    addFiles(files);
+  });
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -28,18 +50,7 @@ export default function MergePdf() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newPdfs = Array.from(e.target.files).map((file) => ({
-        id: Math.random().toString(36).substring(7),
-        name: file.name,
-        size: file.size,
-        file,
-      }));
-      setPdfs((prev) => [...prev, ...newPdfs]);
-      // Reset generated URL if new files added
-      if (mergedPdfUrl) {
-        URL.revokeObjectURL(mergedPdfUrl);
-        setMergedPdfUrl(null);
-      }
+      addFiles(e.target.files);
     }
     // reset input
     if (fileInputRef.current) {

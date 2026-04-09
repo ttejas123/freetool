@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { FileDown, Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import * as mammoth from 'mammoth';
 // @ts-ignore
@@ -14,6 +15,22 @@ export default function WordToPdf() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const validateAndSetFile = (selected: File) => {
+    if (!selected.name.endsWith('.docx') && !selected.name.endsWith('.doc')) {
+      setError('Please upload a valid Word document (.doc or .docx)');
+      setFile(null);
+      return;
+    }
+    setFile(selected);
+    setError(null);
+    setSuccess(false);
+  };
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file) validateAndSetFile(file);
+  });
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -24,15 +41,7 @@ export default function WordToPdf() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const selected = e.target.files[0];
-      if (!selected.name.endsWith('.docx') && !selected.name.endsWith('.doc')) {
-        setError('Please upload a valid Word document (.doc or .docx)');
-        setFile(null);
-        return;
-      }
-      setFile(selected);
-      setError(null);
-      setSuccess(false);
+      validateAndSetFile(e.target.files[0]);
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';

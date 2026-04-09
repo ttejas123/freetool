@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { Upload, Download, ScanLine, Trash2, Sliders } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -58,6 +59,11 @@ export default function SvgTracer() {
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const handleFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);

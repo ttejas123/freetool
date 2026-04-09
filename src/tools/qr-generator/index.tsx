@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import QRCodeStyling, { 
   type TypeNumber, 
   type Mode, 
@@ -90,6 +91,18 @@ export default function QrGenerator() {
 
   const qrRef = useRef<HTMLDivElement>(null);
   const [qrCode] = useState(() => new QRCodeStyling(options));
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setOptions(prev => ({ ...prev, image: event.target?.result as string }));
+        setActiveTab('logo');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
   // Update QR when content or options change
   useEffect(() => {

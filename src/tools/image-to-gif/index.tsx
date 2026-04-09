@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { ImagePlay, Upload, Download, Trash2, Settings, Loader2 } from 'lucide-react';
 // @ts-ignore
 import GIF from 'gif.js';
@@ -20,6 +21,22 @@ export default function ImageToGif() {
   const [gifUrl, setGifUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const addImages = (files: File[] | FileList) => {
+    const fileArray = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (fileArray.length > 0) {
+      const newImages = fileArray.map((file) => ({
+        id: Math.random().toString(36).substring(7),
+        url: URL.createObjectURL(file),
+        file,
+      }));
+      setImages((prev) => [...prev, ...newImages]);
+    }
+  };
+
+  useFilePaste((files) => {
+    addImages(files);
+  });
+
   useEffect(() => {
     // Cleanup generated object URLs
     return () => {
@@ -30,13 +47,9 @@ export default function ImageToGif() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newImages = Array.from(e.target.files).map((file) => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file),
-        file,
-      }));
-      setImages((prev) => [...prev, ...newImages]);
+      addImages(e.target.files);
     }
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const removeImage = (id: string, url: string) => {

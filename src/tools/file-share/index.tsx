@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { UploadCloud, Link as LinkIcon, FileHeart, Trash2, Clock, Check, Loader2, HardDrive } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -57,6 +58,13 @@ export default function FileShare() {
   const [history, setHistory] = useState<SharedFile[]>([]);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useFilePaste((files) => {
+    if (files.length > 0) {
+      setFile(files[0]);
+      setError(null);
+    }
+  });
 
   // 50MB daily limit
   const DAILY_LIMIT_BYTES = 50 * 1024 * 1024;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Textarea } from '../../components/ui/Input';
@@ -21,6 +22,41 @@ export default function DataVisualizer() {
   const [view, setView] = useState<'table' | 'chart'>('table');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const processFile = (file: File) => {
+    setIsLoading(true);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const content = event.target?.result as string;
+      setInput(content);
+      // Automatically process after uploading
+      try {
+        const result = await parseData(content);
+        if (result.error) {
+           setError(result.error);
+        } else {
+           setData(result.data);
+           setColumns(result.columns);
+        }
+      } catch (err) {
+        setError('Error reading file.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    reader.onerror = () => {
+      setError('Error reading file.');
+      setIsLoading(false);
+    };
+    reader.readAsText(file);
+  };
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && (file.name.endsWith('.json') || file.name.endsWith('.csv') || file.type === 'application/json' || file.type === 'text/csv' || file.type === 'text/plain')) {
+      processFile(file);
+    }
+  });
 
   // Consume global input
   useEffect(() => {
@@ -66,32 +102,7 @@ export default function DataVisualizer() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    setIsLoading(true);
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target?.result as string;
-      setInput(content);
-      // Automatically process after uploading
-      try {
-        const result = await parseData(content);
-        if (result.error) {
-           setError(result.error);
-        } else {
-           setData(result.data);
-           setColumns(result.columns);
-        }
-      } catch (err) {
-        setError('Error reading file.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    reader.onerror = () => {
-      setError('Error reading file.');
-      setIsLoading(false);
-    };
-    reader.readAsText(file);
+    processFile(file);
     e.target.value = ''; // Reset input
   };
 

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { Upload, Download, Trash2, Wand2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -140,6 +141,11 @@ export default function ImageFilter() {
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const srcCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const handleFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);

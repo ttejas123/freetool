@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Textarea } from '../../components/ui/Input';
@@ -15,6 +16,21 @@ export default function Base64Encoder() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isBroken, setIsBroken] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const processFile = async (file: File) => {
+    try {
+      const b64 = await fileToBase64(file);
+      setInput(b64);
+      trackEvent('file_uploaded', { tool: 'base64-converter', mime: file.type });
+    } catch (err) {
+      console.error('File read error:', err);
+    }
+  };
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file) processFile(file);
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,13 +50,7 @@ export default function Base64Encoder() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    try {
-      const b64 = await fileToBase64(file);
-      setInput(b64);
-      trackEvent('file_uploaded', { tool: 'base64-converter', mime: file.type });
-    } catch (err) {
-      console.error('File read error:', err);
-    }
+    processFile(file);
   };
 
   const clear = () => {

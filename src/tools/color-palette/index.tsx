@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useFilePaste } from '../../hooks/useFilePaste';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Button } from '../../components/ui/Button';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
@@ -61,6 +62,13 @@ export default function ColorPalette() {
   const [showCopied, setShowCopied] = useState<string | null>(null);
   const { copyToClipboard } = useCopyToClipboard();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      extractColorsFromImage(file);
+    }
+  });
 
   // --- New Picker State ---
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -243,15 +251,7 @@ export default function ColorPalette() {
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
-    const items = e.clipboardData.items;
-    for (const item of items) {
-      if (item.type.indexOf('image') !== -1) {
-        const file = item.getAsFile();
-        if (file) extractColorsFromImage(file);
-      }
-    }
-  };
+
 
   const getContrastScore = (color: string, bg: string) => {
     const contrast = chroma.contrast(color, bg);
@@ -446,7 +446,7 @@ export default function ColorPalette() {
   // --- Render ---
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500" onPaste={handlePaste}>
+    <div className="max-w-7xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500">
       <SEOHelmet 
         title="Smart Color Palette V2 | FreeTool" 
         description="Professional color palette generator. keyword to palette, image to palette, and real-time UI preview with contrast checker." 

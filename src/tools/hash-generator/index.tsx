@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useFilePaste } from '@/hooks/useFilePaste';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Textarea, Input } from '../../components/ui/Input';
@@ -30,6 +31,26 @@ export default function HashGenerator() {
   });
   const [isHashingFile, setIsHashingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useFilePaste(async (files) => {
+    const selectedFile = files[0];
+    if (!selectedFile) return;
+    
+    setFile(selectedFile);
+    setActiveTab('file');
+    setIsHashingFile(true);
+
+    try {
+      const buffer = await selectedFile.arrayBuffer();
+      const m = md5(new Uint8Array(buffer));
+      const s256 = await sha256(buffer);
+      setFileHashes({ md5: m, sha256: s256 });
+    } catch (error) {
+      console.error("File hashing failed", error);
+    } finally {
+      setIsHashingFile(false);
+    }
+  });
 
   // Compare State
   const [compareA, setCompareA] = useState('');
