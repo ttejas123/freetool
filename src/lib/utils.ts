@@ -5,25 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Sanitizes a filename by:
- * 1. Replacing spaces with underscores
- * 2. Removing non-alphanumeric characters (keeps dots, dashes, underscores)
- * 3. Collapsing multiple underscores into one
- */
 export function sanitizeFilename(filename: string): string {
   if (!filename) return `file-${Date.now()}`;
   
-  // Get extension
-  const parts = filename.split('.');
-  const ext = parts.length > 1 ? parts.pop() : '';
-  const nameWithoutExt = parts.join('.');
+  // Normalize Unicode characters (e.g., é -> e) and remove diacritics
+  const normalized = filename.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  // Get extension (if any)
+  const parts = normalized.split('.');
+  const ext = parts.length > 1 ? parts.pop()?.toLowerCase() : '';
+  const nameWithoutExt = parts.join('_'); // Replace dots in filename with underscores
 
   const sanitized = nameWithoutExt
-    .replace(/\s+/g, '_')
-    .replace(/[^a-zA-Z0-9.\-_]/g, '_')
-    .replace(/_{2,}/g, '_')
-    .replace(/^_+|_+$/g, ''); // Trim underscores from start/end
+    .replace(/\s+/g, '_')           // Spaces to underscores
+    .replace(/[^a-zA-Z0-9_-]/g, '_') // Remove everything except alphanumeric, dash, and underscore
+    .replace(/_{2,}/g, '_')         // Collapse multiple underscores
+    .replace(/^_+|_+$/g, '');       // Trim underscores from start/end
 
-  return ext ? `${sanitized}.${ext}` : sanitized;
+  const finalName = sanitized || 'file';
+
+  return ext ? `${finalName}.${ext}` : finalName;
 }

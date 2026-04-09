@@ -34,7 +34,15 @@ export class SupabaseStorageAdapter implements StorageService {
     const supabase = await this.getClient();
     const rawName = file instanceof File ? file.name : `blob-${Date.now()}`;
     const name = sanitizeFilename(rawName);
-    const key = `${path}${Date.now()}-${name}`;
+    
+    // Sanitize the path to remove spaces/special characters while keeping slashes
+    const sanitizedPath = path
+      .split('/')
+      .map(part => part.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '_'))
+      .join('/')
+      .replace(/\/+/g, '/'); // Ensure no double slashes
+
+    const key = `${sanitizedPath}${Date.now()}-${name}`.replace(/^_+/, '');
 
     const { error } = await supabase.storage.from(this.bucket).upload(key, file);
     if (error) throw new Error(`Supabase upload: ${error.message}`);

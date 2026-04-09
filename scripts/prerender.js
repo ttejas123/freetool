@@ -29,6 +29,26 @@ async function prerender() {
       path: 'privacy-policy'
     },
     {
+      name: 'Terms of Service',
+      description: 'Terms of Service for Free Tool - Legal agreements and usage guidelines',
+      path: 'terms'
+    },
+    {
+      name: 'About Us',
+      description: 'Learn more about Free Tool and our mission to provide free developer utilities',
+      path: 'about'
+    },
+    {
+      name: 'Latest Blogs',
+      description: 'Expert guides, tool updates, and developer insights',
+      path: 'blogs'
+    },
+    {
+      name: 'Tech News',
+      description: 'Daily tech news and developer updates',
+      path: 'tech-news'
+    },
+    {
       name: 'Contact',
       description: 'Contact us for any queries or feedback regarding Free Tool',
       path: 'contact'
