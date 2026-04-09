@@ -226,7 +226,9 @@ export const AppLayout = () => {
                               return (
                                 <button
                                   key={tool.id}
-                                  onClick={() => {
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
                                     window.location.href = `/${tool.path}`;
                                     setShowSearchDropdown(false);
                                   }}
@@ -267,7 +269,11 @@ export const AppLayout = () => {
                         
                         <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 px-2 pb-1">
                           <button 
-                            onClick={() => handleSearch()}
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSearch();
+                            }}
                             className="w-full py-2 text-xs font-bold text-brand-500 hover:bg-brand-500/10 rounded-xl transition-all"
                           >
                             {navSearch.trim() ? `View all results for "${navSearch}"` : 'View all tools'}
