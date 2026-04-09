@@ -9,6 +9,7 @@
  *   VITE_SUPABASE_STORAGE_BUCKET  (default: 'upload')
  */
 import type { StorageService, UploadResult } from './types';
+import { sanitizeFilename } from '@/lib/utils';
 
 export class SupabaseStorageAdapter implements StorageService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,7 +32,8 @@ export class SupabaseStorageAdapter implements StorageService {
 
   async upload(file: File | Blob, path = 'upload/'): Promise<UploadResult> {
     const supabase = await this.getClient();
-    const name = file instanceof File ? file.name : `blob-${Date.now()}`;
+    const rawName = file instanceof File ? file.name : `blob-${Date.now()}`;
+    const name = sanitizeFilename(rawName);
     const key = `${path}${Date.now()}-${name}`;
 
     const { error } = await supabase.storage.from(this.bucket).upload(key, file);

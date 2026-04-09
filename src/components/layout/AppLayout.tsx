@@ -156,7 +156,7 @@ export const AppLayout = () => {
                     {[
                       { name: 'Latest Blogs', desc: 'Expert guides & updates', icon: LayoutGrid, path: '/blogs' },
                       { name: 'Tech News', desc: 'Daily developer digests', icon: Newspaper, path: '/tech-news' },
-                      { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/?tab=featured' },
+                      { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/#upcoming' },
                     ].map((item) => (
                       <Link 
                         key={item.name}
@@ -318,7 +318,7 @@ export const AppLayout = () => {
             >
               <nav className="flex flex-col gap-4 text-xl font-bold">
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</Link>
-                <Link to="/?tab=featured" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</Link>
+                <Link to="/#upcoming" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</Link>
                 <Link to="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</Link>
                 <Link to="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</Link>
                 <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</Link>

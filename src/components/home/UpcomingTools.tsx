@@ -58,14 +58,14 @@ export const UpcomingTools = () => {
     }
   };
   return (
-    <section className="container mx-auto px-6 mb-32">
+    <section id="upcoming" className="container mx-auto px-6 mb-32">
       <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-4">
         <div className="max-w-xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold mb-4 border border-amber-500/20 uppercase tracking-widest">
             <Construction className="w-3 h-3" />
             Under Construction
           </div>
-          <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">🚀 Upcoming Tools</h2>
+          <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Upcoming Tools</h2>
           <p className="text-gray-500 dark:text-gray-400">Sneak peek at what we're building next. Vote for your favorites to speed up development.</p>
         </div>
       </div>

@@ -29,7 +29,7 @@ import {
   Plus,
   ExternalLink
 } from 'lucide-react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
@@ -131,8 +131,21 @@ const getCategoryColor = (category: string) => {
 
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const tab = searchParams.get('tab') || 'all';
   
+  // Handle hash scrolling (e.g., /#upcoming)
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.slice(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.hash]);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'newest' | 'views' | 'upvotes'>('newest');

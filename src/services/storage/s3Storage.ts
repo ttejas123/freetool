@@ -11,6 +11,7 @@
  *   VITE_S3_PUBLIC_URL   (e.g. https://<bucket>.s3.<region>.amazonaws.com)
  */
 import type { StorageService, UploadResult } from './types';
+import { sanitizeFilename } from '@/lib/utils';
 
 export class S3Storage implements StorageService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +40,8 @@ export class S3Storage implements StorageService {
   async upload(file: File | Blob, path = 'uploads/'): Promise<UploadResult> {
     const s3 = await this.getClient();
     const { PutObjectCommand } = await import('@aws-sdk/client-s3');
-    const name = file instanceof File ? file.name : `blob-${Date.now()}`;
+    const rawName = file instanceof File ? file.name : `blob-${Date.now()}`;
+    const name = sanitizeFilename(rawName);
     const key = `${path}${Date.now()}-${name}`;
 
     await s3.send(

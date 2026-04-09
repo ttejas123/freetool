@@ -18,6 +18,8 @@ const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy').then(m => ({ de
 const About = lazy(() => import('@/pages/About').then(m => ({ default: m.About })));
 const Contact = lazy(() => import('@/pages/Contact').then(m => ({ default: m.Contact })));
 const Terms = lazy(() => import('@/pages/Terms').then(m => ({ default: m.Terms })));
+const Blogs = lazy(() => import('@/pages/Blogs').then(m => ({ default: m.Blogs })));
+const TechNews = lazy(() => import('@/pages/TechNews').then(m => ({ default: m.TechNews })));
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +69,22 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <Terms />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'blogs',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Blogs />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'tech-news',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TechNews />
           </Suspense>
         ),
       },

@@ -8,7 +8,7 @@ export const PrivacyPolicy = () => {
       <BackgroundEffects />
       <Helmet>
         <title>Privacy Policy - Ozone</title>
-        <meta name="description" content="Your privacy is nuestra Priority. Learn how Ozone protects your data while providing elite developer tools." />
+        <meta name="description" content="Your privacy is nuestra Priority. Learn how FreeTool protects your data while providing elite developer tools." />
       </Helmet>
 
       <div className="max-w-4xl mx-auto">
