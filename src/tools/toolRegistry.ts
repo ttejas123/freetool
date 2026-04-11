@@ -675,4 +675,23 @@ export const toolRegistry: RegistryTool[] = [
       { question: "Which file types are supported?", answer: "We support almost all file types including images, videos, PDFs, and documents. For safety, we do not allow executable binary files." }
     ]
   },
+  {
+    id: 'image-compressor',
+    name: 'Image Compressor',
+    description: 'Compress and optimize images (WebP, JPG, PNG) to your target KB size with smart presets and AI fallback.',
+    path: 'image-compressor',
+    category: 'Media',
+    tags: ['compress', 'image', 'optimize', 'webp', 'jpg', 'png'],
+    inputType: ['image'],
+    outputType: ['image'],
+    icon: Minimize2,
+    type: 'heavy',
+    component: lazy(() => import('./image-compressor')),
+    faqIcon: Minimize2,
+    faq: [
+      { question: "Is my image quality affected?", answer: "Our optimizer uses a smart binary search algorithm to find the best quality-to-size ratio. Minor quality loss may occur to hit aggressive target sizes, but we prioritize visual fidelity." },
+      { question: "What is the recommended format?", answer: "We recommend WebP. It typically provides 30% better compression than JPEG while maintaining identical visual quality." },
+      { question: "Are large files handled?", answer: "Yes! Images under 5MB are processed instantly in your browser. Larger images are seamlessly routed to our edge processing engine for optimal results." }
+    ]
+  },
 ];
