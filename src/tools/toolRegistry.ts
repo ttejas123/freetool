@@ -599,21 +599,21 @@ export const toolRegistry: RegistryTool[] = [
   },
   {
     id: 'remove-background',
-    name: 'Remove Background',
-    description: 'Remove image backgrounds by selecting a color. Click on background and adjust sensitivity for precise results.',
+    name: 'Background Remover v2',
+    description: 'Extract subjects instantly with AI Magic Eraser or use Manual mode for precise chroma key removal.',
     path: 'remove-background',
     category: 'Creative',
-    tags: ['background', 'remove', 'transparency', 'image', 'editing'],
+    tags: ['background', 'remove', 'ai', 'magic-eraser', 'transparency', 'image'],
     inputType: ['image'],
     outputType: ['image'],
     icon: Eraser,
     type: 'heavy',
     component: lazy(() => import('./remove-background')),
-    faqIcon: Eraser,
+    faqIcon: Sparkles,
     faq: [
-      { question: "How do I remove the background?", answer: "Simply upload your image and click on the color in the 'Original' image area that you want to make transparent. Our tool will automatically identify and remove similar pixels." },
-      { question: "What does 'Sensitivity' do?", answer: "It controls how close a pixel's color must be to your selected color to be removed. Higher sensitivity removes more similar shades, while lower sensitivity is more strict and precise." },
-      { question: "Can I remove complex backgrounds?", answer: "For best results, use images with solid or high-contrast backgrounds. If the background has many colors or gradients, try adjusting the sensitivity to find the perfect balance." }
+      { question: "How does the Magic AI mode work?", answer: "Our Magic AI uses a deep learning model to automatically identify the main subject (person, product, or animal) and separate it from the background with pixel-perfect precision." },
+      { question: "When should I use Manual mode?", answer: "Manual mode is best for images where the AI might struggle, such as complex textures or very subtle subjects. It allows you to select a specific background color to remove." },
+      { question: "Is the AI processing private?", answer: "Yes! Everything happens locally in your browser using WASM. Your images are never uploaded to our servers, ensuring 100% privacy." }
     ]
   },
   // ── Pipeline-only Nodes ─────────────────────────────────────────────────────
