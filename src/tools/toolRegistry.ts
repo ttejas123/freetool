@@ -25,11 +25,12 @@ import {
   Shapes,
   Sparkles,
   Eraser,
-  UploadCloud
+  UploadCloud,
+  FileCode,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export type IOType = 'text' | 'json' | 'csv' | 'url' | 'image' | 'number' | 'pdf' | 'word' | 'any';
+export type IOType = 'text' | 'json' | 'csv' | 'url' | 'image' | 'number' | 'pdf' | 'word' | 'excel' | 'parquet' | 'any';
 
 export interface RegistryTool {
   id: string;
@@ -651,5 +652,18 @@ export const toolRegistry: RegistryTool[] = [
       { question: "What is the recommended format?", answer: "We recommend WebP. It typically provides 30% better compression than JPEG while maintaining identical visual quality." },
       { question: "Are large files handled?", answer: "Yes! Images under 5MB are processed instantly in your browser. Larger images are seamlessly routed to our edge processing engine for optimal results." }
     ]
+  },
+  {
+    id: 'parquet-converter',
+    name: 'Parquet to CSV/JSON',
+    description: 'Extract data from Apache Parquet files into readable CSV or JSON formats.',
+    path: 'data-converter',
+    category: 'Data',
+    tags: ['parquet', 'csv', 'json', 'convert'],
+    inputType: ['parquet'],
+    outputType: ['csv', 'json'],
+    icon: FileCode,
+    type: 'light',
+    component: lazy(() => import('./data-converter')),
   },
 ];

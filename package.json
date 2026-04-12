@@ -24,6 +24,8 @@
     "framer-motion": "^12.38.0",
     "gif.js": "^0.2.0",
     "html2pdf.js": "^0.14.0",
+    "hyparquet": "^1.25.6",
+    "hyparquet-writer": "^0.13.0",
     "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.577.0",
@@ -41,6 +43,7 @@
     "reactflow": "^11.11.4",
     "recharts": "^3.8.0",
     "tailwind-merge": "^3.5.0",
+    "xlsx": "^0.18.5",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
