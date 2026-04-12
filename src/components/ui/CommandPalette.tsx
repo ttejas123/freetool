@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Command, ArrowRight, Zap, Star, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toolRegistry, type RegistryTool } from '@/tools/toolRegistry';
+import { getSearchResults, escapeRegex } from '@/utils/search';
 
 export const CommandPalette = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,27 +34,23 @@ export const CommandPalette = () => {
     }
   }, [isOpen]);
 
-  const filteredTools = useMemo(() => {
-    if (!query) return toolRegistry.slice(0, 5);
-    const term = query.toLowerCase();
-    return toolRegistry.filter(t => 
-      t.name.toLowerCase().includes(term) || 
-      t.category.toLowerCase().includes(term) ||
-      t.tags.some(tag => tag.toLowerCase().includes(term))
-    ).slice(0, 8);
-  }, [query, toolRegistry]);
+  const searchResults = useMemo(() => {
+    const results = getSearchResults(query, toolRegistry);
+    if (!query) return results.slice(0, 5);
+    return results.slice(0, 8);
+  }, [query]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex(prev => (prev + 1) % filteredTools.length);
+      setSelectedIndex(prev => (prev + 1) % searchResults.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex(prev => (prev - 1 + filteredTools.length) % filteredTools.length);
+      setSelectedIndex(prev => (prev - 1 + searchResults.length) % searchResults.length);
     } else if (e.key === 'Enter') {
-      if (filteredTools[selectedIndex]) {
-        handleSelect(filteredTools[selectedIndex]);
+      if (searchResults[selectedIndex]) {
+        handleSelect(searchResults[selectedIndex].tool);
       }
     }
   };
@@ -61,6 +58,20 @@ export const CommandPalette = () => {
   const handleSelect = (tool: RegistryTool) => {
     navigate(`/${tool.path}`);
     setIsOpen(false);
+  };
+
+  const highlightMatch = (text: string, term: string) => {
+    if (!term) return text;
+    const parts = text.split(new RegExp(`(${escapeRegex(term)})`, 'gi'));
+    return (
+      <span>
+        {parts.map((part, i) => 
+          part.toLowerCase() === term.toLowerCase() ? (
+            <mark key={i} className="bg-amber-400/30 text-amber-900 dark:text-amber-200 rounded px-0.5">{part}</mark>
+          ) : part
+        )}
+      </span>
+    );
   };
 
 
@@ -101,16 +112,16 @@ export const CommandPalette = () => {
               </div>
 
               <div className="max-h-[60vh] overflow-y-auto p-2">
-                {filteredTools.length > 0 ? (
+                {searchResults.length > 0 ? (
                   <div className="space-y-1">
                     <div className="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center justify-between">
                        Tools & Utilities
                        {!query && <span className="flex items-center gap-1"><Star className="w-3 h-3 text-amber-500" /> Popular</span>}
                     </div>
-                    {filteredTools.map((tool: RegistryTool, index: number) => (
+                    {searchResults.map((result, index: number) => (
                       <button
-                        key={tool.id}
-                        onClick={() => handleSelect(tool)}
+                        key={result.tool.id}
+                        onClick={() => handleSelect(result.tool)}
                         onMouseEnter={() => setSelectedIndex(index)}
                         className={`w-full flex items-center justify-between p-4 rounded-xl transition-all group ${
                           index === selectedIndex ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'hover:bg-gray-50 dark:hover:bg-white/5'
@@ -120,11 +131,22 @@ export const CommandPalette = () => {
                            <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${
                               index === selectedIndex ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/5 text-gray-400'
                            } group-hover:scale-110 transition-transform`}>
-                             <tool.icon className="w-5 h-5" />
+                             <result.tool.icon className="w-5 h-5" />
                            </div>
                            <div className="text-left">
-                              <div className="font-bold">{tool.name}</div>
-                              <div className={`text-xs ${index === selectedIndex ? 'text-white/70' : 'text-gray-500'}`}>{tool.category}</div>
+                              <div className="font-bold">{highlightMatch(result.tool.name, query)}</div>
+                              {result.matchField ? (
+                                <div className={`text-[10px] mt-1 flex items-center gap-1.5 ${index === selectedIndex ? 'text-white/70' : 'text-gray-400'}`}>
+                                  <span className="font-bold uppercase tracking-wider bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded">
+                                    {result.matchField}
+                                  </span>
+                                  <span className="line-clamp-1 italic font-medium">
+                                    {highlightMatch(result.matchSnippet, query)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className={`text-xs ${index === selectedIndex ? 'text-white/70' : 'text-gray-500'}`}>{result.tool.category}</div>
+                              )}
                            </div>
                         </div>
                         {index === selectedIndex && (

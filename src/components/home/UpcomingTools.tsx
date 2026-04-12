@@ -5,13 +5,6 @@ import { supabase } from '@/lib/supabase';
 
 const upcomingTools = [
   {
-    id: 'ai-code-refactor',
-    name: 'AI Code Refactor',
-    description: 'Instant code improvement using local LLMs. Refactor complex functions in seconds.',
-    progress: 65,
-    category: 'AI Tools'
-  },
-  {
     id: 'crypto-portfolio',
     name: 'Wealth Tracker',
     description: 'Track your assets across multiple chains with zero data collection.',
@@ -22,7 +15,7 @@ const upcomingTools = [
     id: 'student-planner',
     name: 'Academic OS',
     description: 'The ultimate space for students to manage courses, notes, and deadlines.',
-    progress: 80,
+    progress: 10,
     category: 'Student'
   }
 ];

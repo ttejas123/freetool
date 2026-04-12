@@ -39,6 +39,8 @@ const getCategoryColor = (category: string) => {
   return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
 };
 
+import { getSearchResults, escapeRegex } from '@/utils/search';
+
 export const AppLayout = () => {
   const { theme, toggleTheme } = useAppStore();
   const location = useLocation();
@@ -59,15 +61,26 @@ export const AppLayout = () => {
     window.location.href = url;
   };
 
-  const filteredTools = useMemo(() => {
-    const term = navSearch.toLowerCase().trim();
-    if (!term) return toolRegistry;
-    return toolRegistry.filter(t => 
-      t.name.toLowerCase().includes(term) || 
-      t.category.toLowerCase().includes(term) ||
-      t.tags.some(tag => tag.toLowerCase().includes(term))
-    );
+  const searchResults = useMemo(() => {
+    const term = navSearch.trim();
+    const results = getSearchResults(term, toolRegistry);
+    if (!term) return results.slice(0, 10);
+    return results;
   }, [navSearch]);
+
+  const highlightMatch = (text: string, term: string) => {
+    if (!term) return text;
+    const parts = text.split(new RegExp(`(${escapeRegex(term)})`, 'gi'));
+    return (
+      <span>
+        {parts.map((part, i) => 
+          part.toLowerCase() === term.toLowerCase() ? (
+            <mark key={i} className="bg-amber-400/30 text-amber-900 dark:text-amber-200 rounded px-0.5">{part}</mark>
+          ) : part
+        )}
+      </span>
+    );
+  };
 
   const metrics = useMemo(() => getCachedMetrics(), []);
 
@@ -218,9 +231,10 @@ export const AppLayout = () => {
                       className="absolute top-full mt-3 right-0 w-[400px] glass border border-gray-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20"
                     >
                       <div className="p-2 max-h-[450px] overflow-y-auto custom-scrollbar">
-                        {filteredTools.length > 0 ? (
+                        {searchResults.length > 0 ? (
                           <div className="flex flex-col gap-1">
-                            {filteredTools.map((tool) => {
+                            {searchResults.map((result) => {
+                              const { tool, matchField, matchSnippet } = result;
                               const stats = metrics[tool.id] || { views: 0 };
                               const catClass = getCategoryColor(tool.category);
                               return (
@@ -240,16 +254,28 @@ export const AppLayout = () => {
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-0.5">
                                       <span className="font-bold text-sm text-gray-900 dark:text-white truncate group-hover:text-brand-500 transition-colors">
-                                        {tool.name}
+                                        {highlightMatch(tool.name, navSearch)}
                                       </span>
                                       <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                                         {tool.category}
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-medium">
-                                        <Eye className="w-3 h-3" />
-                                        {stats.views.toLocaleString()} views
+                                    <div className="flex flex-col gap-1">
+                                      {matchField && (
+                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 italic">
+                                          <span className="font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 px-1 rounded">
+                                            {matchField}
+                                          </span>
+                                          <span className="truncate">
+                                            {highlightMatch(matchSnippet, navSearch)}
+                                          </span>
+                                        </div>
+                                      )}
+                                      <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-medium">
+                                          <Eye className="w-3 h-3" />
+                                          {stats.views.toLocaleString()} views
+                                        </div>
                                       </div>
                                     </div>
                                   </div>

@@ -129,6 +129,8 @@ const getCategoryColor = (category: string) => {
   return getCategoryConfig(category).lightColor;
 };
 
+import { getSearchResults } from '../utils/search';
+
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
@@ -219,17 +221,17 @@ export const Home = () => {
 
   const filteredTools = useMemo(() => {
     let tools = toolRegistry;
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      tools = tools.filter(t => 
-        t.name.toLowerCase().includes(term) || 
-        t.category.toLowerCase().includes(term) ||
-        t.tags.some(tag => tag.toLowerCase().includes(term))
-      );
+    const term = searchTerm.trim();
+    
+    if (term) {
+      const results = getSearchResults(term, tools);
+      tools = results.map(r => r.tool);
     }
+    
     if (selectedCategory !== 'All') {
        tools = tools.filter(t => t.category === selectedCategory);
     }
+    
     if (tab === 'top') {
        tools = [...tools].sort((a, b) => {
            const m1 = metrics[a.id] || { upvotes: 0 };
@@ -238,7 +240,7 @@ export const Home = () => {
        });
     } else if (tab === 'featured') {
        tools = tools.filter(t => ['pipeline-builder', 'diff-checker', 'color-palette'].includes(t.id));
-    } else {
+    } else if (!term) {
         if (sortBy === 'views') {
             tools = [...tools].sort((a, b) => (Number(metrics[b.id]?.views) || 0) - (Number(metrics[a.id]?.views) || 0));
         } else if (sortBy === 'upvotes') {
