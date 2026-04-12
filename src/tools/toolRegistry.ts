@@ -24,9 +24,6 @@ import {
   Grid3x3,
   Shapes,
   Sparkles,
-  Archive,
-  LinkIcon,
-  Unlink,
   Eraser,
   UploadCloud
 } from 'lucide-react';

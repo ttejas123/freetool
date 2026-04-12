@@ -22,7 +22,6 @@ self.onmessage = async (e: MessageEvent) => {
     let low = 0.01;
     let high = 1.0;
     let bestBlob: Blob | null = null;
-    let bestSize = Infinity;
     
     const mimeType = format === 'auto' ? 'image/webp' : `image/${format}`;
     const targetBytes = targetSizeKB * 1024;
@@ -34,7 +33,6 @@ self.onmessage = async (e: MessageEvent) => {
        
        if (blob.size <= targetBytes) {
          bestBlob = blob;
-         bestSize = blob.size;
          low = quality; // Try higher quality
        } else {
          high = quality; // Need lower quality

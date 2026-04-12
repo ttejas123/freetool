@@ -6,11 +6,9 @@ import {
   Trash2, 
   Zap, 
   Loader, 
-  Sparkles, 
   Settings2, 
   CheckCircle2, 
   AlertCircle,
-  Maximize2,
   Image as ImageIcon,
   Smartphone,
   Mail,
@@ -21,7 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { supabase } from '@/lib/supabase';
-import { formatBytes, calculateReduction, getImageDimensions, PRESETS, type CompressionSettings } from './utils';
+import { formatBytes, calculateReduction, PRESETS, type CompressionSettings } from './utils';
 
 export default function ImageCompressor() {
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -29,7 +27,7 @@ export default function ImageCompressor() {
   const [compressedUrl, setCompressedUrl] = useState<string | null>(null);
   const [compressedSize, setCompressedSize] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [_, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const [settings, setSettings] = useState<CompressionSettings>({
