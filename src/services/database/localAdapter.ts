@@ -8,8 +8,8 @@
 import type { DatabaseService, ShortLink, ToolStats } from './types';
 
 const STORAGE_KEY = 'tinyurl_history';
-const STATS_KEY = 'ozone_tool_stats';
-const VISITOR_KEY = 'ozone_tool_visitors';
+const STATS_KEY = 'freetool_tool_stats';
+const VISITOR_KEY = 'freetool_tool_visitors';
 
 export class LocalDatabase implements DatabaseService {
   async createShortUrl(data: { originalUrl: string; shortUrl: string }): Promise<ShortLink> {

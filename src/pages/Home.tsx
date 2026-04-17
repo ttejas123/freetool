@@ -29,7 +29,7 @@ import {
   Plus,
   ExternalLink
 } from 'lucide-react';
-import { useSearchParams, Link, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
@@ -472,9 +472,9 @@ export const Home = () => {
              </div>
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {recentTools.slice(0, 4).map(tool => (
-                  <Link 
+                  <a 
                     key={`recent-${tool.id}`}
-                    to={`/${tool.path}`}
+                    href={`/${tool.path}`}
                     className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all group shadow-sm hover:shadow-xl"
                   >
                      <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
@@ -484,7 +484,7 @@ export const Home = () => {
                        <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{tool.category}</div>
                      </div>
-                  </Link>
+                  </a>
                 ))}
              </div>
           </motion.section>
@@ -643,6 +643,45 @@ export const Home = () => {
       {/* Upcoming Tools Section */}
       <UpcomingTools />
 
+      {/* Why Choose FreeTool SEO Section */}
+      <section className="container mx-auto px-6 mb-32 border-t border-gray-100 dark:border-white/5 pt-32">
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black mb-8 border border-brand-500/20 uppercase tracking-[0.2em]">
+             <Zap className="w-4 h-4" />
+             <span>The FreeTool Advantage</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6">
+            Why We Built FreeTool Software Utilities
+          </h2>
+          <p className="text-xl text-gray-500 dark:text-gray-400 font-medium">
+            Navigating dozens of disjointed, ad-riddled websites to find a reliable JSON formatter or an image compressor wastes valuable developer time. FreeTool fixes this entirely.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 font-medium text-gray-600 dark:text-gray-400">
+           <div>
+             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">100% Free, Zero Ads, Zero Logins</h3>
+             <p className="mb-6 leading-relaxed">
+               Unlike other online developer utilities, FreeTool functions completely free without paywalls or annoying subscriptions. Our mission is to democratize high-quality, professional-grade developer tools that simply work. We completely removed the friction of creating user accounts. You can just open a tool and use it.
+             </p>
+             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Unmatched Speed & Performance</h3>
+             <p className="leading-relaxed">
+               Our entire platform utilizes pure client-side processing using cutting-edge WebAssembly and Web Workers. Because the majority of our tools don't even talk to an external backend server, processing is instantaneous. No upload limits, no waiting for server queues, just instant results generated right from your own CPU cache.
+             </p>
+           </div>
+           <div>
+             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Uncompromising Data Privacy</h3>
+             <p className="mb-6 leading-relaxed">
+               Security incidents shouldn't be the cost of formatting a JSON payload. FreeTool prioritizes zero-knowledge privacy. Because executions are client-side, your confidential API tokens, secret keys, or sensitive customer data never actually leave your machine's browser memory. When you use tools like our Password Generator or JSON formatter, you are completely protected.
+             </p>
+             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Comprehensive Utility Suite</h3>
+             <p className="leading-relaxed">
+               With over 25+ integrated utilities spanning String Manipulation, Image Compression, PDF Merging, and CSS/SVG Art Generation, FreeTool is the only bookmark you need. Our integrated dashboard syncs perfectly with your workflow, allowing fast switching between tools without losing context.
+             </p>
+           </div>
+        </div>
+      </section>
+
       {/* Call to Action Section */}
       <section className="container mx-auto px-6 mb-40">
          <div className="relative p-16 md:p-28 rounded-[4rem] bg-gray-900 dark:bg-white overflow-hidden shadow-[0_50px_100px_-20px_rgba(59,130,246,0.3)]">
@@ -654,13 +693,13 @@ export const Home = () => {
                <p className="text-white/50 dark:text-black/50 text-xl mb-14 font-medium leading-relaxed">
                  Our roadmap is driven by our community. Submit your request today and we'll aim to ship it in record time.
                </p>
-               <Link 
-                 to="/contact"
+               <a 
+                 href="/contact"
                  className="inline-flex items-center gap-4 px-12 py-6 bg-brand-500 text-white rounded-2xl font-black text-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl"
                >
                  Request a Tool
                  <Plus className="w-8 h-8" />
-               </Link>
+               </a>
             </div>
          </div>
       </section>

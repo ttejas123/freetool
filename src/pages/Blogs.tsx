@@ -10,7 +10,7 @@ import {
   Shield,
   Code
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 const blogPosts = [
@@ -117,13 +117,13 @@ export const Blogs = () => {
                     <span>{post.readTime}</span>
                   </div>
                 </div>
-                <Link 
-                  to={`/blogs/${post.id}`}
+                <a 
+                  href={`/blogs/${post.id}`}
                   className="w-full flex items-center justify-center gap-2 py-4 bg-gray-50 dark:bg-white/5 hover:bg-brand-500 hover:text-white dark:text-gray-300 rounded-2xl text-sm font-bold transition-all group/btn"
                 >
                   Read Full Post
                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                </Link>
+                </a>
               </div>
             </motion.article>
           ))}

@@ -166,7 +166,7 @@ export default function RemoveBackground() {
     if (!outputUrl) return;
     const a = document.createElement('a');
     a.href = outputUrl;
-    a.download = 'background-removed-ozone.png';
+    a.download = 'background-removed-freetool.png';
     a.click();
   };
 

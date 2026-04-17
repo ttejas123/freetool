@@ -151,7 +151,7 @@ function renderTextPattern(
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function TextBackground() {
-  const [text, setText] = useState('OZONE');
+  const [text, setText] = useState('FREETOOL');
   const [font, setFont] = useState<FontFamily>('Impact');
   const [fontSize, setFontSize] = useState(32);
   const [tilt, setTilt] = useState(-15);

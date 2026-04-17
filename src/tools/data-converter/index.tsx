@@ -207,7 +207,7 @@ export default function DataConverter() {
 
   const loadSample = () => {
     const sampleText = JSON.stringify([
-      { "id": 1, "name": "Project Ozone", "type": "Software", "active": true, "rating": 4.9 },
+      { "id": 1, "name": "Project FreeTool", "type": "Software", "active": true, "rating": 4.9 },
       { "id": 2, "name": "Data Stream", "type": 102, "active": false, "rating": "N/A" },
       { "id": 3, "name": "Vortex AI", "type": "Algorithm", "active": true, "rating": 4.8 }
     ], null, 2);
@@ -240,7 +240,7 @@ export default function DataConverter() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
       <SEOHelmet 
-        title="Ozone Data Converter Pro - JSON, CSV, Excel, Parquet" 
+        title="FreeTool Data Converter Pro - JSON, CSV, Excel, Parquet" 
         description="Fast, secure, enterprise-grade data conversion between JSON, CSV, Excel, and Parquet. Client-side processing for ultimate privacy." 
       />
 

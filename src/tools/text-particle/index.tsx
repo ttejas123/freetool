@@ -62,7 +62,7 @@ export default function TextParticle() {
   const particlesRef = useRef<Particle[]>([]);
   const playingRef = useRef(true);
 
-  const [text, setText] = useState('OZONE');
+  const [text, setText] = useState('FREETOOL');
   const [fontSize, setFontSize] = useState(120);
   const [particleSize, setParticleSize] = useState(3);
   const [colorMode, setColorMode] = useState<ColorMode>('gradient');

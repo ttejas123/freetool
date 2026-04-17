@@ -16,10 +16,10 @@ const generateSeedStats = (id: string) => {
 // Global User ID for unique tracking
 const getDeviceId = () => {
     if (typeof window === 'undefined') return 'server';
-    let id = localStorage.getItem('ozone_device_id');
+    let id = localStorage.getItem('freetool_device_id');
     if (!id) {
         id = 'dev_' + Math.random().toString(36).substring(2, 11);
-        localStorage.setItem('ozone_device_id', id);
+        localStorage.setItem('freetool_device_id', id);
     }
     return id;
 };
@@ -74,7 +74,7 @@ export const fetchAllToolMetrics = async (): Promise<Record<string, ToolMetric>>
 
         // Cache in localStorage for immediate sync access on next load
         if (typeof window !== 'undefined') {
-            localStorage.setItem('ozone_stats_cache', JSON.stringify(metrics));
+            localStorage.setItem('freetool_stats_cache', JSON.stringify(metrics));
         }
 
         return metrics;
@@ -90,7 +90,7 @@ export const fetchAllToolMetrics = async (): Promise<Record<string, ToolMetric>>
 export const getCachedMetrics = (): Record<string, ToolMetric> => {
     if (typeof window === 'undefined') return {};
     try {
-        const raw = localStorage.getItem('ozone_stats_cache');
+        const raw = localStorage.getItem('freetool_stats_cache');
         return raw ? JSON.parse(raw) : {};
     } catch {
         return {};

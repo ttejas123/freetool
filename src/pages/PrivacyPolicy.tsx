@@ -7,7 +7,7 @@ export const PrivacyPolicy = () => {
     <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
       <BackgroundEffects />
       <Helmet>
-        <title>Privacy Policy - Ozone</title>
+        <title>Privacy Policy - FreeTool</title>
         <meta name="description" content="Your privacy is nuestra Priority. Learn how FreeTool protects your data while providing elite developer tools." />
       </Helmet>
 

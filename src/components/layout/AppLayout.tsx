@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Outlet, useLocation, Link } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -29,6 +29,7 @@ import { CookieConsent } from '../ui/CookieConsent';
 import { getCachedMetrics } from '@/lib/toolStats';
 import { CommandPalette } from '../ui/CommandPalette';
 import { CursorGlow } from '../ui/CursorGlow';
+import { RichToolDescription } from '../ui/RichToolDescription';
 
 const getCategoryColor = (category: string) => {
   const cat = category.toLowerCase();
@@ -98,21 +99,23 @@ export const AppLayout = () => {
       trackPageView(location.pathname);
     }
 
-    const currentPath = location.pathname.substring(1);
-    if (!currentPath) return; // ignore home
-    
-    // Check if path is a known tool
-    const matchedTool = toolRegistry.find(t => t.path === currentPath);
-    if (matchedTool) {
+    const pathPart = location.pathname.substring(1);
+    const matchedToolPath = toolRegistry.find(t => t.path === pathPart);
+    if (matchedToolPath) {
       try {
         const recentStr = localStorage.getItem('recentTools');
         const recent = recentStr ? JSON.parse(recentStr) : [];
-        const newRecent = [matchedTool.id, ...recent.filter((id: string) => id !== matchedTool.id)].slice(0, 4);
+        const newRecent = [matchedToolPath.id, ...recent.filter((id: string) => id !== matchedToolPath.id)].slice(0, 4);
         localStorage.setItem('recentTools', JSON.stringify(newRecent));
       } catch (e) {
         // ignore storage errors
       }
     }
+  }, [location.pathname]);
+
+  const currentMatchedTool = useMemo(() => {
+    const pathPart = location.pathname.substring(1);
+    return toolRegistry.find(t => t.path === pathPart);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -143,19 +146,19 @@ export const AppLayout = () => {
       >
         <div className="container mx-auto px-6 flex items-center justify-between gap-8">
           <div className="flex items-center gap-10">
-            <Link to="/" className="flex items-center gap-2.5 group">
+            <a href="/" className="flex items-center gap-2.5 group">
               <div className="relative flex items-center justify-center w-9 h-9">
                  <img src="/favicon.png" alt="Logo" className="w-9 h-9" />
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Free<span className="text-gradient">Tool</span>
               </span>
-            </Link>
+            </a>
             
             <nav className="hidden lg:flex items-center gap-10 text-[14px] font-bold">
-              <Link to="/" className="text-gray-900 dark:text-white hover:text-brand-500 transition-colors">
+              <a href="/" className="text-gray-900 dark:text-white hover:text-brand-500 transition-colors">
                 Tools
-              </Link>
+              </a>
               
               {/* Resources Dropdown */}
               <div className="relative group/dropdown">
@@ -171,9 +174,9 @@ export const AppLayout = () => {
                       { name: 'Tech News', desc: 'Daily developer digests', icon: Newspaper, path: '/tech-news' },
                       { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/#upcoming' },
                     ].map((item) => (
-                      <Link 
+                      <a 
                         key={item.name}
-                        to={item.path}
+                        href={item.path}
                         className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group/item"
                       >
                         <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 group-hover/item:bg-brand-500 group-hover/item:text-white transition-all">
@@ -183,21 +186,21 @@ export const AppLayout = () => {
                           <div className="text-sm font-bold text-gray-900 dark:text-white">{item.name}</div>
                           <div className="text-[10px] text-gray-500 dark:text-gray-400">{item.desc}</div>
                         </div>
-                      </Link>
+                      </a>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <Link to="/about" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+              <a href="/about" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
                 <Info className="w-4 h-4" />
                 About
-              </Link>
+              </a>
               
-              <Link to="/contact" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+              <a href="/contact" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
                 <Mail className="w-4 h-4" />
                 Support
-              </Link>
+              </a>
             </nav>
           </div>
 
@@ -321,13 +324,13 @@ export const AppLayout = () => {
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               
-              <Link 
-                to="/contact" 
+              <a 
+                href="/contact" 
                 className="hidden sm:flex items-center gap-2 px-5 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full text-sm font-semibold hover:opacity-90 transition-all shadow-md active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 Submit
-              </Link>
+              </a>
 
               <button 
                 className="lg:hidden p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
@@ -349,12 +352,12 @@ export const AppLayout = () => {
               className="lg:hidden absolute top-full left-0 w-full glass border-t border-gray-200 dark:border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl"
             >
               <nav className="flex flex-col gap-4 text-xl font-bold">
-                <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</Link>
-                <Link to="/#upcoming" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</Link>
-                <Link to="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</Link>
-                <Link to="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</Link>
-                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</Link>
-                <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Support</Link>
+                <a href="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</a>
+                <a href="/#upcoming" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</a>
+                <a href="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</a>
+                <a href="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</a>
+                <a href="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</a>
+                <a href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Support</a>
               </nav>
               <div className="pt-6 border-t border-gray-200 dark:border-white/10">
                 <div className="flex items-center gap-4 text-gray-500">
@@ -371,6 +374,7 @@ export const AppLayout = () => {
       <main className="flex-1 flex flex-col">
         <ErrorBoundary>
           <Outlet />
+          {currentMatchedTool && <RichToolDescription tool={currentMatchedTool} />}
         </ErrorBoundary>
       </main>
 
@@ -379,14 +383,14 @@ export const AppLayout = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
-              <Link to="/" className="flex items-center gap-2.5 mb-6">
+              <a href="/" className="flex items-center gap-2.5 mb-6">
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-500 shadow-md">
                    <CheckCircle2 className="w-4 h-4 text-white" />
                 </div>
                 <span className="text-xl font-bold tracking-tight dark:text-white">
                   Free<span className="text-gradient">Tool</span>
                 </span>
-              </Link>
+              </a>
               <p className="text-gray-500 dark:text-gray-400 max-w-sm mb-8 leading-relaxed">
                 The most comprehensive directory of high-performance developer tools. Built for speed, privacy, and productivity.
               </p>

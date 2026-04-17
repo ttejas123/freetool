@@ -176,7 +176,7 @@ export default function LiveParticles() {
   const [particleSize, setParticleSize] = useState(1.2);
   const [speed, setSpeed]            = useState(1.0);
   const [hoverMode, setHoverMode]    = useState<HoverMode>('repel');
-  const [customText, setCustomText]  = useState('OZONE');
+  const [customText, setCustomText]  = useState('FREETOOL');
 
   // --- Runtime state ---
   const [isPlaying, setIsPlaying]  = useState(true);
