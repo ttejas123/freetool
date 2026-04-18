@@ -132,7 +132,7 @@ export default function RemoveBackground() {
 
     try {
       const config: Config = {
-        publicPath: '/wasm/',
+        publicPath: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || 'upload'}/wasm/`,
         progress: (key, current, total) => {
           const percentage = Math.round((current / total) * 100);
           setProgress(percentage);
