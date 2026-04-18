@@ -27,7 +27,8 @@ import {
   Sparkles,
   Layers,
   Plus,
-  ExternalLink
+  ExternalLink,
+  Terminal
 } from 'lucide-react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
@@ -44,6 +45,12 @@ const getCategoryConfig = (category: string) => {
     color: 'from-brand-500 to-blue-600', 
     lightColor: 'bg-brand-500/10 text-brand-500 border-brand-500/20',
     glow: 'shadow-brand-500/20'
+  };
+  if (cat.includes('programming')) return { 
+    icon: Terminal, 
+    color: 'from-indigo-600 to-emerald-500', 
+    lightColor: 'bg-indigo-600/10 text-indigo-600 border-indigo-600/20',
+    glow: 'shadow-indigo-600/20'
   };
   if (cat.includes('dev')) return { 
     icon: Code, 

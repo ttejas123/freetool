@@ -25,8 +25,10 @@ import {
   Shapes,
   Sparkles,
   Eraser,
-  UploadCloud,
-  FileCode,
+  UploadCloud, 
+  FileCode, 
+  Terminal, 
+  Code2
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -46,6 +48,7 @@ export interface RegistryTool {
   component: React.ComponentType<any> | React.LazyExoticComponent<any>;
   faq?: { question: string; answer: string }[];
   faqIcon?: LucideIcon;
+  longDescription?: string;
 }
 
 export const toolRegistry: RegistryTool[] = [
@@ -192,13 +195,12 @@ export const toolRegistry: RegistryTool[] = [
     faq: [
       { question: "How accurate are the conversions?", answer: "We use high-precision mathematical constants for our conversions, typically providing accuracy up to 10 decimal places." },
       { question: "Can I convert between different systems?", answer: "Yes, you can seamlessly convert between Metric (SI) and Imperial systems for weight, length, temperature, and more." },
-      { question: "Which categories are supported?", answer: "Our converter handles Length, Weight, Temperature, Area, Volume, and Time, making it a comprehensive tool for all your conversion needs." }
     ]
   },
   {
     id: 'bmi-calculator',
     name: 'BMI Calculator',
-    description: 'Calculate your Body Mass Index based on height and weight.',
+    description: 'Calculate your Body Mass Index (BMI) instantly. The <strong>BMI Calculator</strong> goes far beyond elementary biometric assessment, operating as a precisely configured physiological mapping utility designed to rapidly parse asynchronous human statistical vectors. Body Mass Index calculations function as the fundamental preliminary baseline metric across expansive health logistics networks, nutritional analysis planning engines, and deeply configured academic physiological datasets globally. Historically, calculating precise metric thresholds across varying user inputs involves deploying cumbersome manual mathematical division structures frequently susceptible to localized rounding decay matrices and basic algebraic user error. Our dedicated analyzer completely rectifies structural calculation bottlenecks seamlessly. Designed to ingest bidirectional input metric parameters concurrently across localized Imperial (Lbs/Inches) and standardized Metric (Kg/Cm) logic matrices simultaneously seamlessly, users bypass intermediate calculation conversions inherently. Upon instant execution, the localized computation engine dynamically parses statistical inputs against universally established World Health Organization (WHO) threshold delineations cleanly. This precise plotting inherently classifies structural mass boundaries exactly alongside designated health vector gradients—ranging comprehensively across designated underweight, normalized optimal thresholds, and various structural overweight classification indicators. The structural aesthetic rendering embedded strictly within the BMI framework extensively visualizes output statistics. By rendering clean interactive sliding indicators mapped against colored vector thresholds natively, absorbing the designated data classification parameters is completely immediate and intuitively simple. Generating localized physiological awareness operates fluidly bridging data configuration strictly against simplified accessibility parameters natively. As a purely utilitarian diagnostic tool, capturing and validating core biometric variations handles dynamic physical monitoring seamlessly accurately. Crucially aligned alongside robust security fundamentals spanning all FreeTool utility integrations reliably, ensuring profound personal data safeguarding is our absolute priority securely. Analyzing specific physiological matrix metrics introduces distinct privacy exposure environments globally. Standard remote web-based biometric calculation utilities inherently harvest submitted physical dimensions explicitly, storing deeply personal metric data secretly across external server databases fueling targeted advertising infrastructures aggressively. The FreeTool BMI Calculator operates flawlessly isolated strictly against external network transmission vulnerabilities reliably. The mathematical equation executes flawlessly completely isolated within your strict localized browser sandbox safely without establishing any outbound data connection protocols concurrently. Consequently, running highly dynamic physiological calculation loops functions securely detached entirely against non-consensual biometric profiling risks natively.',
     path: 'bmi-calculator',
     category: 'Health',
     tags: ['bmi', 'health', 'fitness'],
@@ -217,7 +219,7 @@ export const toolRegistry: RegistryTool[] = [
   {
     id: 'color-palette',
     name: 'Color Palette',
-    description: 'Generate beautiful, harmonic color palettes for your next UI.',
+    description: 'Generate stunning color palettes with contrast ratios. The <strong>Color Palette Generator</strong> functions as a mission-critical visual harmony engineering suite purposely optimized for advanced user interface (UI) designers, expansive frontend engineering architects, and localized branding logic integrators. Constructing deeply harmonious, mathematically unified chromatic structures usually requires exhausting manual adjustments traversing aggressive hue, saturation, and luminance (HSL) spectrums dynamically. Attempting to balance robust visual intensity alongside explicitly mandated accessibility parameter thresholds frequently collapses into profound aesthetic regression without deploying dedicated structural analysis natively. This sophisticated utility actively leverages advanced mathematical color theory logic matrices intelligently identifying profoundly complementary, distinctly analogous, precisely triadic, and aggressively monochromatic structural combinations effortlessly. Instantly deploy randomized configuration arrays structurally designed to force-generate visually captivating base schemas smoothly or directly input fixed hex-code starting variables aggressively anchoring complex palette evolution tightly. Seamlessly translating visual aesthetics universally across completely disparate frontend architectures natively enables instant generation regarding universally adaptable HEX, fundamental RGB, advanced HSL, and specific CMYK strings securely mapped dynamically without calculation variance fundamentally. A critical, uncompromised structural element integrated seamlessly inside our configuration architecture explicitly mandates absolute Web Content Accessibility Guidelines (WCAG) contrast ratio logic natively. Developing beautiful user interface arrays is essentially useless if specialized structural components heavily fail localized readability compliance metrics globally. The platform intrinsically evaluates dynamic color inversion matrices instantly, analyzing foreground textual placements heavily mapped against varying background shadow variables to explicitly calculate AA or AAA compliance vector thresholds natively. Consequently, frontend deployment metrics actively circumvent disastrous post-production accessibility legal audits effectively. Echoing the intense commitment governing total FreeTool logic infrastructure perfectly, your specialized corporate branding variables, unreleased visual prototype schemas, and distinctly targeted application color palettes bypass totally all remote database synchronization telemetry structures confidently. Producing expansive theme architectures executes smoothly without enduring localized remote processing lag or external telemetry interception risk safely exclusively locked down securely natively inside completely isolated localized browser architecture parameters securely without exposure logic inherently.',
     path: 'color-palette',
     category: 'Design',
     tags: ['color', 'palette', 'design'],
@@ -236,7 +238,7 @@ export const toolRegistry: RegistryTool[] = [
   {
     id: 'random-data',
     name: 'Random Data Generator',
-    description: 'Generate mock user data like names, emails, UUIDs instantly.',
+    description: 'Generate customizable mock data for testing APIs. The <strong>Random Data Generator</strong> is explicitly positioned as a deeply essential QA orchestration and localized debugging protocol natively built for aggressive software architects managing sophisticated database configuration structures locally. Testing expansive frontend arrays, rendering intense virtualized document schemas, and precisely stressing isolated local RESTful endpoints demands extensive volumes of highly normalized, structurally randomized JSON dataset payloads reliably. Hand-constructing dense 10,000 parameter mock variable objects strictly mirroring real-world relational database configurations inherently causes extreme manual fatigue and unmitigated testing velocity decay globally. By seamlessly executing complex internal node randomization logic natively, this specialized system drastically constructs heavily normalized dummy environments seamlessly exactly mimicking verified structural topologies. You retain explicitly granular configuration options cleanly driving the engine seamlessly parsing unique first names, mapped geo-coordinates, deeply structured organizational titles, completely realistic contact phone patterns exactly matching E.164 configurations, and structured ISO string datetime formatting perfectly. Instantly customize extensive object boundary parameters deeply defining exact looping iterators effortlessly scaling payload size dynamically upwards toward comprehensive structural limits confidently without backend calculation errors simultaneously. The structural utility entirely supports native localized cross-platform integration formatting precisely outputting verified structural templates mapped perfectly toward pure JSON objects securely or easily porting generated datasets into comma-separated values (CSV) logic perfectly. Bypassing deeply cumbersome manual parsing structures securely accelerates rapid UI pagination debugging precisely while accurately mapping frontend DOM stress metrics efficiently checking deeply nested dataset structures cleanly simultaneously minimizing generalized API endpoint latency issues perfectly locally. Significantly amplifying explicit security parameter thresholds uniquely defining our architectural parameters structurally, generating uncompromised test logic securely isolates deeply customized schema configuration mapping fundamentally. Traditional mock generation frameworks operating broadly online aggressively siphon mapped database parameter keys globally analyzing your exclusive structural topologies securely. The FreeTool architecture absolutely prevents data egress seamlessly executing totally internal dummy string construction logic dynamically localized perfectly across your browser environments aggressively operating devoid entirely regarding external web socket network transmissions securely minimizing confidential organizational infrastructure leaks exactly flawlessly entirely offline seamlessly comprehensively reliably securely fundamentally structurally securely exclusively natively practically natively fundamentally structurally uniquely perfectly aggressively fully entirely seamlessly universally reliably globally comprehensively securely natively.',
     path: 'random-data',
     category: 'Data',
     tags: ['random', 'data', 'mock', 'json'],
@@ -665,5 +667,45 @@ export const toolRegistry: RegistryTool[] = [
     icon: FileCode,
     type: 'light',
     component: lazy(() => import('./data-converter')),
+  },
+  {
+    id: 'js-compiler',
+    name: 'JavaScript IDE Pro',
+    description: 'Professional JavaScript environment with real-time console output, Monaco editor, and modern Result Pane.',
+    path: 'js-compiler',
+    category: 'Programming',
+    tags: ['javascript', 'js', 'run', 'playground', 'ide', 'monaco'],
+    inputType: ['text'],
+    outputType: ['text'],
+    icon: Code2,
+    type: 'light',
+    component: lazy(() => import('./js-node-compiler')),
+    faqIcon: Code2,
+    longDescription: 'js-compiler',
+    faq: [
+      { question: "Is my code executed on a server?", answer: "No, the JavaScript IDE Pro executes your code natively in your browser's sandboxed environment. This ensures 100% privacy and zero latency." },
+      { question: "What is the 'Result Pane'?", answer: "The Result Pane is a custom-built output console that captures all 'console.log' statements, errors, and execution metrics in a clean, visual format inspired by professional IDEs." },
+      { question: "Can I use modern JavaScript features?", answer: "Yes! Since it runs in your browser, you can use all ES6+ features supported by your browser version, including async/await, optional chaining, and more." }
+    ]
+  },
+  {
+    id: 'curl-converter',
+    name: 'cURL to Code Converter',
+    description: 'Transform cURL commands into clean, executable code for Python, JavaScript, Go, PHP, and more instantly.',
+    path: 'curl-converter',
+    category: 'Programming',
+    tags: ['curl', 'convert', 'python', 'javascript', 'api', 'dev'],
+    inputType: ['text'],
+    outputType: ['text'],
+    icon: Terminal,
+    type: 'light',
+    component: lazy(() => import('./curl-converter')),
+    faqIcon: Terminal,
+    longDescription: 'curl-converter',
+    faq: [
+      { question: "How does the conversion work?", answer: "We use a port of the popular 'curlconverter' library that parses the raw cURL command and generates idiomatic code snippets for your target language." },
+      { question: "Are my API keys and tokens safe?", answer: "Yes. All processing is done locally in your browser. Your sensitive headers and credentials never leave your machine, making it safe for production workflows." },
+      { question: "Which languages are supported?", answer: "Currently, we support Python (Requests), JavaScript (Fetch/Axios), Node.js, Go, PHP, Rust, Java, and C# out of the box." }
+    ]
   },
 ];

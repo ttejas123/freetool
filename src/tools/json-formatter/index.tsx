@@ -1,5 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { SEOHelmet } from '../../components/SEOHelmet';
+import { toolRegistry } from '@/tools/toolRegistry';
+import { RichToolDescription } from '@/components/ui/RichToolDescription';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { CopyButton } from '../../components/ui/CopyButton';
@@ -203,6 +206,8 @@ export default function JsonFormatter() {
   const [showTypes, setShowTypes] = useState(false);
   const [showPaths, setShowPaths] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const tool = toolRegistry.find(t => t.id === 'json-formatter')!;
   const [needsFix, setNeedsFix] = useState(false);
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
 
@@ -337,19 +342,25 @@ export default function JsonFormatter() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 flex flex-col min-h-[85vh]">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4 flex flex-col min-h-[85vh]">
       <SEOHelmet title="Pro JSON Formatter & Search" description="High-performance JSON viewer with search, path copying, and auto-fix capabilities." />
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-400 dark:to-indigo-400">
-            JSON Formatter Pro
+      <Breadcrumbs />
+
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-brand-500/20">
+             <tool.icon className="w-3 h-3" />
+             <span>Professional Dev Tools</span>
+          </div>
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white">
+             {tool.name.split(' ')[0]} <span className="text-brand-500">{tool.name.split(' ').slice(1).join(' ')}</span>
           </h1>
-          <p className="mt-1 text-gray-500 dark:text-gray-400 flex items-center gap-2">
-            <Code2 className="w-4 h-4 text-brand-500" />
-            Optimized for large files • Search • Path Copy
+          <p className="text-gray-500 dark:text-gray-400 font-medium">
+             {tool.description}
           </p>
         </div>
+      </div>
 
         <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-800 p-1.5 px-3 rounded-xl border shadow-sm">
           <div className="flex items-center gap-1">
@@ -390,7 +401,6 @@ export default function JsonFormatter() {
             )}
           </div>
         </div>
-      </div>
 
       {needsFix && (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4 rounded-2xl flex items-center justify-between animate-in slide-in-from-top-2">
@@ -496,6 +506,8 @@ export default function JsonFormatter() {
       </div>
 
       <ToolChainer currentToolId="json-formatter" />
+
+      <RichToolDescription tool={tool} />
     </div>
   );
 }
