@@ -132,6 +132,7 @@ export default function RemoveBackground() {
 
     try {
       const config: Config = {
+        publicPath: '/wasm/',
         progress: (key, current, total) => {
           const percentage = Math.round((current / total) * 100);
           setProgress(percentage);
