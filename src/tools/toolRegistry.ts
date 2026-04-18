@@ -689,6 +689,26 @@ export const toolRegistry: RegistryTool[] = [
     ]
   },
   {
+    id: 'sql-playground',
+    name: 'SQL Playground',
+    description: 'WASM-powered scalable PostgreSQL sandbox. Write, run, and test full SQL databases natively in your browser.',
+    path: 'sql-playground',
+    category: 'Programming',
+    tags: ['sql', 'database', 'postgres', 'postgresql', 'query', 'sandbox'],
+    inputType: ['text'],
+    outputType: ['text', 'json'],
+    icon: Database,
+    type: 'light',
+    component: lazy(() => import('./sql-playground')),
+    faqIcon: Database,
+    longDescription: 'sql-playground',
+    faq: [
+      { question: "Is my database hosted on a server?", answer: "No, the SQL Playground runs completely locally inside your browser using a WebAssembly (WASM) build of PostgreSQL. Fast, scalable, and 100% private." },
+      { question: "Can I persist my database between sessions?", answer: "Currently, databases run in an ephemeral sandbox to ensure a clean testing slate every time you run. It's meant for rapid prototyping, learning, and testing logic." },
+      { question: "What SQL dialect is supported?", answer: "Since it is running real PostgreSQL, it supports full PostgreSQL 16 standard syntax, constraints, and features, ensuring perfect parity with production backends." }
+    ]
+  },
+  {
     id: 'curl-converter',
     name: 'cURL to Code Converter',
     description: 'Transform cURL commands into clean, executable code for Python, JavaScript, Go, PHP, and more instantly.',
@@ -706,6 +726,25 @@ export const toolRegistry: RegistryTool[] = [
       { question: "How does the conversion work?", answer: "We use a port of the popular 'curlconverter' library that parses the raw cURL command and generates idiomatic code snippets for your target language." },
       { question: "Are my API keys and tokens safe?", answer: "Yes. All processing is done locally in your browser. Your sensitive headers and credentials never leave your machine, making it safe for production workflows." },
       { question: "Which languages are supported?", answer: "Currently, we support Python (Requests), JavaScript (Fetch/Axios), Node.js, Go, PHP, Rust, Java, and C# out of the box." }
+    ]
+  },
+  {
+    id: 'block-editor',
+    name: 'Block Editor (Notion Clone)',
+    description: 'A fluid, Notion-style block editor with local-first storage, AI autocomplete, and structured data extraction.',
+    path: 'block-editor',
+    category: 'Writing',
+    tags: ['editor', 'notion', 'blocks', 'text', 'ai'],
+    inputType: ['text', 'any'],
+    outputType: ['text', 'any'],
+    icon: FileText,
+    type: 'heavy',
+    component: lazy(() => import('./block-editor')),
+    faqIcon: FileText,
+    faq: [
+      { question: "Where is my data saved?", answer: "All notes and blocks are saved locally inside your browser using IndexedDB. This ensures maximum privacy, offline support, and speed." },
+      { question: "Can I use AI commands?", answer: "Yes! Select text or type '/' to trigger AI formatting, summaries, and complex JSON-to-table extractions right inside the editor." },
+      { question: "Can I upload images?", answer: "Yes, you can upload media. Media files are stored in our secure Supabase bucket and referenced in your local document state securely." }
     ]
   },
 ];

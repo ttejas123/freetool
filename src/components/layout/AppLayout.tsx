@@ -136,6 +136,19 @@ export const AppLayout = () => {
     }
   }, [theme]);
 
+  const isPopup = new URLSearchParams(location.search).get('popup') === 'true';
+
+  if (isPopup) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#050505]">
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
+        <ToastContainer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505]">
       {/* Premium Navbar */}
