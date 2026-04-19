@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 interface CommentPopoverProps {
   position: { top: number; left: number };

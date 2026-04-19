@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, MessageSquare, CheckCircle2, History, Trash2 } from 'lucide-react';
 import { useEditorStore } from '../store';
 import { formatDistanceToNow } from 'date-fns';

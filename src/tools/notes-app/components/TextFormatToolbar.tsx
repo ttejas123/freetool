@@ -6,10 +6,7 @@ import {
   Strikethrough, 
   Code, 
   Link, 
-  Wand2, 
   MessageSquare, 
-  CheckCircle2, 
-  FileText,
   ChevronDown
 } from 'lucide-react';
 
