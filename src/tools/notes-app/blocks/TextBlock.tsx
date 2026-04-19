@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { BlockData } from '../types';
 import { useEditorStore } from '../store';
 import { SlashMenu } from '../components/SlashMenu';
+import { TextFormatToolbar } from '../components/TextFormatToolbar';
 
 interface TextBlockProps {
   block: BlockData;
@@ -15,6 +16,7 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
   const editableRef = useRef<HTMLDivElement>(null);
   
   const [slashMenuState, setSlashMenuState] = useState<{ isOpen: boolean; top: number; left: number } | null>(null);
+  const [toolbarState, setToolbarState] = useState<{ top: number; left: number } | null>(null);
 
   // To prevent updating state when typing, which changes cursor position, 
   // we keep track of whether we are currently editing.
@@ -62,7 +64,6 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
         
         if (textBeforeCursor.endsWith('/')) {
           const rect = range.getBoundingClientRect();
-          // Adjust for scrolling/container if necessary, or just position relative to text block
           const parentRect = editableRef.current?.getBoundingClientRect();
           if (parentRect) {
             setSlashMenuState({ 
@@ -76,6 +77,48 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
         }
       }
     }
+  };
+
+  const updateToolbarPosition = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !editableRef.current?.contains(selection.anchorNode)) {
+      setToolbarState(null);
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    
+    setToolbarState({
+      top: rect.top,
+      left: rect.left + rect.width / 2
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      // Small delay to ensure selection is final
+      requestAnimationFrame(updateToolbarPosition);
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+    return () => document.removeEventListener('selectionchange', handleSelectionChange);
+  }, [updateToolbarPosition]);
+
+  const handleApplyStyle = (command: string, value?: string) => {
+    if (!editableRef.current) return;
+    
+    // Focus back to editable div if focus was lost (e.g. by clicking toolbar)
+    editableRef.current.focus();
+    
+    document.execCommand(command, false, value);
+    
+    // Manually trigger input to sync state
+    const html = editableRef.current.innerHTML;
+    updateBlock(block.id, { content: html });
+    
+    // Update toolbar position as selection might have changed
+    updateToolbarPosition();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -97,19 +140,15 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
       e.preventDefault();
       deleteBlock(block.id);
     } else if (e.key === 'ArrowUp') {
-       // Optional: logic to move to previous block
        const index = blocks.findIndex((b: any) => b.id === block.id);
        if (index > 0) {
          setFocusedBlock(blocks[index - 1].id);
        }
     } else if (e.key === 'ArrowDown') {
-       // Optional: logic to move to next block
        const index = blocks.findIndex((b: any) => b.id === block.id);
        if (index < blocks.length - 1) {
          setFocusedBlock(blocks[index + 1].id);
        }
-    } else if (e.key === '/') {
-      // TODO: Open slash command menu
     }
   };
 
@@ -148,6 +187,8 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
         onKeyDown={handleKeyDown}
         onCompositionStart={() => isComposing.current = true}
         onCompositionEnd={() => isComposing.current = false}
+        onMouseUp={updateToolbarPosition}
+        onKeyUp={updateToolbarPosition}
         suppressContentEditableWarning
         className={className}
       />
@@ -156,6 +197,12 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
           blockId={block.id} 
           position={{ top: slashMenuState.top, left: slashMenuState.left }} 
           onClose={() => setSlashMenuState(null)} 
+        />
+      )}
+      {toolbarState && (
+        <TextFormatToolbar 
+          position={toolbarState} 
+          onApplyStyle={handleApplyStyle} 
         />
       )}
     </div>
