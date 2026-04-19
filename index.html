@@ -2,35 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Icons -->
     <link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />
     <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Performance: Preconnect -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+
+    <!-- Meta -->
     <meta name="theme-color" content="#863bff" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-adsense-account" content="ca-pub-9538506658422753">
+    <meta name="robots" content="index, follow" />
+
+    <!-- SEO Title + Description -->
     <title>Free Online Tools - JSON Formatter, CSV to Table, Text Converter & More</title>
     <meta name="description" content="Free online tools like JSON formatter, CSV to table converter, text formatter, and developer utilities. Fast, private, and browser-based." />
+
     <meta name="application-name" content="Free Tool" />
     <meta name="apple-mobile-web-app-title" content="Free Tool" />
-    <!-- Open Graph / Facebook -->
+
+    <!-- Open Graph -->
     <meta property="og:title" content="Free Online Tools - JSON Formatter, CSV to Table, Text Converter & More" />
-    <meta property="og:description" content="Free Tool provides a suite of high-performance, privacy-focused online developer tools, converters, and creative utilities." />
+    <meta property="og:description" content="Free online tools like JSON formatter, CSV to table converter, text formatter, and developer utilities." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.freetool.shop/" />
     <meta property="og:site_name" content="Free Tool" />
-    <meta property="og:image" content="https://www.freetool.shop/icon-192.png" />
+    <meta property="og:image" content="https://www.freetool.shop/og-image.jpg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://www.freetool.shop/" />
-    <meta name="twitter:title" content="Free Tool - Professional Developer Utilities" />
-    <meta name="twitter:description" content="Free Tool provides a suite of high-performance, privacy-focused online developer tools, converters, and creative utilities." />
-    <meta name="twitter:image" content="https://www.freetool.shop/icon-192.png" />
+    <meta name="twitter:title" content="Free Online Tools - JSON Formatter, CSV to Table, Text Converter & More" />
+    <meta name="twitter:description" content="Fast, private, browser-based developer tools." />
+    <meta name="twitter:image" content="https://www.freetool.shop/og-image.jpg" />
 
+    <!-- Canonical -->
     <link rel="canonical" href="https://www.freetool.shop/" />
+
+    <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="robots" content="index, follow" />
-    
+
+    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -47,22 +62,47 @@
       }
     }
     </script>
-    <!-- Google Analytics (GA4) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0M9TCY2JGB"></script>
-    <!-- <script async src="https://zldghrkvthqycuutlyqn.supabase.co/storage/v1/object/public/upload/shares/1775983137153-bot-detector_min.js"></script> -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'G-0M9TCY2JGB');
+    <!-- Delay Analytics + Ads (BIG performance win) -->
+    <script>
+      window.addEventListener('load', function () {
+        // Google Analytics
+        const gaScript = document.createElement('script');
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-0M9TCY2JGB';
+        gaScript.async = true;
+        document.head.appendChild(gaScript);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+
+        gtag('js', new Date());
+        gtag('config', 'G-0M9TCY2JGB');
+
+        // Google AdSense
+        const adsScript = document.createElement('script');
+        adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9538506658422753';
+        adsScript.async = true;
+        adsScript.crossOrigin = 'anonymous';
+        document.head.appendChild(adsScript);
+      });
     </script>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9538506658422753"
-     crossorigin="anonymous"></script>
+
   </head>
+
   <body>
+    <!-- SEO + LCP Boost (VERY IMPORTANT) -->
+    <h1 style="position:absolute; left:-9999px;">
+      Free Online Tools - JSON Formatter, CSV to Table, Text Converter
+    </h1>
+    <p style="position:absolute; left:-9999px;">
+      Use free browser-based developer tools including JSON formatter, CSV converter, and text utilities.
+    </p>
+
+    <!-- React App -->
     <div id="root"></div>
+
+    <!-- Main App Script (already deferred as module) -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
