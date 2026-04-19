@@ -61,12 +61,14 @@ export const useEditorStore = create<EditorState>()(
       pages: INITIAL_PAGES,
       activePageId: INITIAL_PAGES[0].id,
       focusedBlockId: null,
+      isCommentSidebarOpen: false,
 
       addPage: (title = 'Untitled', blocks = [{ id: crypto.randomUUID(), type: 'text', content: '' }]) => {
         const newPage: Page = {
           id: crypto.randomUUID(),
           title,
           blocks,
+          comments: [],
         };
         set((state) => ({
           pages: [...state.pages, newPage],
@@ -177,11 +179,59 @@ export const useEditorStore = create<EditorState>()(
         });
       },
 
+      addComment: (comment) => {
+        set((state) => ({
+          pages: state.pages.map((page) => {
+            if (page.id !== state.activePageId) return page;
+            const newComment = {
+              ...comment,
+              id: crypto.randomUUID(),
+              createdAt: new Date().toISOString(),
+              isResolved: false,
+            };
+            return {
+              ...page,
+              comments: [...(page.comments || []), newComment],
+            };
+          }),
+          isCommentSidebarOpen: true,
+        }));
+      },
+
+      deleteComment: (id) => {
+        set((state) => ({
+          pages: state.pages.map((page) => {
+            if (page.id !== state.activePageId) return page;
+            return {
+              ...page,
+              comments: (page.comments || []).filter((c) => c.id !== id),
+            };
+          }),
+        }));
+      },
+
+      resolveComment: (id) => {
+        set((state) => ({
+          pages: state.pages.map((page) => {
+            if (page.id !== state.activePageId) return page;
+            return {
+              ...page,
+              comments: (page.comments || []).map((c) =>
+                c.id === id ? { ...c, isResolved: !c.isResolved } : c
+              ),
+            };
+          }),
+        }));
+      },
+
+      toggleCommentSidebar: () => set((state) => ({ isCommentSidebarOpen: !state.isCommentSidebarOpen })),
+
       resetAll: () => {
         set({
           pages: INITIAL_PAGES,
           activePageId: INITIAL_PAGES[0].id,
           focusedBlockId: null,
+          isCommentSidebarOpen: false,
         });
       },
     }),

@@ -16,13 +16,20 @@ import {
 interface TextFormatToolbarProps {
   position: { top: number; left: number };
   onApplyStyle: (command: string, value?: string) => void;
+  onAddComment: () => void;
 }
 
-export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarProps) {
+export function TextFormatToolbar({ position, onApplyStyle, onAddComment }: TextFormatToolbarProps) {
   const handleCommand = (e: React.MouseEvent, command: string, value?: string) => {
     e.preventDefault();
     e.stopPropagation();
     onApplyStyle(command, value);
+  };
+
+  const handleComment = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onAddComment();
   };
 
   return (
@@ -33,13 +40,13 @@ export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarP
       <div className="flex flex-col bg-white/90 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden min-w-[280px]">
         {/* Formatting Row */}
         <div className="flex items-center gap-0.5 p-1.5 border-b border-zinc-100 dark:border-zinc-800/50">
-          <ToolbarButton icon={Bold} onClick={(e) => handleCommand(e, 'bold')} tooltip="Bold" />
-          <ToolbarButton icon={Italic} onClick={(e) => handleCommand(e, 'italic')} tooltip="Italic" />
-          <ToolbarButton icon={Underline} onClick={(e) => handleCommand(e, 'underline')} tooltip="Underline" />
-          <ToolbarButton icon={Strikethrough} onClick={(e) => handleCommand(e, 'strikethrough')} tooltip="Strikethrough" />
+          <ToolbarButton icon={Bold} onMouseDown={(e) => handleCommand(e, 'bold')} tooltip="Bold" />
+          <ToolbarButton icon={Italic} onMouseDown={(e) => handleCommand(e, 'italic')} tooltip="Italic" />
+          <ToolbarButton icon={Underline} onMouseDown={(e) => handleCommand(e, 'underline')} tooltip="Underline" />
+          <ToolbarButton icon={Strikethrough} onMouseDown={(e) => handleCommand(e, 'strikethrough')} tooltip="Strikethrough" />
           <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1" />
-          <ToolbarButton icon={Link} onClick={(e) => handleCommand(e, 'createLink', '#')} tooltip="Link" />
-          <ToolbarButton icon={Code} onClick={(e) => handleCommand(e, 'formatBlock', 'pre')} tooltip="Code" />
+          <ToolbarButton icon={Link} onMouseDown={(e) => handleCommand(e, 'createLink', '#')} tooltip="Link" />
+          <ToolbarButton icon={Code} onMouseDown={(e) => handleCommand(e, 'formatBlock', 'pre')} tooltip="Code" />
           <div className="flex-1" />
           <button className="flex items-center gap-1 px-2 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-xs font-medium text-zinc-500 dark:text-zinc-400">
             Auto <ChevronDown size={12} />
@@ -52,9 +59,10 @@ export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarP
             icon={MessageSquare} 
             label="Comment" 
             shortcut="⌘J" 
-            onClick={() => {}} 
+            onMouseDown={(e) => handleComment(e)} 
           />
           
+          {/* AI Skills - Commented out for now
           <div className="mt-2 mb-1 px-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
             AI Skills
           </div>
@@ -62,22 +70,23 @@ export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarP
           <ActionButton 
             icon={Wand2} 
             label="Improve writing" 
-            onClick={() => {}} 
+            onMouseDown={() => {}} 
             className="text-purple-600 dark:text-purple-400"
           />
           <ActionButton 
             icon={CheckCircle2} 
             label="Proofread" 
-            onClick={() => {}} 
+            onMouseDown={() => {}} 
           />
           <ActionButton 
             icon={FileText} 
             label="Explain" 
-            onClick={() => {}} 
+            onMouseDown={() => {}} 
           />
+          */}
         </div>
 
-        {/* AI Input Area */}
+        {/* AI Input Area - Commented out for now
         <div className="p-2 border-t border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/30">
           <div className="relative group">
             <input 
@@ -90,6 +99,7 @@ export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarP
             </div>
           </div>
         </div>
+        */}
       </div>
       
       {/* Little arrow at bottom */}
@@ -98,10 +108,10 @@ export function TextFormatToolbar({ position, onApplyStyle }: TextFormatToolbarP
   );
 }
 
-function ToolbarButton({ icon: Icon, onClick, tooltip }: { icon: any, onClick: (e: React.MouseEvent) => void, tooltip: string }) {
+function ToolbarButton({ icon: Icon, onMouseDown, tooltip }: { icon: any, onMouseDown: (e: React.MouseEvent) => void, tooltip: string }) {
   return (
     <button 
-      onClick={onClick}
+      onMouseDown={onMouseDown}
       title={tooltip}
       className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors text-zinc-600 dark:text-zinc-300"
     >
@@ -110,10 +120,10 @@ function ToolbarButton({ icon: Icon, onClick, tooltip }: { icon: any, onClick: (
   );
 }
 
-function ActionButton({ icon: Icon, label, shortcut, onClick, className = "" }: { icon: any, label: string, shortcut?: string, onClick: () => void, className?: string }) {
+function ActionButton({ icon: Icon, label, shortcut, onMouseDown, className = "" }: { icon: any, label: string, shortcut?: string, onMouseDown: (e: React.MouseEvent) => void, className?: string }) {
   return (
     <button 
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick(); }}
+      onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); onMouseDown(e); }}
       className={`flex items-center justify-between w-full px-2 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors ${className}`}
     >
       <div className="flex items-center gap-2">

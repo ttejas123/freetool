@@ -49,6 +49,7 @@ export interface RegistryTool {
   faq?: { question: string; answer: string }[];
   faqIcon?: LucideIcon;
   longDescription?: string;
+  fullScreen?: boolean;
 }
 
 export const toolRegistry: RegistryTool[] = [
@@ -741,6 +742,7 @@ export const toolRegistry: RegistryTool[] = [
     type: 'heavy',
     component: lazy(() => import('./notes-app')),
     faqIcon: FileText,
+    fullScreen: true,
     faq: [
       { question: "Where is my data saved?", answer: "All notes and blocks are saved locally inside your browser using IndexedDB. This ensures maximum privacy, offline support, and speed." },
       { question: "Can I use templates?", answer: "Yes! Use the Sidebar to add pre-built templates for Students, Classrooms, and more to jumpstart your productivity." },

@@ -138,6 +138,8 @@ export const AppLayout = () => {
 
   const isPopup = new URLSearchParams(location.search).get('popup') === 'true';
 
+  const isFullScreen = currentMatchedTool?.fullScreen;
+
   if (isPopup) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505]">
@@ -150,254 +152,257 @@ export const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505]">
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505] ${isFullScreen ? 'h-screen overflow-hidden' : ''}`}>
       {/* Premium Navbar */}
-      <header 
-        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-          isScrolled ? 'py-3 glass shadow-sm' : 'py-5 bg-transparent'
-        }`}
-      >
-        <div className="container mx-auto px-6 flex items-center justify-between gap-8">
-          <div className="flex items-center gap-10">
-            <a href="/" className="flex items-center gap-2.5 group">
-              <div className="relative flex items-center justify-center w-9 h-9">
-                 <img src="/favicon.webp" alt="Logo" className="w-9 h-9" />
-              </div>
-              <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Free<span className="text-gradient">Tool</span>
-              </span>
-            </a>
-            
-            <nav className="hidden lg:flex items-center gap-10 text-[14px] font-bold">
-              <a href="/" className="text-gray-900 dark:text-white hover:text-brand-500 transition-colors">
-                Tools
+      {!isFullScreen && (
+        <header 
+          className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+            isScrolled ? 'py-3 glass shadow-sm' : 'py-5 bg-transparent'
+          }`}
+        >
+          <div className="container mx-auto px-6 flex items-center justify-between gap-8">
+            <div className="flex items-center gap-10">
+              <a href="/" className="flex items-center gap-2.5 group">
+                <div className="relative flex items-center justify-center w-9 h-9">
+                   <img src="/favicon.webp" alt="Logo" className="w-9 h-9" />
+                </div>
+                <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  Free<span className="text-gradient">Tool</span>
+                </span>
               </a>
               
-              {/* Resources Dropdown */}
-              <div className="relative group/dropdown">
-                <button 
-                  className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors py-2"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  Resources
-                  <ChevronDown className="w-4 h-4 group-hover/dropdown:rotate-180 transition-transform duration-300" />
-                </button>
+              <nav className="hidden lg:flex items-center gap-10 text-[14px] font-bold">
+                <a href="/" className="text-gray-900 dark:text-white hover:text-brand-500 transition-colors">
+                  Tools
+                </a>
                 
-                <div className="absolute top-full -left-4 w-64 pt-4 opacity-0 scale-95 group-hover/dropdown:opacity-100 group-hover/dropdown:scale-100 transition-all duration-200 pointer-events-none group-hover/dropdown:pointer-events-auto z-[100]">
-                  <div className="bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/10 rounded-[2rem] shadow-2xl p-4 overflow-hidden">
-                    {[
-                      { name: 'Latest Blogs', desc: 'Expert guides & updates', icon: LayoutGrid, path: '/blogs' },
-                      { name: 'Tech News', desc: 'Daily developer digests', icon: Newspaper, path: '/tech-news' },
-                      { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/#upcoming' },
-                    ].map((item) => (
-                      <a 
-                        key={item.name}
-                        href={item.path}
-                        className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group/item"
-                      >
-                        <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 group-hover/item:bg-brand-500 group-hover/item:text-white transition-all">
-                          <item.icon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-gray-900 dark:text-white">{item.name}</div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400">{item.desc}</div>
-                        </div>
-                      </a>
-                    ))}
+                {/* Resources Dropdown */}
+                <div className="relative group/dropdown">
+                  <button 
+                    className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors py-2"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    Resources
+                    <ChevronDown className="w-4 h-4 group-hover/dropdown:rotate-180 transition-transform duration-300" />
+                  </button>
+                  
+                  <div className="absolute top-full -left-4 w-64 pt-4 opacity-0 scale-95 group-hover/dropdown:opacity-100 group-hover/dropdown:scale-100 transition-all duration-200 pointer-events-none group-hover/dropdown:pointer-events-auto z-[100]">
+                    <div className="bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/10 rounded-[2rem] shadow-2xl p-4 overflow-hidden">
+                      {[
+                        { name: 'Latest Blogs', desc: 'Expert guides & updates', icon: LayoutGrid, path: '/blogs' },
+                        { name: 'Tech News', desc: 'Daily developer digests', icon: Newspaper, path: '/tech-news' },
+                        { name: 'Product Scope', desc: 'Roadmap & upcoming', icon: Zap, path: '/#upcoming' },
+                      ].map((item) => (
+                        <a 
+                          key={item.name}
+                          href={item.path}
+                          className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all group/item"
+                        >
+                          <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 group-hover/item:bg-brand-500 group-hover/item:text-white transition-all">
+                            <item.icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">{item.name}</div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400">{item.desc}</div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <a href="/about" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
-                <Info className="w-4 h-4" />
-                About
-              </a>
-              
-              <a href="/contact" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
-                <Mail className="w-4 h-4" />
-                Support
-              </a>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <form onSubmit={handleSearch} className="relative hidden md:block">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search tools..." 
-                value={navSearch}
-                onChange={(e) => {
-                  setNavSearch(e.target.value);
-                  setShowSearchDropdown(true);
-                }}
-                onFocus={() => setShowSearchDropdown(true)}
-                className="w-48 lg:w-72 pl-10 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-full text-sm text-gray-900 dark:text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:bg-white dark:focus:bg-black/50 transition-all duration-200"
-               />
-
-              {/* Search Results Dropdown */}
-              <AnimatePresence>
-                {showSearchDropdown && (
-                  <>
-                    <div 
-                      className="fixed inset-0 z-10" 
-                      onClick={() => setShowSearchDropdown(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute top-full mt-3 right-0 w-[400px] glass border border-gray-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20"
-                    >
-                      <div className="p-2 max-h-[450px] overflow-y-auto custom-scrollbar">
-                        {searchResults.length > 0 ? (
-                          <div className="flex flex-col gap-1">
-                            {searchResults.map((result) => {
-                              const { tool, matchField, matchSnippet } = result;
-                              const stats = metrics[tool.id] || { views: 0 };
-                              const catClass = getCategoryColor(tool.category);
-                              return (
-                                <button
-                                  key={tool.id}
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    window.location.href = `/${tool.path}`;
-                                    setShowSearchDropdown(false);
-                                  }}
-                                  className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
-                                >
-                                  <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]}`}>
-                                    <tool.icon className="w-5 h-5" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-2 mb-0.5">
-                                      <span className="font-bold text-sm text-gray-900 dark:text-white truncate group-hover:text-brand-500 transition-colors">
-                                        {highlightMatch(tool.name, navSearch)}
-                                      </span>
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                        {tool.category}
-                                      </span>
+  
+                <a href="/about" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+                  <Info className="w-4 h-4" />
+                  About
+                </a>
+                
+                <a href="/contact" className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors">
+                  <Mail className="w-4 h-4" />
+                  Support
+                </a>
+              </nav>
+            </div>
+  
+            <div className="flex items-center gap-4">
+              <form onSubmit={handleSearch} className="relative hidden md:block">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search tools..." 
+                  value={navSearch}
+                  onChange={(e) => {
+                    setNavSearch(e.target.value);
+                    setShowSearchDropdown(true);
+                  }}
+                  onFocus={() => setShowSearchDropdown(true)}
+                  className="w-48 lg:w-72 pl-10 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-full text-sm text-gray-900 dark:text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:bg-white dark:focus:bg-black/50 transition-all duration-200"
+                 />
+  
+                {/* Search Results Dropdown */}
+                <AnimatePresence>
+                  {showSearchDropdown && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-10" 
+                        onClick={() => setShowSearchDropdown(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute top-full mt-3 right-0 w-[400px] glass border border-gray-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20"
+                      >
+                        <div className="p-2 max-h-[450px] overflow-y-auto custom-scrollbar">
+                          {searchResults.length > 0 ? (
+                            <div className="flex flex-col gap-1">
+                              {searchResults.map((result) => {
+                                const { tool, matchField, matchSnippet } = result;
+                                const stats = metrics[tool.id] || { views: 0 };
+                                const catClass = getCategoryColor(tool.category);
+                                return (
+                                  <button
+                                    key={tool.id}
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      window.location.href = `/${tool.path}`;
+                                      setShowSearchDropdown(false);
+                                    }}
+                                    className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
+                                  >
+                                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]}`}>
+                                      <tool.icon className="w-5 h-5" />
                                     </div>
-                                    <div className="flex flex-col gap-1">
-                                      {matchField && (
-                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 italic">
-                                          <span className="font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 px-1 rounded">
-                                            {matchField}
-                                          </span>
-                                          <span className="truncate">
-                                            {highlightMatch(matchSnippet, navSearch)}
-                                          </span>
-                                        </div>
-                                      )}
-                                      <div className="flex items-center gap-3">
-                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-medium">
-                                          <Eye className="w-3 h-3" />
-                                          {stats.views.toLocaleString()} views
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                                        <span className="font-bold text-sm text-gray-900 dark:text-white truncate group-hover:text-brand-500 transition-colors">
+                                          {highlightMatch(tool.name, navSearch)}
+                                        </span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                          {tool.category}
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-col gap-1">
+                                        {matchField && (
+                                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400 italic">
+                                            <span className="font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 px-1 rounded">
+                                              {matchField}
+                                            </span>
+                                            <span className="truncate">
+                                              {highlightMatch(matchSnippet, navSearch)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        <div className="flex items-center gap-3">
+                                          <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-medium">
+                                            <Eye className="w-3 h-3" />
+                                            {stats.views.toLocaleString()} views
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <div className="py-8 px-4 text-center">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 mb-3 text-gray-400">
-                              <Search className="w-6 h-6" />
+                                  </button>
+                                );
+                              })}
                             </div>
-                            <p className="text-sm font-bold text-gray-900 dark:text-white">No tools found</p>
-                            <p className="text-xs text-gray-500 mt-1">Try a different search term</p>
+                          ) : (
+                            <div className="py-8 px-4 text-center">
+                              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 mb-3 text-gray-400">
+                                <Search className="w-6 h-6" />
+                              </div>
+                              <p className="text-sm font-bold text-gray-900 dark:text-white">No tools found</p>
+                              <p className="text-xs text-gray-500 mt-1">Try a different search term</p>
+                            </div>
+                          )}
+                          
+                          <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 px-2 pb-1">
+                            <button 
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSearch();
+                              }}
+                              className="w-full py-2 text-xs font-bold text-brand-500 hover:bg-brand-500/10 rounded-xl transition-all"
+                            >
+                              {navSearch.trim() ? `View all results for "${navSearch}"` : 'View all tools'}
+                            </button>
                           </div>
-                        )}
-                        
-                        <div className="mt-2 pt-2 border-t border-gray-100 dark:border-white/5 px-2 pb-1">
-                          <button 
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleSearch();
-                            }}
-                            className="w-full py-2 text-xs font-bold text-brand-500 hover:bg-brand-500/10 rounded-xl transition-all"
-                          >
-                            {navSearch.trim() ? `View all results for "${navSearch}"` : 'View all tools'}
-                          </button>
                         </div>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </form>
-
-            <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-4 ml-2">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
-                aria-label="Toggle Theme"
-              >
-                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-              
-              <a 
-                href="/contact" 
-                className="hidden sm:flex items-center gap-2 px-5 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full text-sm font-semibold hover:opacity-90 transition-all shadow-md active:scale-95"
-              >
-                <Plus className="w-4 h-4" />
-                Submit
-              </a>
-
-              <button 
-                className="lg:hidden p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
-              >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </form>
+  
+              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-white/10 pl-4 ml-2">
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
+                  aria-label="Toggle Theme"
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+                
+                <a 
+                  href="/contact" 
+                  className="hidden sm:flex items-center gap-2 px-5 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full text-sm font-semibold hover:opacity-90 transition-all shadow-md active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  Submit
+                </a>
+  
+                <button 
+                  className="lg:hidden p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
+                >
+                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="lg:hidden absolute top-full left-0 w-full glass border-t border-gray-200 dark:border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl"
-            >
-              <nav className="flex flex-col gap-4 text-xl font-bold">
-                <a href="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</a>
-                <a href="/#upcoming" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</a>
-                <a href="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</a>
-                <a href="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</a>
-                <a href="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</a>
-                <a href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Support</a>
-              </nav>
-              <div className="pt-6 border-t border-gray-200 dark:border-white/10">
-                <div className="flex items-center gap-4 text-gray-500">
-                   <Twitter className="w-5 h-5" aria-label="Twitter" />
-                   <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} aria-label="GitHub Profile" />
+  
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="lg:hidden absolute top-full left-0 w-full glass border-t border-gray-200 dark:border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl"
+              >
+                <nav className="flex flex-col gap-4 text-xl font-bold">
+                  <a href="/" onClick={() => setIsMobileMenuOpen(false)}>All Tools</a>
+                  <a href="/#upcoming" onClick={() => setIsMobileMenuOpen(false)}>Product Roadmap</a>
+                  <a href="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blogs</a>
+                  <a href="/tech-news" onClick={() => setIsMobileMenuOpen(false)}>Tech News</a>
+                  <a href="/about" onClick={() => setIsMobileMenuOpen(false)}>About Us</a>
+                  <a href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Support</a>
+                </nav>
+                <div className="pt-6 border-t border-gray-200 dark:border-white/10">
+                  <div className="flex items-center gap-4 text-gray-500">
+                     <Twitter className="w-5 h-5" aria-label="Twitter" />
+                     <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} aria-label="GitHub Profile" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </header>
+      )}
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col">
+      <main className={`flex-1 flex flex-col ${isFullScreen ? 'h-full' : ''}`}>
         <ErrorBoundary>
           <Outlet />
-          {currentMatchedTool && <RichToolDescription tool={currentMatchedTool} />}
+          {currentMatchedTool && !isFullScreen && <RichToolDescription tool={currentMatchedTool} />}
         </ErrorBoundary>
       </main>
 
       {/* Premium Footer */}
-      <footer className="bg-gray-50 dark:bg-[#0A0A0A] border-t border-gray-200 dark:border-white/5 pt-20 pb-12">
+      {!isFullScreen && (
+        <footer className="bg-gray-50 dark:bg-[#0A0A0A] border-t border-gray-200 dark:border-white/5 pt-20 pb-12">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
@@ -456,6 +461,7 @@ export const AppLayout = () => {
           </div>
         </div>
       </footer>
+      )}
       <CommandPalette />
       <ToastContainer />
       <CookieConsent />
