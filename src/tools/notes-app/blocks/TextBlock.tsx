@@ -9,7 +9,9 @@ interface TextBlockProps {
 }
 
 export function TextBlock({ block, isFocused }: TextBlockProps) {
-  const { updateBlock, setFocusedBlock, blocks, addBlock, deleteBlock } = useEditorStore();
+  const { pages, activePageId, updateBlock, setFocusedBlock, addBlock, deleteBlock } = useEditorStore();
+  const activePage = pages.find(p => p.id === activePageId);
+  const blocks = activePage?.blocks || [];
   const editableRef = useRef<HTMLDivElement>(null);
   
   const [slashMenuState, setSlashMenuState] = useState<{ isOpen: boolean; top: number; left: number } | null>(null);
@@ -96,13 +98,13 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
       deleteBlock(block.id);
     } else if (e.key === 'ArrowUp') {
        // Optional: logic to move to previous block
-       const index = blocks.findIndex(b => b.id === block.id);
+       const index = blocks.findIndex((b: any) => b.id === block.id);
        if (index > 0) {
          setFocusedBlock(blocks[index - 1].id);
        }
     } else if (e.key === 'ArrowDown') {
        // Optional: logic to move to next block
-       const index = blocks.findIndex(b => b.id === block.id);
+       const index = blocks.findIndex((b: any) => b.id === block.id);
        if (index < blocks.length - 1) {
          setFocusedBlock(blocks[index + 1].id);
        }
@@ -111,17 +113,31 @@ export function TextBlock({ block, isFocused }: TextBlockProps) {
     }
   };
 
-  let className = "outline-none w-full py-1 text-base leading-relaxed break-words relative min-h-[1.5em]";
+  const getPlaceholder = () => {
+    switch (block.type) {
+      case 'h1': return 'Heading 1';
+      case 'h2': return 'Heading 2';
+      case 'h3': return 'Heading 3';
+      default: return "Type '/' for commands";
+    }
+  };
+
+  let className = "outline-none w-full py-1 leading-relaxed break-words relative min-h-[1.5em]";
   
-  if (block.type === 'h1') className += " text-4xl font-bold mt-6 mb-2";
-  else if (block.type === 'h2') className += " text-2xl font-semibold mt-4 mb-2";
-  else if (block.type === 'h3') className += " text-xl font-medium mt-3 mb-1";
+  if (block.type === 'h1') className += " text-4xl font-bold mt-6 mb-2 text-zinc-900 dark:text-zinc-50";
+  else if (block.type === 'h2') className += " text-2xl font-semibold mt-4 mb-2 text-zinc-800 dark:text-zinc-100";
+  else if (block.type === 'h3') className += " text-xl font-medium mt-3 mb-1 text-zinc-700 dark:text-zinc-200";
+  else className += " text-base text-zinc-600 dark:text-zinc-400";
 
   return (
     <div className="relative group/text">
       {block.content === '' && isFocused && (
-        <div className="absolute left-0 top-1 text-zinc-400 pointer-events-none select-none">
-          Type '/' for commands
+        <div className={`absolute left-0 top-1 text-zinc-300 dark:text-zinc-700 pointer-events-none select-none ${
+          block.type === 'h1' ? 'text-4xl font-bold' : 
+          block.type === 'h2' ? 'text-2xl font-semibold' :
+          block.type === 'h3' ? 'text-xl font-medium' : 'text-base'
+        }`}>
+          {getPlaceholder()}
         </div>
       )}
       <div 

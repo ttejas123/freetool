@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { GripVertical, Plus } from 'lucide-react';
+import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import type { BlockData } from '../types';
 import { useEditorStore } from '../store';
 import { TextBlock } from '../blocks/TextBlock';
 import { TableBlock } from '../blocks/TableBlock';
 import { MediaBlock } from '../blocks/MediaBlock';
-import { AIPromptMenu } from './AIPromptMenu';
-import { Sparkles } from 'lucide-react';
 
 interface BlockWrapperProps {
   block: BlockData;
@@ -14,9 +12,8 @@ interface BlockWrapperProps {
 }
 
 export function BlockWrapper({ block, dragControls }: BlockWrapperProps) {
-  const { addBlock, focusedBlockId } = useEditorStore();
+  const { addBlock, deleteBlock, focusedBlockId } = useEditorStore();
   const [isHovered, setIsHovered] = useState(false);
-  const [aiMenuState, setAiMenuState] = useState<{ isOpen: boolean; top: number; left: number } | null>(null);
   
   const isFocused = focusedBlockId === block.id;
 
@@ -49,33 +46,31 @@ export function BlockWrapper({ block, dragControls }: BlockWrapperProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-start">
+        {/* Hover Actions Panel */}
         <div 
-          className={`flex-none w-16 flex items-center justify-end pr-2 opacity-0 transition-opacity gap-1 ${
+          className={`flex-none w-20 flex items-center justify-end pr-2 opacity-0 transition-opacity gap-0.5 ${
             isHovered || isFocused ? 'opacity-100' : ''
           }`}
         >
-          {block.type === 'text' && (
-             <button 
-               onClick={(e) => {
-                 const rect = e.currentTarget.getBoundingClientRect();
-                 setAiMenuState({ isOpen: true, top: rect.bottom + 5, left: rect.left });
-               }}
-               className="p-1 text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 rounded"
-               title="Ask AI"
-             >
-               <Sparkles size={14} />
-             </button>
-          )}
+          <button 
+            onClick={() => deleteBlock(block.id)}
+            className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+            title="Delete block"
+          >
+            <Trash2 size={14} />
+          </button>
           <button 
             onClick={handleAddBelow}
-            className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 rounded"
+            className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
+            title="Add block below"
           >
             <Plus size={16} />
           </button>
           <div 
-            className="p-1 cursor-grab active:cursor-grabbing text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 rounded"
+            className="p-1 cursor-grab active:cursor-grabbing text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
             onPointerDown={(e) => dragControls?.start(e)}
             style={{ touchAction: "none" }}
+            title="Drag to reorder"
           >
             <GripVertical size={16} />
           </div>
@@ -85,14 +80,6 @@ export function BlockWrapper({ block, dragControls }: BlockWrapperProps) {
           {renderBlock()}
         </div>
       </div>
-      
-      {aiMenuState && aiMenuState.isOpen && (
-         <AIPromptMenu 
-            block={block} 
-            onClose={() => setAiMenuState(null)} 
-            position={{ top: aiMenuState.top, left: aiMenuState.left }} 
-         />
-      )}
     </div>
   );
 }

@@ -21,8 +21,11 @@ interface SlashMenuProps {
 }
 
 export function SlashMenu({ blockId, onClose, position }: SlashMenuProps) {
-  const { updateBlock } = useEditorStore();
+  const { updateBlock, pages, activePageId } = useEditorStore();
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const activePage = pages.find(p => p.id === activePageId);
+  const currentBlock = activePage?.blocks.find(b => b.id === blockId);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -44,7 +47,18 @@ export function SlashMenu({ blockId, onClose, position }: SlashMenuProps) {
   }, [selectedIndex, blockId]);
 
   const selectItem = (type: BlockType) => {
-    updateBlock(blockId, { type, content: '' });
+    let content = currentBlock?.content || '';
+    if (typeof content === 'string') {
+      // Remove the slash that triggered the menu
+      content = content.replace(/\/$/, '').trim();
+    }
+
+    // Reset content for complex blocks if it was just text
+    if (['table', 'image', 'video', 'file'].includes(type) && typeof content === 'string') {
+      content = []; // Use empty array for table or appropriate default
+    }
+
+    updateBlock(blockId, { type, content });
     onClose();
   };
 

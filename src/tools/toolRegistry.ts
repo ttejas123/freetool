@@ -729,22 +729,22 @@ export const toolRegistry: RegistryTool[] = [
     ]
   },
   {
-    id: 'block-editor',
-    name: 'Block Editor (Notion Clone)',
-    description: 'A fluid, Notion-style block editor with local-first storage, AI autocomplete, and structured data extraction.',
-    path: 'block-editor',
+    id: 'notes-app',
+    name: 'NoteSpace',
+    description: 'A fluid, professional block-based notes app with local-first storage, templates, and interactive table management.',
+    path: 'notes-app',
     category: 'Writing',
-    tags: ['editor', 'notion', 'blocks', 'text', 'ai'],
+    tags: ['notes', 'writing', 'blocks', 'text'],
     inputType: ['text', 'any'],
     outputType: ['text', 'any'],
     icon: FileText,
     type: 'heavy',
-    component: lazy(() => import('./block-editor')),
+    component: lazy(() => import('./notes-app')),
     faqIcon: FileText,
     faq: [
       { question: "Where is my data saved?", answer: "All notes and blocks are saved locally inside your browser using IndexedDB. This ensures maximum privacy, offline support, and speed." },
-      { question: "Can I use AI commands?", answer: "Yes! Select text or type '/' to trigger AI formatting, summaries, and complex JSON-to-table extractions right inside the editor." },
-      { question: "Can I upload images?", answer: "Yes, you can upload media. Media files are stored in our secure Supabase bucket and referenced in your local document state securely." }
+      { question: "Can I use templates?", answer: "Yes! Use the Sidebar to add pre-built templates for Students, Classrooms, and more to jumpstart your productivity." },
+      { question: "How do I manage tables?", answer: "NoteSpace features an interactive table editor where you can add rows/columns, edit cells inline, and even import CSV or JSON data directly." }
     ]
   },
 ];
