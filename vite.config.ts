@@ -33,7 +33,6 @@ export default defineConfig({
             if (id.includes('recharts') || id.includes('reactflow')) return 'vendor-charts';
             if (id.includes('firebase') || id.includes('supabase') || id.includes('aws-sdk')) return 'vendor-cloud';
             if (id.includes('framer-motion') || id.includes('lucide-react')) return 'vendor-ui';
-            return 'vendor-core';
           }
         }
       }

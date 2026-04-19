@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Bell, Vote, Construction, Loader2, CheckCircle2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 const upcomingTools = [
   {
@@ -34,6 +33,7 @@ export const UpcomingTools = () => {
 
     setLoading(toolId);
     try {
+      const { supabase } = await import('@/lib/supabase');
       const { error } = await supabase
         .from('tool_notifications')
         .insert([{ tool_id: toolId, email }]);
