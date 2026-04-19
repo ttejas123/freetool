@@ -108,6 +108,7 @@ function TypeSelect({ value, onChange }: { value: FieldType; onChange: (t: Field
       <select
         value={value}
         onChange={e => onChange(e.target.value as FieldType)}
+        aria-label="Field Type"
         className="w-full text-xs appearance-none pl-2 pr-6 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer"
       >
         {Object.entries(groupedTypes).map(([cat, types]) => (
@@ -424,10 +425,12 @@ export default function RandomData() {
             {/* Count slider */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Rows to Generate</label>
+                <label htmlFor="rows-count" className="text-sm font-medium text-gray-700 dark:text-gray-300">Rows to Generate</label>
                 <span className="px-2 py-0.5 rounded bg-brand-50 dark:bg-brand-900/30 text-xs font-mono font-bold text-brand-600 dark:text-brand-400">{count}</span>
               </div>
-              <input type="range" min="1" max="500" value={count}
+              <input 
+                id="rows-count"
+                type="range" min="1" max="500" value={count}
                 onChange={e => setCount(+e.target.value)}
                 className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-brand-600" />
               <div className="flex justify-between text-[10px] uppercase font-bold text-zinc-400 tracking-wider"><span>1 row</span><span>500 rows</span></div>

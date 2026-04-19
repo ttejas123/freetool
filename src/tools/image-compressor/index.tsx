@@ -346,10 +346,11 @@ export default function ImageCompressor() {
                   <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Target Size</label>
+                        <label htmlFor="target-size" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Target Size</label>
                         <span className="text-xs font-black text-blue-600">{settings.targetSizeKB} KB</span>
                       </div>
                       <input
+                        id="target-size"
                         type="range"
                         min="10"
                         max="2000"
@@ -362,8 +363,9 @@ export default function ImageCompressor() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Format</label>
+                        <label htmlFor="format-select" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Format</label>
                         <select
+                          id="format-select"
                           value={settings.format}
                           onChange={(e) => setSettings({ ...settings, format: e.target.value as any })}
                           className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 text-xs font-medium focus:ring-2 focus:ring-blue-500 outline-none"

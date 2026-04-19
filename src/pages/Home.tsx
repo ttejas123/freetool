@@ -284,10 +284,16 @@ export const Home = () => {
             {/* Quick Actions overlay handles hover state */}
             <div className="flex flex-col items-end gap-2">
                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors">
+                  <button 
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
+                    aria-label={`Copy link for ${tool.name}`}
+                  >
                      <Copy className="w-3.5 h-3.5" />
                   </button>
-                  <button className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors">
+                  <button 
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
+                    aria-label={`Open ${tool.name} tool`}
+                  >
                      <ExternalLink className="w-3.5 h-3.5" />
                   </button>
                </div>
@@ -609,7 +615,9 @@ export const Home = () => {
                 />
              </div>
              <div className="relative group">
+                <label htmlFor="sort-select" className="sr-only">Sort tools by</label>
                 <select 
+                  id="sort-select"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
                   className="appearance-none pl-6 pr-14 py-4 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-2xl text-sm font-black uppercase tracking-widest focus:outline-none cursor-pointer dark:text-white shadow-inner hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all"

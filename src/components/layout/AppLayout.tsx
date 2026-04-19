@@ -161,7 +161,7 @@ export const AppLayout = () => {
           <div className="flex items-center gap-10">
             <a href="/" className="flex items-center gap-2.5 group">
               <div className="relative flex items-center justify-center w-9 h-9">
-                 <img src="/favicon.png" alt="Logo" className="w-9 h-9" />
+                 <img src="/favicon.webp" alt="Logo" className="w-9 h-9" />
               </div>
               <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Free<span className="text-gradient">Tool</span>
@@ -175,7 +175,11 @@ export const AppLayout = () => {
               
               {/* Resources Dropdown */}
               <div className="relative group/dropdown">
-                <button className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors py-2">
+                <button 
+                  className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-colors py-2"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
                   Resources
                   <ChevronDown className="w-4 h-4 group-hover/dropdown:rotate-180 transition-transform duration-300" />
                 </button>
@@ -348,6 +352,7 @@ export const AppLayout = () => {
               <button 
                 className="lg:hidden p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -374,8 +379,8 @@ export const AppLayout = () => {
               </nav>
               <div className="pt-6 border-t border-gray-200 dark:border-white/10">
                 <div className="flex items-center gap-4 text-gray-500">
-                   <Twitter className="w-5 h-5" />
-                   <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} />
+                   <Twitter className="w-5 h-5" aria-label="Twitter" />
+                   <Github className="w-5 h-5" onClick={()=> window.open('https://www.github.com/ttejas123')} aria-label="GitHub Profile" />
                 </div>
               </div>
             </motion.div>
@@ -408,17 +413,17 @@ export const AppLayout = () => {
                 The most comprehensive directory of high-performance developer tools. Built for speed, privacy, and productivity.
               </p>
               <div className="flex items-center gap-4">
-                <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
+                <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all" aria-label="Twitter">
                   <Twitter className="w-4 h-4" />
                 </a>
-                <a href="https://www.github.com/ttejas123" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all">
+                <a href="https://www.github.com/ttejas123" className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 transition-all" aria-label="GitHub">
                   <Github className="w-4 h-4" />
                 </a>
               </div>
             </div>
 
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Platform</h4>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Platform</h3>
               <ul className="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <li><a href="/" className="hover:text-brand-500 transition-colors">Browse Tools</a></li>
                 <li><a href="/?tab=featured" className="hover:text-brand-500 transition-colors">Featured</a></li>
@@ -429,7 +434,7 @@ export const AppLayout = () => {
             </div>
 
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Legal</h4>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Legal</h3>
               <ul className="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <li><a href="/privacy-policy" className="hover:text-brand-500 transition-colors">Privacy Policy</a></li>
                 <li><a href="/terms" className="hover:text-brand-500 transition-colors">Terms of Service</a></li>

@@ -146,7 +146,9 @@ export const Blogs = () => {
                 Get monthly digests of new tools, engineering guides, and security updates.
             </p>
             <div className="w-full space-y-3">
+              <label htmlFor="newsletter-email" className="sr-only">Email address for monthly digest</label>
               <input 
+                id="newsletter-email"
                 type="email" 
                 placeholder="your@email.com"
                 className="w-full px-6 py-4 bg-white/10 dark:bg-black/5 border border-white/10 dark:border-black/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all placeholder:text-white/30 dark:placeholder:text-black/30"

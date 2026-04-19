@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppLayout } from '@/components/layout/AppLayout';
+// import { AppLayout } from '@/components/layout/AppLayout';
 import { Home } from '@/pages/Home';
 import { Redirect } from '@/pages/Redirect';
 import { toolRegistry } from '@/tools/toolRegistry';
@@ -14,6 +14,7 @@ const PageLoader = () => (
 );
 
 // Legal Pages (Lazy Loaded)
+const AppLayout = lazy(() => import('@/components/layout/AppLayout').then(m => ({ default: m.AppLayout })));
 const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
 const About = lazy(() => import('@/pages/About').then(m => ({ default: m.About })));
 const Contact = lazy(() => import('@/pages/Contact').then(m => ({ default: m.Contact })));

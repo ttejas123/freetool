@@ -15,6 +15,7 @@ function UnitSelect({
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
+        aria-label="Select unit"
         className="w-full appearance-none pl-3 pr-8 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
       >
         {options.map(u => (

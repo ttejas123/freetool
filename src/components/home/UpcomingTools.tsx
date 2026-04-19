@@ -113,7 +113,9 @@ export const UpcomingTools = () => {
                       exit={{ opacity: 0, y: 10 }}
                       className="flex items-center gap-2 p-1 bg-white dark:bg-white/5 border border-brand-500/30 rounded-xl"
                     >
+                      <label htmlFor={`email-${tool.id}`} className="sr-only">Email address for notification</label>
                       <input 
+                        id={`email-${tool.id}`}
                         type="email" 
                         placeholder="your@email.com"
                         value={email}
@@ -147,7 +149,10 @@ export const UpcomingTools = () => {
                         <Bell className="w-4 h-4" />
                         Notify Me
                       </button>
-                      <button className="w-12 h-12 flex items-center justify-center rounded-xl glass border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 hover:border-brand-500/50 transition-all">
+                      <button 
+                        className="w-12 h-12 flex items-center justify-center rounded-xl glass border-gray-200 dark:border-white/10 text-gray-500 hover:text-brand-500 hover:border-brand-500/50 transition-all"
+                        aria-label="Vote for this tool idea"
+                      >
                         <Vote className="w-5 h-5" />
                       </button>
                     </div>

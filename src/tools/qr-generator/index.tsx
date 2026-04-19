@@ -254,8 +254,9 @@ export default function QrGenerator() {
                   <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                     {type === 'url' && (
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Target URL</label>
+                        <label htmlFor="qr-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Target URL</label>
                         <Input 
+                          id="qr-url"
                           value={urlData} 
                           onChange={e => setUrlData(e.target.value)} 
                           placeholder="https://yourwebsite.com" 
@@ -265,8 +266,9 @@ export default function QrGenerator() {
 
                     {type === 'text' && (
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Message Content</label>
+                        <label htmlFor="qr-text" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Message Content</label>
                         <Textarea 
+                          id="qr-text"
                           value={textData} 
                           onChange={e => setTextData(e.target.value)} 
                           placeholder="Write your message here..."
@@ -278,24 +280,27 @@ export default function QrGenerator() {
                     {type === 'email' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2 space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Recipient Email</label>
+                          <label htmlFor="qr-email-to" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Recipient Email</label>
                           <Input 
+                            id="qr-email-to"
                             value={emailData.to} 
                             onChange={e => setEmailData({...emailData, to: e.target.value})} 
                             placeholder="hello@example.com" 
                           />
                         </div>
                         <div className="md:col-span-2 space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Subject</label>
+                          <label htmlFor="qr-email-subj" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Subject</label>
                           <Input 
+                            id="qr-email-subj"
                             value={emailData.subject} 
                             onChange={e => setEmailData({...emailData, subject: e.target.value})} 
                             placeholder="Subject line" 
                           />
                         </div>
                         <div className="md:col-span-2 space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email Body</label>
+                          <label htmlFor="qr-email-body" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email Body</label>
                           <Textarea 
+                            id="qr-email-body"
                             value={emailData.body} 
                             onChange={e => setEmailData({...emailData, body: e.target.value})} 
                             placeholder="Email content..." 
@@ -307,16 +312,18 @@ export default function QrGenerator() {
                     {type === 'wifi' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">SSID (Network Name)</label>
+                          <label htmlFor="qr-wifi-ssid" className="text-sm font-semibold text-gray-700 dark:text-gray-300">SSID (Network Name)</label>
                           <Input 
+                            id="qr-wifi-ssid"
                             value={wifiData.ssid} 
                             onChange={e => setWifiData({...wifiData, ssid: e.target.value})} 
                             placeholder="Home WiFi" 
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Password</label>
+                          <label htmlFor="qr-wifi-pass" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Password</label>
                           <Input 
+                            id="qr-wifi-pass"
                             type="password" 
                             value={wifiData.password} 
                             onChange={e => setWifiData({...wifiData, password: e.target.value})} 
@@ -324,8 +331,9 @@ export default function QrGenerator() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Encryption</label>
+                          <label htmlFor="qr-wifi-enc" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Encryption</label>
                           <select 
+                            id="qr-wifi-enc"
                             className="w-full flex h-10 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-800 dark:bg-gray-950 dark:text-white"
                             value={wifiData.encryption}
                             onChange={e => setWifiData({...wifiData, encryption: e.target.value})}
@@ -341,32 +349,32 @@ export default function QrGenerator() {
                     {type === 'vcard' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">First Name</label>
-                          <Input value={vcardData.firstName} onChange={e => setVcardData({...vcardData, firstName: e.target.value})} />
+                          <label htmlFor="qr-vcard-first" className="text-sm font-semibold text-gray-700 dark:text-gray-300">First Name</label>
+                          <Input id="qr-vcard-first" value={vcardData.firstName} onChange={e => setVcardData({...vcardData, firstName: e.target.value})} />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Last Name</label>
-                          <Input value={vcardData.lastName} onChange={e => setVcardData({...vcardData, lastName: e.target.value})} />
+                          <label htmlFor="qr-vcard-last" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Last Name</label>
+                          <Input id="qr-vcard-last" value={vcardData.lastName} onChange={e => setVcardData({...vcardData, lastName: e.target.value})} />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
-                          <Input value={vcardData.email} onChange={e => setVcardData({...vcardData, email: e.target.value})} />
+                          <label htmlFor="qr-vcard-email" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
+                          <Input id="qr-vcard-email" value={vcardData.email} onChange={e => setVcardData({...vcardData, email: e.target.value})} />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone</label>
-                          <Input value={vcardData.phone} onChange={e => setVcardData({...vcardData, phone: e.target.value})} />
+                          <label htmlFor="qr-vcard-phone" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone</label>
+                          <Input id="qr-vcard-phone" value={vcardData.phone} onChange={e => setVcardData({...vcardData, phone: e.target.value})} />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Organization</label>
-                          <Input value={vcardData.org} onChange={e => setVcardData({...vcardData, org: e.target.value})} />
+                          <label htmlFor="qr-vcard-org" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Organization</label>
+                          <Input id="qr-vcard-org" value={vcardData.org} onChange={e => setVcardData({...vcardData, org: e.target.value})} />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Title</label>
-                          <Input value={vcardData.title} onChange={e => setVcardData({...vcardData, title: e.target.value})} />
+                          <label htmlFor="qr-vcard-title" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Title</label>
+                          <Input id="qr-vcard-title" value={vcardData.title} onChange={e => setVcardData({...vcardData, title: e.target.value})} />
                         </div>
                         <div className="md:col-span-2 space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Website URL</label>
-                          <Input value={vcardData.url} onChange={e => setVcardData({...vcardData, url: e.target.value})} />
+                          <label htmlFor="qr-vcard-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Website URL</label>
+                          <Input id="qr-vcard-url" value={vcardData.url} onChange={e => setVcardData({...vcardData, url: e.target.value})} />
                         </div>
                       </div>
                     )}
@@ -374,8 +382,9 @@ export default function QrGenerator() {
                     {(type === 'phone' || type === 'whatsapp') && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone Number (with country code)</label>
+                          <label htmlFor="qr-phone" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone Number (with country code)</label>
                           <Input 
+                            id="qr-phone"
                             value={type === 'phone' ? phoneData : whatsappData.phone} 
                             onChange={e => type === 'phone' ? setPhoneData(e.target.value) : setWhatsappData({...whatsappData, phone: e.target.value})} 
                             placeholder="+1234567890" 
@@ -383,8 +392,9 @@ export default function QrGenerator() {
                         </div>
                         {type === 'whatsapp' && (
                           <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pre-filled Message</label>
+                            <label htmlFor="qr-whatsapp-msg" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pre-filled Message</label>
                             <Input 
+                              id="qr-whatsapp-msg"
                               value={whatsappData.message} 
                               onChange={e => setWhatsappData({...whatsappData, message: e.target.value})} 
                               placeholder="Hello, I'm reaching out from the QR code..." 
@@ -446,10 +456,11 @@ export default function QrGenerator() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Margin</label>
+                          <label htmlFor="qr-margin" className="text-sm font-medium text-gray-700 dark:text-gray-300">Margin</label>
                           <span className="text-xs text-gray-400">{options.margin}px</span>
                         </div>
                         <input 
+                          id="qr-margin"
                           type="range" min="0" max="100" 
                           value={options.margin} 
                           onChange={(e) => setOptions({ ...options, margin: parseInt(e.target.value) })}
@@ -457,8 +468,9 @@ export default function QrGenerator() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Error Correction</label>
+                        <label htmlFor="qr-error-level" className="text-sm font-medium text-gray-700 dark:text-gray-300">Error Correction</label>
                         <select 
+                          id="qr-error-level"
                           className="w-full flex h-10 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-800 dark:bg-gray-950"
                           value={options.qrOptions.errorCorrectionLevel}
                           onChange={(e) => setOptions({ ...options, qrOptions: { ...options.qrOptions, errorCorrectionLevel: e.target.value as any } })}
@@ -485,9 +497,10 @@ export default function QrGenerator() {
                       
                       <div className="flex gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
                         <div className="space-y-2 flex-col">
-                          <label className="text-xs uppercase tracking-wider font-bold text-gray-400">Color 1</label>
+                          <label htmlFor="qr-color1" className="text-xs uppercase tracking-wider font-bold text-gray-400">Color 1</label>
                           <div className="flex items-center gap-3">
                             <input 
+                              id="qr-color1"
                               type="color" 
                               value={options.dotsOptions.gradient.colorStops[0].color} 
                               onChange={(e) => {
@@ -501,9 +514,10 @@ export default function QrGenerator() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-xs uppercase tracking-wider font-bold text-gray-400">Color 2 (Gradient)</label>
+                          <label htmlFor="qr-color2" className="text-xs uppercase tracking-wider font-bold text-gray-400">Color 2 (Gradient)</label>
                           <div className="flex items-center gap-3">
                             <input 
+                              id="qr-color2"
                               type="color" 
                               value={options.dotsOptions.gradient.colorStops[1].color} 
                               onChange={(e) => {
@@ -519,8 +533,9 @@ export default function QrGenerator() {
                       </div>
                       
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Gradient Rotation</label>
+                        <label htmlFor="qr-gradient-rot" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gradient Rotation</label>
                         <input 
+                          id="qr-gradient-rot"
                           type="range" min="0" max="360" 
                           value={options.dotsOptions.gradient.rotation} 
                           onChange={(e) => setOptions({ ...options, dotsOptions: { ...options.dotsOptions, gradient: { ...options.dotsOptions.gradient, rotation: parseInt(e.target.value) } } })}
@@ -538,9 +553,10 @@ export default function QrGenerator() {
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
-                          <label className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-2">Background</label>
+                          <label htmlFor="qr-bg-color" className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-2">Background</label>
                           <div className="flex items-center gap-3">
                             <input 
+                              id="qr-bg-color"
                               type="color" 
                               value={options.backgroundOptions.color} 
                               onChange={(e) => setOptions({ ...options, backgroundOptions: { ...options.backgroundOptions, color: e.target.value } })}
@@ -550,9 +566,10 @@ export default function QrGenerator() {
                           </div>
                         </div>
                         <div className="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
-                          <label className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-2">Corner Square</label>
+                          <label htmlFor="qr-corner-color" className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-2">Corner Square</label>
                           <div className="flex items-center gap-3">
                             <input 
+                              id="qr-corner-color"
                               type="color" 
                               value={options.cornersSquareOptions?.color || '#000000'} 
                               onChange={(e) => setOptions({ ...options, cornersSquareOptions: { ...options.cornersSquareOptions, color: e.target.value } })}
@@ -606,10 +623,11 @@ export default function QrGenerator() {
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Logo Size</label>
+                            <label htmlFor="qr-logo-size" className="text-sm font-medium text-gray-700 dark:text-gray-300">Logo Size</label>
                             <span className="text-xs text-gray-400">{(options.imageOptions.imageSize * 100).toFixed(0)}%</span>
                           </div>
                           <input 
+                            id="qr-logo-size"
                             type="range" min="0.1" max="0.5" step="0.05"
                             value={options.imageOptions.imageSize} 
                             onChange={(e) => setOptions({ ...options, imageOptions: { ...options.imageOptions, imageSize: parseFloat(e.target.value) } })}
@@ -619,10 +637,11 @@ export default function QrGenerator() {
                         
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Buffer Texture</label>
+                            <label htmlFor="qr-logo-margin" className="text-sm font-medium text-gray-700 dark:text-gray-300">Buffer Texture</label>
                             <span className="text-xs text-gray-400">{options.imageOptions.margin}px</span>
                           </div>
                           <input 
+                            id="qr-logo-margin"
                             type="range" min="0" max="20" 
                             value={options.imageOptions.margin} 
                             onChange={(e) => setOptions({ ...options, imageOptions: { ...options.imageOptions, margin: parseInt(e.target.value) } })}

@@ -106,8 +106,9 @@ export const DataCharts: React.FC<DataChartsProps> = ({ data, columns }) => {
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">X-Axis Category</label>
+              <label htmlFor="xaxis-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">X-Axis Category</label>
               <select 
+                id="xaxis-select"
                 value={xAxis} 
                 onChange={e => setXAxis(e.target.value)}
                 className="w-full h-10 px-3 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm"
@@ -116,8 +117,9 @@ export const DataCharts: React.FC<DataChartsProps> = ({ data, columns }) => {
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Y-Axis Value</label>
+              <label htmlFor="yaxis-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Y-Axis Value</label>
               <select 
+                id="yaxis-select"
                 value={yAxis} 
                 onChange={e => setYAxis(e.target.value)}
                 className="w-full h-10 px-3 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm"

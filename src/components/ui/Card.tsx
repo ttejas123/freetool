@@ -12,7 +12,7 @@ export const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDiv
 );
 
 export const CardTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("font-semibold text-gray-900 dark:text-gray-100", className)} {...props} />
+  <h2 className={cn("font-semibold text-gray-900 dark:text-gray-100", className)} {...props} />
 );
 
 export const CardContent = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (

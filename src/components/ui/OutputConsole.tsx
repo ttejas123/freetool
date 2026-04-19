@@ -87,6 +87,7 @@ export const OutputConsole = ({
                  onClick={handleCopy}
                  disabled={!output}
                  title="Copy Output"
+                 aria-label="Copy Output"
                  className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all disabled:opacity-30"
                >
                  {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -95,6 +96,7 @@ export const OutputConsole = ({
                  onClick={() => setIsMaximized(true)}
                  disabled={!output}
                  title="Maximize Output"
+                 aria-label="Maximize Output"
                  className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all disabled:opacity-30"
                >
                  <Maximize2 className="w-3.5 h-3.5" />
@@ -103,6 +105,7 @@ export const OutputConsole = ({
                  onClick={handleExport}
                  disabled={!output}
                  title="Export Result"
+                 aria-label="Export Result"
                  className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all disabled:opacity-30"
                >
                  <Download className="w-3.5 h-3.5" />
@@ -111,6 +114,7 @@ export const OutputConsole = ({
                  <button 
                    onClick={onClear}
                    title="Clear Output"
+                   aria-label="Clear Output"
                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-500 transition-all"
                  >
                    <Trash2 className="w-3.5 h-3.5" />
