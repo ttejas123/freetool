@@ -7,8 +7,11 @@ const __dirname = path.dirname(__filename);
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const DIST_DIR = path.resolve(PROJECT_ROOT, 'dist');
+const PUBLIC_DIR = path.resolve(PROJECT_ROOT, 'public');
 const TOOL_REGISTRY_PATH = path.resolve(PROJECT_ROOT, 'src/tools/toolRegistry.ts');
 const INDEX_HTML_PATH = path.resolve(DIST_DIR, 'index.html');
+const SITEMAP_PATH_DIST = path.resolve(DIST_DIR, 'sitemap.xml');
+const SITEMAP_PATH_PUBLIC = path.resolve(PUBLIC_DIR, 'sitemap.xml');
 
 async function prerender() {
   console.log('Starting SSG Prerendering...');
@@ -62,6 +65,10 @@ async function prerender() {
 
   let count = 0;
   const processedPaths = new Set();
+  const currentDate = new Date().toISOString().split('T')[0];
+
+  let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  sitemapContent += `  <url>\n    <loc>https://www.freetool.shop/</loc>\n    <lastmod>${currentDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
 
   // Process Static Pages
   for (const page of staticPages) {
@@ -79,6 +86,9 @@ async function prerender() {
 
     const outPath = path.resolve(pageDir, 'index.html');
     fs.writeFileSync(outPath, html);
+    
+    sitemapContent += `  <url>\n    <loc>https://www.freetool.shop/${page.path}</loc>\n    <lastmod>${currentDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    
     console.log(`✅ Generated: /${page.path}/index.html`);
     processedPaths.add(page.path);
     count++;
@@ -107,9 +117,21 @@ async function prerender() {
 
     const outPath = path.resolve(toolDir, 'index.html');
     fs.writeFileSync(outPath, html);
+    
+    sitemapContent += `  <url>\n    <loc>https://www.freetool.shop/${toolPath}</loc>\n    <lastmod>${currentDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+    
     console.log(`✅ Generated: /${toolPath}/index.html`);
     processedPaths.add(toolPath);
     count++;
+  }
+
+  sitemapContent += `</urlset>`;
+  fs.writeFileSync(SITEMAP_PATH_DIST, sitemapContent);
+  console.log(`✅ Generated: /dist/sitemap.xml`);
+  
+  if (fs.existsSync(PUBLIC_DIR)) {
+    fs.writeFileSync(SITEMAP_PATH_PUBLIC, sitemapContent);
+    console.log(`✅ Generated: /public/sitemap.xml`);
   }
 
   console.log(`SSG Complete. Generated ${count} static pages.`);
