@@ -28,7 +28,9 @@ import {
   UploadCloud, 
   FileCode, 
   Terminal, 
-  Code2
+  Code2,
+  ScanText,
+  Mic
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -747,6 +749,44 @@ export const toolRegistry: RegistryTool[] = [
       { question: "Where is my data saved?", answer: "All notes and blocks are saved locally inside your browser using IndexedDB. This ensures maximum privacy, offline support, and speed." },
       { question: "Can I use templates?", answer: "Yes! Use the Sidebar to add pre-built templates for Students, Classrooms, and more to jumpstart your productivity." },
       { question: "How do I manage tables?", answer: "NoteSpace features an interactive table editor where you can add rows/columns, edit cells inline, and even import CSV or JSON data directly." }
+    ]
+  },
+  {
+    id: 'ocr-tool',
+    name: 'AI OCR Scanner',
+    description: 'Extract text from images, screenshots and scanned documents with professional accuracy.',
+    path: 'ocr-tool',
+    category: 'Media',
+    tags: ['ocr', 'text', 'extract', 'image', 'ai'],
+    inputType: ['image'],
+    outputType: ['text'],
+    icon: ScanText,
+    type: 'heavy',
+    component: lazy(() => import('./ocr-tool')),
+    faqIcon: ScanText,
+    faq: [
+      { question: "Which languages are supported?", answer: "We support over 10 languages including English, Spanish, French, German, Chinese, Japanese, Hindi, and Arabic." },
+      { question: "Is my image uploaded to a server?", answer: "No, all OCR processing happens locally in your browser using Tesseract.js WASM. Your data never leaves your device." },
+      { question: "Can it scan handwriting?", answer: "It works best with printed text. While it can attempt handwriting, accuracy may vary significantly depending on legibility." }
+    ]
+  },
+  {
+    id: 'speech-to-text',
+    name: 'Speech to Text',
+    description: 'Convert audio and video files into accurate text locally using Whisper AI.',
+    path: 'speech-to-text',
+    category: 'Media',
+    tags: ['speech', 'audio', 'transcribe', 'whisper', 'ai'],
+    inputType: ['any'],
+    outputType: ['text'],
+    icon: Mic,
+    type: 'heavy',
+    component: lazy(() => import('./speech-to-text')),
+    faqIcon: Mic,
+    faq: [
+      { question: "How does the transcription work?", answer: "We use OpenAI's Whisper model running locally via Transformers.js and WASM. It can even use your GPU (WebGPU) for faster processing." },
+      { question: "What audio formats are supported?", answer: "You can upload almost any audio or video format, including MP3, WAV, M4A, OGG, and MP4." },
+      { question: "Is there a file size limit?", answer: "For the best experience in the browser, we recommend files under 50MB. Larger files may cause the browser to become unresponsive during processing." }
     ]
   },
 ];

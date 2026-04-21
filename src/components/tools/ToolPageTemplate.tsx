@@ -35,7 +35,33 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
     }
   ];
 
+  const faqs = tool.faq || defaultFaq;
+
   const isFullScreen = tool.fullScreen;
+
+  const schemaData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": tool.name,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "url": `https://freetool.shop/${tool.path}`,
+      "description": tool.description
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": f.answer
+        }
+      }))
+    }
+  ];
 
   return (
     <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12'}>
@@ -48,6 +74,9 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
         <meta property="og:url" content={`https://freetool.shop/${tool.path}`} />
         <meta name="keywords" content={tool.tags?.join(', ') || ''} />
         <link rel="canonical" href={`https://freetool.shop/${tool.path}`} />
+        <script type="application/ld+json">
+          {JSON.stringify(schemaData)}
+        </script>
       </Helmet>
 
       {/* Tool UI */}
@@ -59,7 +88,7 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
         <>
           {/* Dynamic FAQ Section */}
           <FAQSection 
-            items={tool.faq || defaultFaq}
+            items={faqs}
             icon={tool.faqIcon}
             className="bg-white dark:bg-zinc-800/50 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm"
           />
