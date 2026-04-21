@@ -366,7 +366,7 @@ export default function RandomData() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       <SEOHelmet title="Random Data Generator" description="Generate custom mock JSON, CSV and SQL data with 65+ field types, domain templates, and nested objects." />
 
       <div className="flex justify-between items-start flex-wrap gap-4">

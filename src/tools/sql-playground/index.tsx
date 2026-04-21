@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { RichToolDescription } from '@/components/ui/RichToolDescription';
 
-import Editor from '@monaco-editor/react';
+const Editor = React.lazy(() => import('@monaco-editor/react'));
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { PGlite } from '@electric-sql/pglite';
 
@@ -104,11 +104,16 @@ export default function SQLPlayground() {
 
   
   const [isDbReady, setIsDbReady] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const pgRef = useRef<PGlite | null>(null);
   const tool = toolRegistry.find(t => t.id === 'sql-playground')!;
   const activeFile = files.find(f => f.id === activeFileId) || files[0];
   const isResizing = useRef(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Initialize PGlite database only once
   useEffect(() => {
@@ -320,7 +325,7 @@ export default function SQLPlayground() {
         description="WASM-powered scalable PostgreSQL sandbox. Write, run, and test full SQL natively in your browser with zero latency and true privacy."
       />
 
-      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4">
+      <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4">
         <Breadcrumbs />
         
         {/* Header */}
@@ -333,7 +338,7 @@ export default function SQLPlayground() {
             <h1 className="text-4xl font-black text-gray-900 dark:text-white">
                SQL <span className="text-brand-500">Playground</span>
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 font-medium max-w-2xl">
+            <p className="text-gray-500 dark:text-gray-400 font-medium w-full">
                Write, run, and explore real PostgreSQL queries natively in your browser using high-performance WASM sandboxing. No backend required.
             </p>
           </div>
@@ -481,20 +486,24 @@ export default function SQLPlayground() {
             </div>
 
             <div className="flex-1 relative overflow-hidden bg-[#0d1117]">
-               <Editor
-                  height="100%"
-                  language="sql"
-                  theme={theme}
-                  value={activeFile?.content || ''}
-                  onChange={(val) => updateFileContent(val || '')}
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 14,
-                    automaticLayout: true,
-                    scrollBeyondLastLine: false,
-                    padding: { top: 16 }
-                  }}
-               />
+               {isMounted && (
+                 <Suspense fallback={<div className="flex items-center justify-center h-full text-white/50">Loading Editor...</div>}>
+                   <Editor
+                      height="100%"
+                      language="sql"
+                      theme={theme}
+                      value={activeFile?.content || ''}
+                      onChange={(val) => updateFileContent(val || '')}
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
+                        padding: { top: 16 }
+                      }}
+                   />
+                 </Suspense>
+               )}
                <button 
                   onClick={runCode}
                   disabled={!isDbReady}

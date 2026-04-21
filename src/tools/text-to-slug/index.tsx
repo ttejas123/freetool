@@ -101,7 +101,7 @@ export default function TextToSlug() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
       <SEOHelmet 
         title="Text to Slug Converter V3 | SEO Friendly URL Generator" 
         description="Convert any string or list of titles into SEO-friendly URL slugs. Features bulk mode, custom separators, and diacritic normalization." 
@@ -116,7 +116,7 @@ export default function TextToSlug() {
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
           Text to <span className="text-blue-600 dark:text-blue-400">Slug</span> Converter
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 dark:text-gray-400 w-full mx-auto">
           Transform messy titles into clean, URL-friendly slugs instantly. Perfect for SEO, bloggers, and developers.
         </p>
       </div>

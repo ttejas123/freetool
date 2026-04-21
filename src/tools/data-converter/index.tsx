@@ -238,7 +238,7 @@ export default function DataConverter() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in duration-700">
       <SEOHelmet 
         title="FreeTool Data Converter Pro - JSON, CSV, Excel, Parquet" 
         description="Fast, secure, enterprise-grade data conversion between JSON, CSV, Excel, and Parquet. Client-side processing for ultimate privacy." 
@@ -527,7 +527,7 @@ export default function DataConverter() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="w-full h-full max-w-7xl bg-white dark:bg-gray-900 rounded-2xl md:rounded-[40px] shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col"
+              className="w-full h-full w-full bg-white dark:bg-gray-900 rounded-2xl md:rounded-[40px] shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col"
               onClick={e => e.stopPropagation()}
             >
               <div className="p-4 md:p-8 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">

@@ -342,7 +342,7 @@ export default function JsonFormatter() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4 flex flex-col min-h-[85vh]">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4 flex flex-col min-h-[85vh]">
       <SEOHelmet title="Pro JSON Formatter & Search" description="High-performance JSON viewer with search, path copying, and auto-fix capabilities." />
       
       <Breadcrumbs />

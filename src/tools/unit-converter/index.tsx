@@ -112,7 +112,7 @@ export default function UnitConverter() {
   }, [fromValue, fromUnit, fromId, category]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet
         title="Unit Converter — Length, Mass, Temperature, Speed & More"
         description="Convert between all major units: length, mass, temperature, volume, speed, digital storage, time, energy, pressure and fuel economy."

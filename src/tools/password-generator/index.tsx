@@ -45,7 +45,7 @@ export default function PasswordGenerator() {
   const strength = calculateStrength(password);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet title="Secure Password Generator" description="Generate secure passwords with strength checker." />
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Password Generator</h1>

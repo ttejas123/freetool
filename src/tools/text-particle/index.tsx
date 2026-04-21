@@ -209,7 +209,7 @@ export default function TextParticle() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Text Particle Effect — Animated Particle Text Generator"
         description="Create stunning animated particle text effects. Type any word and watch it explode into particles and reassemble. Export as PNG."

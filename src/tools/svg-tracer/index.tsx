@@ -111,7 +111,7 @@ export default function SvgTracer() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="SVG Tracer — Bitmap to Vector Converter"
         description="Convert PNG and JPG images to scalable SVG vector files instantly in your browser. No upload needed."

@@ -184,7 +184,7 @@ export default function OCRTool() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 py-8 px-4">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 py-8 px-4">
       <SEOHelmet 
         title="AI OCR Scanner - Deep Multi-Pass Extraction" 
         description="Professional OCR tool using iterative scanning technologies. Automatically optimizes image contrast and binarization to extract text from complex backgrounds with up to 99% accuracy." 
@@ -200,7 +200,7 @@ export default function OCRTool() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Deep <span className="text-indigo-600 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">OCR Scanner</span>
           </h1>
-          <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 max-w-2xl font-medium">
+          <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 w-full font-medium">
             Next-generation extraction engine. Automatically tries multiple visual perspectives to isolate text from noisy backgrounds and decorations.
           </p>
         </div>

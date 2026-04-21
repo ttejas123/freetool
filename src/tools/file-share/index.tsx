@@ -118,7 +118,7 @@ export default function FileShare() {
   const usagePercent = Math.min((usageBytes / DAILY_LIMIT_BYTES) * 100, 100);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Temporary File Sharing"
         description="Securely upload and share files, images, and videos. Links expire in 2 days."

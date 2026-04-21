@@ -302,7 +302,7 @@ export default function ColorPalette() {
                 <button className="px-4 py-2 rounded-full text-white" style={{ backgroundColor: s }}>Sign Up</button>
               </div>
             </nav>
-            <div className="max-w-2xl mx-auto text-center space-y-6">
+            <div className="w-full mx-auto text-center space-y-6">
               <h2 className="text-4xl font-extrabold tracking-tight">Level up your <span style={{ color: p }}>workflow</span> today.</h2>
               <p className="text-lg opacity-80">Everything you need to build, scale, and thrive in the modern web era.</p>
               <div className="flex justify-center gap-4">
@@ -446,7 +446,7 @@ export default function ColorPalette() {
   // --- Render ---
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-12 pb-20 animate-in fade-in duration-500">
       <SEOHelmet 
         title="Smart Color Palette V2 | FreeTool" 
         description="Professional color palette generator. keyword to palette, image to palette, and real-time UI preview with contrast checker." 
@@ -458,7 +458,7 @@ export default function ColorPalette() {
           <Palette className="w-3 h-3" /> Tool Version 2.0
         </div>
         <h1 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight">Smart Color <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Palette</span></h1>
-        <p className="text-xl text-gray-500 max-w-2xl mx-auto">Generate stunning design systems using keywords, colors, or images. Instant UI previews and accessibility testing.</p>
+        <p className="text-xl text-gray-500 w-full mx-auto">Generate stunning design systems using keywords, colors, or images. Instant UI previews and accessibility testing.</p>
         
         <div className="max-w-xl mx-auto relative mt-8">
             <input 

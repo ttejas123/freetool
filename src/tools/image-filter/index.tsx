@@ -174,7 +174,7 @@ export default function ImageFilter() {
   useEffect(() => { if (imageUrl) applyEffect(); }, [activeFilter, strength, imageUrl]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Image Filter Tool — Halftone, Dither, Grayscale & More"
         description="Apply stunning visual filters to images: halftone, dithering, pixelate, posterize, neon glow and more — entirely in your browser."

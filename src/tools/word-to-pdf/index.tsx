@@ -93,7 +93,7 @@ export default function WordToPdf() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet 
         title="Word to PDF Converter Online Free | .doc to PDF Instantly"
         description="Convert Microsoft Word (.doc or .docx) files to PDF securely in your browser without uploading to any server."

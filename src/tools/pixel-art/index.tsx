@@ -107,7 +107,7 @@ export default function PixelArt() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Pixel Art Generator — Convert Photos to Pixel Art"
         description="Transform any photo into stunning pixel art with retro color palettes like Game Boy, NES, and C64. Free and browser-based."

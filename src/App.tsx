@@ -5,7 +5,7 @@ import { router } from './routes';
 function App() {
   return (
     <HelmetProvider>
-      <RouterProvider router={router} />
+      {router && <RouterProvider router={router} />}
     </HelmetProvider>
   );
 }

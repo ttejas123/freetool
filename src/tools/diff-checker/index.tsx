@@ -51,7 +51,7 @@ export default function DiffChecker() {
   const acceptRightToLeft = () => setLeftInput(rightInput);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet
         title="Diff Checker — Line, Word & Character Compare"
         description="Compare text or JSON with side-by-side or inline diff. Switch between line, word, and character granularity with intra-line highlighting."

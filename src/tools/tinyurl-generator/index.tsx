@@ -233,7 +233,7 @@ export default function TinyUrlGenerator() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 relative">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 relative">
       <SEOHelmet
         title="TinyURL Generator & URL Expander"
         description="Shorten long URLs instantly or expand short links to see the original destination, with cURL commands. Fully browser-side."
@@ -279,7 +279,7 @@ export default function TinyUrlGenerator() {
 
       {previewUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
-          <div className="bg-white dark:bg-gray-900 w-full max-w-6xl h-[85vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 animate-in slide-in-from-bottom-8">
+          <div className="bg-white dark:bg-gray-900 w-full w-full h-[85vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 animate-in slide-in-from-bottom-8">
             <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
               <div className="flex items-center gap-3 w-full min-w-0 pr-4">
                 <div className="bg-brand-100 dark:bg-brand-900/30 p-2 rounded-lg">

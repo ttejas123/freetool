@@ -393,7 +393,7 @@ export default function LiveParticles() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Live Particle Canvas — Interactive Animated Particle Patterns"
         description="Create stunning animated particle patterns: flower, vortex, starfield, text and more. Interact with hover, record as video, export as PNG."

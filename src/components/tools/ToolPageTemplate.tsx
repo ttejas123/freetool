@@ -64,9 +64,9 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
   ];
 
   return (
-    <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12'}>
+    <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : 'w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12'}>
       <Helmet>
-        <title>{tool.name} - Free Tool</title>
+        <title>{`${tool.name} - Free Tool`}</title>
         <meta name="description" content={tool.description} />
         <meta property="og:title" content={`${tool.name} - Free Tool`} />
         <meta property="og:description" content={tool.description} />

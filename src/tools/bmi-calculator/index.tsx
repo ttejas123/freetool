@@ -226,7 +226,7 @@ export default function BmiCalculator() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
+    <div className="w-full mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
       <SEOHelmet title="Advanced BMI Calculator" description="Compute your BMI, set goals, and get health insights with our visual tool." />
       
       <div className="text-center space-y-2">

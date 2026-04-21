@@ -268,7 +268,7 @@ export default function GeoArt() {
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Geo Art Generator — Abstract Geometric Grid Art"
         description="Create stunning abstract geometric art by randomly placing shapes in a grid. Choose 2×2 to 5×5, pick shapes, colors, and export as SVG or PNG."

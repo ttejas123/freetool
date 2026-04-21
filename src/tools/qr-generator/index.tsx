@@ -189,7 +189,7 @@ export default function QrGenerator() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       <SEOHelmet title="Premium QR Code Generator" description="Generate professional, custom-branded QR codes with logos, colors, and gradients." />
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

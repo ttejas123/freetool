@@ -22,7 +22,9 @@ const Terms = lazy(() => import('@/pages/Terms').then(m => ({ default: m.Terms }
 const Blogs = lazy(() => import('@/pages/Blogs').then(m => ({ default: m.Blogs })));
 const TechNews = lazy(() => import('@/pages/TechNews').then(m => ({ default: m.TechNews })));
 
-export const router = createBrowserRouter([
+import type { RouteRecord } from 'vite-react-ssg';
+
+export const routes: RouteRecord[] = [
   {
     path: '/',
     element: <AppLayout />,
@@ -99,4 +101,7 @@ export const router = createBrowserRouter([
     path: '/t',
     element: <Redirect />,
   },
-]);
+];
+
+export const router = typeof window !== 'undefined' ? createBrowserRouter(routes as any) : null;
+

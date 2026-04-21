@@ -10,7 +10,7 @@ export default function TextCaseConverter() {
   const [input, setInput] = useState('');
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet 
         title="Text Case Converter" 
         description="Convert Text Case Online Instantly - Change to UPPERCASE, lowercase, Title Case, camelCase, or snake_case." 

@@ -16,7 +16,7 @@ export default function WordCounter() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet 
         title="Word & Character Counter" 
         description="Free Word & Character Counter Online - Instantly count words, characters, sentences, and paragraphs." 

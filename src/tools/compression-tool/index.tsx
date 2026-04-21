@@ -94,7 +94,7 @@ export default function CompressionTool() {
   }, [mode, inputSize, outputSize]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet 
         title={`Text & JSON ${mode === 'compress' ? 'Compressor' : 'Decompressor'} Online`}
         description="Compress or decompress text and JSON payloads instantly in your browser." 

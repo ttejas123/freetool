@@ -4,7 +4,7 @@ import { Upload, Download, Trash2, Eraser, Loader, Sparkles, Settings2, CheckCir
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { SEOHelmet } from '@/components/SEOHelmet';
-import { removeBackground, type Config } from '@imgly/background-removal';
+
 
 type RemovalMode = 'auto' | 'manual';
 
@@ -131,9 +131,11 @@ export default function RemoveBackground() {
     setProgressText('Loading AI model...');
 
     try {
-      const config: Config = {
+      const { removeBackground } = await import('@imgly/background-removal');
+
+      const config = {
         publicPath: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || 'upload'}/wasm/`,
-        progress: (key, current, total) => {
+        progress: (key: string, current: number, total: number) => {
           const percentage = Math.round((current / total) * 100);
           setProgress(percentage);
           
@@ -189,7 +191,7 @@ export default function RemoveBackground() {
         title="AI Background Remover - Magic Eraser Tool"
         description="Extract subjects from images instantly with AI. Our Magic Eraser automatically removes backgrounds with professional precision. No manual effort required."
       />
-      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4">
+      <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold tracking-wider uppercase mb-2">
@@ -199,7 +201,7 @@ export default function RemoveBackground() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Background <span className="text-orange-600">Remover</span>
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-500 dark:text-gray-400 w-full mx-auto text-lg">
             Professional-grade subject extraction. Use AI for automatic "Magic Eraser" results or Manual mode for exact color removal.
           </p>
         </div>

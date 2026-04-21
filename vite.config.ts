@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
 import viteCompression from 'vite-plugin-compression'
+import path from 'path'
+
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -22,6 +23,13 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  // @ts-ignore
+  ssgOptions: {
+    mock: true
+  },
+  ssr: {
+    external: ['onnxruntime-web', '@imgly/background-removal'],
   },
   build: {
     rollupOptions: {

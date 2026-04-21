@@ -119,7 +119,7 @@ export default function ImageToGif() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet 
         title="Images to GIF Converter | Free Online Animator"
         description="Convert multiple images into an animated GIF. Fast, free, and completely client-side. No data leaves your browser."

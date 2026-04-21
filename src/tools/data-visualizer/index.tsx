@@ -119,7 +119,7 @@ export default function DataVisualizer() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in duration-500">
       <SEOHelmet 
         title="Free JSON & CSV Data Visualizer Online" 
         description="Visualize, filter, and chart JSON and CSV datasets directly in your browser without uploading." 
@@ -168,7 +168,7 @@ export default function DataVisualizer() {
       </div>
 
       {!data.length && (
-        <Card className="max-w-3xl mx-auto mt-8">
+        <Card className="w-full mx-auto mt-8">
           <CardHeader>
             <CardTitle>Input Data</CardTitle>
           </CardHeader>

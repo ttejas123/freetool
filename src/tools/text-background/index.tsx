@@ -243,7 +243,7 @@ export default function TextBackground() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet
         title="Text Background Generator — Premium Repeating Text Patterns"
         description="Create stunning tilted repeating text backgrounds for websites. Control font, tilt, colors, highlight mode, and export as PNG or SVG."

@@ -119,7 +119,7 @@ export default function SpeechToText() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 py-8 px-4">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 py-8 px-4">
       <SEOHelmet 
         title="Offline Speech to Text - AI Audio Transcription" 
         description="Convert audio to text locally in your browser. Powered by OpenAI's Whisper and Transformers.js. No server uploads, 100% private and secure." 
@@ -135,7 +135,7 @@ export default function SpeechToText() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Speech <span className="text-emerald-600">to Text</span>
           </h1>
-          <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 max-w-2xl">
+          <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 w-full">
             Convert any audio or video file into accurate text locally. Zero data leaves your device. High-fidelity transcription for 100+ languages.
           </p>
         </div>

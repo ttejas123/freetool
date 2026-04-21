@@ -105,7 +105,7 @@ export default function MergePdf() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
+    <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
       <SEOHelmet 
         title="Merge PDF Online Free | Combine PDF Documents Instantly"
         description="Combine multiple PDF files into one single PDF securely. Everything happens in your browser."

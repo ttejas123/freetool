@@ -142,7 +142,7 @@ export default function HashGenerator() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SEOHelmet 
         title="Hash Generator Pro - V2" 
         description="Professional cryptographic hash generator. Support for MD5, SHA-1, SHA-256, HMAC, File Hashing, and Hash Comparison." 

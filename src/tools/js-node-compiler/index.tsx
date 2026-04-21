@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { RichToolDescription } from '@/components/ui/RichToolDescription';
 
-import Editor from '@monaco-editor/react';
+const Editor = React.lazy(() => import('@monaco-editor/react'));
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { 
   Play, 
@@ -129,6 +129,12 @@ export default function JavaScriptRunner() {
     }
   }, [activeFile]);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -223,7 +229,7 @@ export default function JavaScriptRunner() {
         description="Professional-grade JavaScript editor with modern Result Pane design, Monaco engine, and resizable workspace. 100% private."
       />
 
-      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4">
+      <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4">
         <Breadcrumbs />
         
         {/* Header */}
@@ -376,20 +382,24 @@ export default function JavaScriptRunner() {
             </div>
 
             <div className="flex-1 relative overflow-hidden bg-[#0d1117]">
-               <Editor
-                  height="100%"
-                  language="javascript"
-                  theme={theme}
-                  value={activeFile?.content || ''}
-                  onChange={(val) => updateFileContent(val || '')}
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 14,
-                    automaticLayout: true,
-                    scrollBeyondLastLine: false,
-                    padding: { top: 16 }
-                  }}
-               />
+               {isMounted && (
+                 <Suspense fallback={<div className="flex items-center justify-center h-full text-white/50">Loading Editor...</div>}>
+                   <Editor
+                      height="100%"
+                      language="javascript"
+                      theme={theme}
+                      value={activeFile?.content || ''}
+                      onChange={(val) => updateFileContent(val || '')}
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
+                        padding: { top: 16 }
+                      }}
+                   />
+                 </Suspense>
+               )}
                <button 
                   onClick={runCode}
                   className="absolute top-4 right-8 z-30 group flex items-center gap-3 bg-brand-500 hover:bg-brand-600 text-white px-6 py-2.5 rounded-full shadow-2xl shadow-brand-500/20 active:scale-95 transition-all"

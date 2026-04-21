@@ -178,7 +178,7 @@ export default function ImageCompressor() {
         title="Image Compressor - Optimize for Web"
         description="Compress JPG, PNG, and WebP images to a target file size. Fast, secure, and running entirely in your browser."
       />
-      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4 font-sans">
+      <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4 font-sans">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold tracking-wider uppercase mb-2">
@@ -188,7 +188,7 @@ export default function ImageCompressor() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Image <span className="text-blue-600">Compressor</span>
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-500 dark:text-gray-400 w-full mx-auto text-lg">
             Squeeze your images without losing the magic. Target specific file sizes or use one-click presets.
           </p>
         </div>

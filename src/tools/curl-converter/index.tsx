@@ -104,7 +104,7 @@ export default function CurlConverter() {
         description="Instantly convert cURL commands into clean, production-ready code for Python, JavaScript, Go, PHP, Rust and other languages."
       />
 
-      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4">
+      <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16 px-4">
         <Breadcrumbs />
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
