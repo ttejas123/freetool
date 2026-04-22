@@ -1,3 +1,5 @@
+'use client';
+
 
 import { useToolStore } from '@/store/toolStore';
 import { toolRegistry } from '@/tools/toolRegistry';

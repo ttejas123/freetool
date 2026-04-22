@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';

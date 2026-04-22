@@ -1,9 +1,11 @@
+'use client';
+
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
 import { getDatabase } from '@/services';
 
 export function Redirect() {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const code = searchParams.get('c');
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useCallback } from 'react';
 import { createWorker, type Worker } from 'tesseract.js';
 import { useFilePaste } from '@/hooks/useFilePaste';

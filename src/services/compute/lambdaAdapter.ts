@@ -10,8 +10,8 @@
 import type { ComputeService, CompressionAlgorithm } from './types';
 
 export class LambdaComputeAdapter implements ComputeService {
-  private readonly compressUrl = import.meta.env.VITE_LAMBDA_COMPRESS_URL as string;
-  private readonly decompressUrl = import.meta.env.VITE_LAMBDA_DECOMPRESS_URL as string;
+  private readonly compressUrl = process.env.NEXT_PUBLIC_LAMBDA_COMPRESS_URL as string;
+  private readonly decompressUrl = process.env.NEXT_PUBLIC_LAMBDA_DECOMPRESS_URL as string;
 
   async compress(data: string, algorithm: CompressionAlgorithm = 'deflate'): Promise<string> {
     const res = await fetch(this.compressUrl, {

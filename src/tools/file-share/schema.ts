@@ -1,3 +1,5 @@
+'use client';
+
 import { getStorage } from '@/services/storage';
 import { generateShortLink } from '@/tools/tinyurl-generator/utils';
 
@@ -33,8 +35,8 @@ export async function uploadFileAndLog(file: File, deviceId: string): Promise<Sh
 
   // 2. Log to Database
   const { createClient } = await import('@supabase/supabase-js');
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     // If not configured, we'll gracefully degrade and just return the storage URL
@@ -94,8 +96,8 @@ export async function uploadFileAndLog(file: File, deviceId: string): Promise<Sh
  * Returns sum of file sizes uploaded by this device today
  */
 export async function getTodaysUploadSize(deviceId: string): Promise<number> {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) return 0;
 
   const { createClient } = await import('@supabase/supabase-js');
@@ -123,8 +125,8 @@ export async function getTodaysUploadSize(deviceId: string): Promise<number> {
  * Returns the recent upload history for this device
  */
 export async function getUploadHistory(deviceId: string): Promise<SharedFile[]> {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) return [];
 
   const { createClient } = await import('@supabase/supabase-js');

@@ -14,7 +14,7 @@
 import type { RedirectService } from './types';
 
 export class CloudflareRedirect implements RedirectService {
-  private readonly apiBase = import.meta.env.VITE_CLOUDFLARE_REDIRECT_API as string;
+  private readonly apiBase = process.env.NEXT_PUBLIC_CLOUDFLARE_REDIRECT_API as string;
 
   async resolve(code: string): Promise<string | null> {
     const res = await fetch(`${this.apiBase}/resolve?code=${encodeURIComponent(code)}`);

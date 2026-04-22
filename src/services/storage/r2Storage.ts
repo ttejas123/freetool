@@ -21,8 +21,8 @@ export class R2Storage implements StorageService {
   private readonly publicUrl: string;
 
   constructor() {
-    this.bucket = import.meta.env.VITE_R2_BUCKET_NAME as string;
-    this.publicUrl = import.meta.env.VITE_R2_PUBLIC_URL as string;
+    this.bucket = process.env.NEXT_PUBLIC_R2_BUCKET_NAME as string;
+    this.publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL as string;
   }
 
   private async getClient() {
@@ -30,10 +30,10 @@ export class R2Storage implements StorageService {
     const { S3Client } = await import('@aws-sdk/client-s3');
     this.s3 = new S3Client({
       region: 'auto',
-      endpoint: `https://${import.meta.env.VITE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      endpoint: `https://${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: import.meta.env.VITE_R2_ACCESS_KEY_ID as string,
-        secretAccessKey: import.meta.env.VITE_R2_SECRET_ACCESS_KEY as string,
+        accessKeyId: process.env.NEXT_PUBLIC_R2_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.NEXT_PUBLIC_R2_SECRET_ACCESS_KEY as string,
       },
     });
     return this.s3;

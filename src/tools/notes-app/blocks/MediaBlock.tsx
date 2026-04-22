@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Image as ImageIcon, FileText, Video as VideoIcon, UploadCloud, Trash2 } from 'lucide-react';
 import type { BlockData } from '../types';

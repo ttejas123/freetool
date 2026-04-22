@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * TinyURL Generator — Service Layer Consumer
  * ─────────────────────────────────────────────
@@ -13,12 +15,12 @@ export type { ShortLink } from '@/services';
  * Previously: direct localStorage write — now: db.createShortUrl()
  */
 export const generateShortLink = async (originalUrl: string) => {
-  if (import.meta.env.VITE_DB_PROVIDER === 'supabase') {
+  if (process.env.NEXT_PUBLIC_DB_PROVIDER === 'supabase') {
     // Fast path: use the Edge Function directly when using Supabase
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
-      import.meta.env.VITE_SUPABASE_URL as string,
-      import.meta.env.VITE_SUPABASE_ANON_KEY as string
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
     );
 
     const { data, error } = await supabase.functions.invoke('shorten', {
@@ -72,11 +74,11 @@ export const clearHistory = async () => {
  * Expand a generated short link using the redirect Edge Function
  */
 export const resolveShortLink = async (url: string): Promise<string> => {
-  if (import.meta.env.VITE_DB_PROVIDER === 'supabase') {
+  if (process.env.NEXT_PUBLIC_DB_PROVIDER === 'supabase') {
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
-      import.meta.env.VITE_SUPABASE_URL as string,
-      import.meta.env.VITE_SUPABASE_ANON_KEY as string
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
     );
 
     // Call the redirect edge function via invoke, passing the url to be expanded

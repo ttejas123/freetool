@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useCallback } from 'react';
 import { useFilePaste } from '@/hooks/useFilePaste';
 import { Upload, Download, Trash2, Eraser, Loader, Sparkles, Settings2, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -134,7 +136,7 @@ export default function RemoveBackground() {
       const { removeBackground } = await import('@imgly/background-removal');
 
       const config = {
-        publicPath: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || 'upload'}/wasm/`,
+        publicPath: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || 'upload'}/wasm/`,
         progress: (key: string, current: number, total: number) => {
           const percentage = Math.round((current / total) * 100);
           setProgress(percentage);

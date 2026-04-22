@@ -1,3 +1,5 @@
+'use client';
+
 import { useToastStore } from '../../store/toastStore';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 

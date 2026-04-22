@@ -1,23 +1,27 @@
-import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+'use client';
 
-import type { RegistryTool } from '@/tools/toolRegistry';
+import React, { useEffect } from 'react';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { FAQSection } from '@/components/ui/FAQSection';
 import { trackEvent } from '@/lib/analytics';
 
 interface ToolPageTemplateProps {
-  tool: RegistryTool;
+  toolPath: string;
   children: React.ReactNode;
 }
 
-export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
+export function ToolPageTemplate({ toolPath, children }: ToolPageTemplateProps) {
+  const tool = toolRegistry.find((t) => t.path === toolPath);
+
   useEffect(() => {
+    if (!tool) return;
     trackEvent('tool_opened', {
       tool: tool.id,
-      category: tool.category
+      category: tool.category,
     });
-  }, [tool.id, tool.category]);
+  }, [tool]);
+
+  if (!tool) return <>{children}</>;
 
   // Find related tools (same category, excluding current)
   const relatedTools = toolRegistry
@@ -26,68 +30,34 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
 
   const defaultFaq = [
     {
-      question: "Is my data secure?",
-      answer: "Yes, all processing happens locally in your browser. We don't store or transmit your data to any servers."
+      question: 'Is my data secure?',
+      answer:
+        "Yes, all processing happens locally in your browser. We don't store or transmit your data to any servers.",
     },
     {
       question: `Is ${tool.name} completely free?`,
-      answer: "Yes! FreeTool.shop is a completely free suite of developer and creative utilities."
-    }
+      answer: 'Yes! FreeTool.shop is a completely free suite of developer and creative utilities.',
+    },
   ];
 
   const faqs = tool.faq || defaultFaq;
-
   const isFullScreen = tool.fullScreen;
 
-  const schemaData = [
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": tool.name,
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web",
-      "url": `https://freetool.shop/${tool.path}`,
-      "description": tool.description
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": faqs.map(f => ({
-        "@type": "Question",
-        "name": f.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": f.answer
-        }
-      }))
-    }
-  ];
-
   return (
-    <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : 'w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12'}>
-      <Helmet>
-        <title>{`${tool.name} - Free Tool`}</title>
-        <meta name="description" content={tool.description} />
-        <meta property="og:title" content={`${tool.name} - Free Tool`} />
-        <meta property="og:description" content={tool.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://freetool.shop/${tool.path}`} />
-        <meta name="keywords" content={tool.tags?.join(', ') || ''} />
-        <link rel="canonical" href={`https://freetool.shop/${tool.path}`} />
-        <script type="application/ld+json">
-          {JSON.stringify(schemaData)}
-        </script>
-      </Helmet>
-
+    <div
+      className={
+        isFullScreen
+          ? 'flex flex-col flex-1 h-full w-full'
+          : 'w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12'
+      }
+    >
       {/* Tool UI */}
-      <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : ''}>
-        {children}
-      </div>
+      <div className={isFullScreen ? 'flex flex-col flex-1 h-full w-full' : ''}>{children}</div>
 
       {!isFullScreen && (
         <>
           {/* Dynamic FAQ Section */}
-          <FAQSection 
+          <FAQSection
             items={faqs}
             icon={tool.faqIcon}
             className="bg-white dark:bg-zinc-800/50 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm"
@@ -101,9 +71,10 @@ export function ToolPageTemplate({ tool, children }: ToolPageTemplateProps) {
             <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-400">
               <p>{tool.description}</p>
               <p>
-                Designed for speed and security, this tool runs entirely on your local machine. 
-                By processing data within your browser, we ensure that sensitive information is never 
-                transmitted over the network, providing a private and robust experience for developers and creators.
+                Designed for speed and security, this tool runs entirely on your local machine. By
+                processing data within your browser, we ensure that sensitive information is never
+                transmitted over the network, providing a private and robust experience for developers
+                and creators.
               </p>
             </div>
           </section>

@@ -1,3 +1,5 @@
+'use client';
+
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { parquetReadObjects } from 'hyparquet';

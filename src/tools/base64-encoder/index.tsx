@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { useFilePaste } from '@/hooks/useFilePaste';
 import { SEOHelmet } from '../../components/SEOHelmet';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import type { BlockData } from '../types';

@@ -1,7 +1,9 @@
+'use client';
+
 import { useState, useEffect, useMemo } from 'react';
 import { useInView } from '@/hooks/useInView';
 import { toolRegistry, type RegistryTool } from '../tools/toolRegistry';
-import { SEOHelmet } from '../components/SEOHelmet';
+
 import { 
   Copy,
   Code,
@@ -30,7 +32,7 @@ import {
   ExternalLink,
   Terminal
 } from 'lucide-react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
@@ -139,22 +141,11 @@ const getCategoryColor = (category: string) => {
 import { getSearchResults } from '../utils/search';
 
 export const Home = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const tab = searchParams.get('tab') || 'all';
   
-  // Handle hash scrolling (e.g., /#upcoming)
-  useEffect(() => {
-    if (location.hash) {
-      const element = document.getElementById(location.hash.slice(1));
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
-    }
-  }, [location.hash]);
-
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'newest' | 'views' | 'upvotes'>('newest');
@@ -184,10 +175,10 @@ export const Home = () => {
 
   const handleLocalSearch = (val: string) => {
      setSearchTerm(val);
-     const newParams = new URLSearchParams(searchParams);
+     const newParams = new URLSearchParams(searchParams.toString());
      if (val) newParams.set('search', val);
      else newParams.delete('search');
-     setSearchParams(newParams, { replace: true });
+     router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
   };
 
   useEffect(() => {
@@ -340,10 +331,6 @@ export const Home = () => {
 
   return (
     <div className="flex-1 w-full bg-white dark:bg-[#050505] transition-colors duration-200 overflow-x-hidden">
-      <SEOHelmet
-        title="Premium Developer Tools"
-        description="Transform your workflow with our suite of high-performance, privacy-focused developer tools."
-      />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-48 overflow-hidden bg-glow">
@@ -384,9 +371,9 @@ export const Home = () => {
             </button>
             <button
               onClick={() => {
-                const newParams = new URLSearchParams(searchParams);
+                const newParams = new URLSearchParams(searchParams.toString());
                 newParams.set('tab', 'top');
-                setSearchParams(newParams);
+                router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
                 document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="w-full sm:w-auto px-10 py-5 glass rounded-2xl font-black text-xl hover:bg-white dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 active:scale-95 shadow-xl"

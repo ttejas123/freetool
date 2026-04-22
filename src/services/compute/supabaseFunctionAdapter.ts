@@ -21,8 +21,8 @@ export class SupabaseFunctionAdapter implements ComputeService {
     if (this.client) return this.client;
     const { createClient } = await import('@supabase/supabase-js');
     this.client = createClient(
-      import.meta.env.VITE_SUPABASE_URL as string,
-      import.meta.env.VITE_SUPABASE_ANON_KEY as string,
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     );
     return this.client;
   }

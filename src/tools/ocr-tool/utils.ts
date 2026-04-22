@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * OCR Pre-processing Utilities
  * These functions help isolate text from complex backgrounds for better Tesseract accuracy.

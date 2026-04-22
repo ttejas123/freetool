@@ -1,13 +1,5 @@
-import { HelmetProvider } from 'react-helmet-async';
-import { RouterProvider } from 'react-router-dom';
-import { router } from './routes';
-
-function App() {
-  return (
-    <HelmetProvider>
-      {router && <RouterProvider router={router} />}
-    </HelmetProvider>
-  );
+// This file is unused — Next.js App Router replaces React Router.
+// Kept to avoid breaking any stale imports during migration.
+export default function App() {
+  return null;
 }
-
-export default App;

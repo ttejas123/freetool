@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Play, Pause, Download, RefreshCw, Video, StopCircle, Sparkles,

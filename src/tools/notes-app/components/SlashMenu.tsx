@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { Type, Heading1, Heading2, Heading3, Image, Table, FileText, Video } from 'lucide-react';
 import { useEditorStore } from '../store';

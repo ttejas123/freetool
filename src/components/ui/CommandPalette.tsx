@@ -1,7 +1,9 @@
+'use client';
+
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Command, ArrowRight, Zap, Star, Clock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { toolRegistry, type RegistryTool } from '@/tools/toolRegistry';
 import { getSearchResults, escapeRegex } from '@/utils/search';
 
@@ -10,7 +12,7 @@ export const CommandPalette = () => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +58,7 @@ export const CommandPalette = () => {
   };
 
   const handleSelect = (tool: RegistryTool) => {
-    navigate(`/${tool.path}`);
+    router.push(`/${tool.path}`);
     setIsOpen(false);
   };
 

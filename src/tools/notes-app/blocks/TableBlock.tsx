@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Table as TableIcon, FileUp, Clipboard, X, Plus, Trash } from 'lucide-react';
 import Papa from 'papaparse';

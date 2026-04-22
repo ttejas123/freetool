@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../../../components/ui/Card';

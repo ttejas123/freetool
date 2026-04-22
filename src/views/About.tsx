@@ -1,15 +1,12 @@
-import { Helmet } from 'react-helmet-async';
+'use client';
+
 import { Rocket, Shield, Zap, Heart, Globe, Cpu, Plus } from 'lucide-react';
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const About = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505]">
-      <Helmet>
-        <title>About Us - FreeTool.shop</title>
-        <meta name="description" content="Learn about FreeTool.shop - The most powerful and private collection of free developer tools." />
-      </Helmet>
-
+      
       {/* Hero Section */}
       <section className="relative pt-50 pb-50 overflow-hidden">
         <BackgroundEffects />

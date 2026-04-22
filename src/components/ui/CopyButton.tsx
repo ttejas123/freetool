@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';

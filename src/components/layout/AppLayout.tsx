@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useState, useMemo } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toolRegistry } from '@/tools/toolRegistry';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -42,9 +44,10 @@ const getCategoryColor = (category: string) => {
 
 import { getSearchResults, escapeRegex } from '@/utils/search';
 
-export const AppLayout = () => {
+export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { theme, toggleTheme } = useAppStore();
-  const location = useLocation();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
@@ -96,10 +99,10 @@ export const AppLayout = () => {
   useEffect(() => {
     const consent = localStorage.getItem('cookie_consent');
     if (consent === 'granted') {
-      trackPageView(location.pathname);
+      trackPageView(pathname);
     }
 
-    const pathPart = location.pathname.substring(1);
+    const pathPart = pathname.substring(1).replace(/\/$/, '');
     const matchedToolPath = toolRegistry.find(t => t.path === pathPart);
     if (matchedToolPath) {
       try {
@@ -111,12 +114,12 @@ export const AppLayout = () => {
         // ignore storage errors
       }
     }
-  }, [location.pathname]);
+  }, [pathname]);
 
   const currentMatchedTool = useMemo(() => {
-    const pathPart = location.pathname.substring(1);
+    const pathPart = pathname.substring(1).replace(/\/$/, '');
     return toolRegistry.find(t => t.path === pathPart);
-  }, [location.pathname]);
+  }, [pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -136,7 +139,7 @@ export const AppLayout = () => {
     }
   }, [theme]);
 
-  const isPopup = new URLSearchParams(location.search).get('popup') === 'true';
+  const isPopup = searchParams.get('popup') === 'true';
 
   const isFullScreen = currentMatchedTool?.fullScreen;
 
@@ -144,7 +147,7 @@ export const AppLayout = () => {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505]">
         <ErrorBoundary>
-          <Outlet />
+          {children}
         </ErrorBoundary>
         <ToastContainer />
       </div>
@@ -395,7 +398,7 @@ export const AppLayout = () => {
       {/* Main Content Area */}
       <main className={`flex-1 flex flex-col ${isFullScreen ? 'h-full' : ''}`}>
         <ErrorBoundary>
-          <Outlet />
+          {children}
           {currentMatchedTool && !isFullScreen && <RichToolDescription tool={currentMatchedTool} />}
         </ErrorBoundary>
       </main>
@@ -477,7 +480,7 @@ export const AppLayout = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => {
-              if (location.pathname === '/') {
+              if (pathname === '/') {
                 document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' });
               } else {
                 window.location.href = '/#browse';
@@ -498,4 +501,3 @@ export const AppLayout = () => {
     </div>
   );
 };
-

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, Play, Pause, RefreshCw, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/Card';

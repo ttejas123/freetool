@@ -1,4 +1,5 @@
-import { Helmet } from 'react-helmet-async';
+'use client';
+
 import { Shield, Eye, Lock, Globe, Bell, UserCheck } from 'lucide-react';
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
@@ -6,11 +7,7 @@ export const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
       <BackgroundEffects />
-      <Helmet>
-        <title>Privacy Policy - FreeTool</title>
-        <meta name="description" content="Your privacy is nuestra Priority. Learn how FreeTool protects your data while providing elite developer tools." />
-      </Helmet>
-
+      
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16 px-4 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 mb-8 border border-brand-500/20">

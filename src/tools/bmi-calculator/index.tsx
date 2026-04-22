@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useMemo } from 'react';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardContent } from '../../components/ui/Card';

@@ -1,3 +1,5 @@
+'use client';
+
 import { 
   Plus, FileText, Trash2, BookOpen, GraduationCap, Archive, 
   ClipboardList, Presentation, Calendar, Rocket, File

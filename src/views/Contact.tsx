@@ -1,5 +1,6 @@
+'use client';
+
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Mail, MessageCircle, Phone, MapPin, Send, Twitter, Github, Linkedin, CheckCircle2, Loader2 } from 'lucide-react';
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 import { supabase } from '@/lib/supabase';
@@ -72,11 +73,7 @@ export const Contact = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
       <BackgroundEffects />
-      <Helmet>
-        <title>Contact Us - FreeTool.shop</title>
-        <meta name="description" content="Get in touch with the FreeTool.shop team. We're here to help with any questions or feedback." />
-      </Helmet>
-
+      
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16 animate-fade-in">

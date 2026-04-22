@@ -1,3 +1,5 @@
+'use client';
+
 import { renderToStaticMarkup } from 'react-dom/server';
 import { QRCodeSVG } from 'qrcode.react';
 import { getCompute } from '@/services';

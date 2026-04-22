@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Sparkles, Bell, Vote, Construction, Loader2, CheckCircle2 } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';

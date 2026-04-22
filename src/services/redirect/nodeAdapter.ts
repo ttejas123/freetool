@@ -13,7 +13,7 @@
 import type { RedirectService } from './types';
 
 export class NodeRedirect implements RedirectService {
-  private readonly apiBase = import.meta.env.VITE_REDIRECT_API_URL as string;
+  private readonly apiBase = process.env.NEXT_PUBLIC_REDIRECT_API_URL as string;
 
   async resolve(code: string): Promise<string | null> {
     const res = await fetch(`${this.apiBase}/resolve/${encodeURIComponent(code)}`);

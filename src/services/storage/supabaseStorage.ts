@@ -17,15 +17,15 @@ export class SupabaseStorageAdapter implements StorageService {
   private readonly bucket: string;
 
   constructor() {
-    this.bucket = (import.meta.env.VITE_SUPABASE_STORAGE_BUCKET as string) || 'upload';
+    this.bucket = (process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET as string) || 'upload';
   }
 
   private async getClient() {
     if (this.client) return this.client;
     const { createClient } = await import('@supabase/supabase-js');
     this.client = createClient(
-      import.meta.env.VITE_SUPABASE_URL as string,
-      import.meta.env.VITE_SUPABASE_ANON_KEY as string,
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     );
     return this.client;
   }
@@ -58,7 +58,7 @@ export class SupabaseStorageAdapter implements StorageService {
   }
 
   getUrl(key: string): string {
-    const base = import.meta.env.VITE_SUPABASE_URL as string;
+    const base = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
     return `${base}/storage/v1/object/public/${this.bucket}/${key}`;
   }
 }

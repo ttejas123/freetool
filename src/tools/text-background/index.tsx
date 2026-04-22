@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, RefreshCw, Type } from 'lucide-react';
 import { Card } from '@/components/ui/Card';

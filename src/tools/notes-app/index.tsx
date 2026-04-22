@@ -1,3 +1,5 @@
+'use client';
+
 import { Plus, ExternalLink, Menu, MessageSquare, Home } from 'lucide-react';
 import { useEditorStore } from './store';
 import { BlockWrapper } from './components/BlockWrapper';

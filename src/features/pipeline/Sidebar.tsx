@@ -1,3 +1,5 @@
+'use client';
+
 import type { DragEvent } from 'react';
 import { toolRegistry } from '@/tools/toolRegistry';
 

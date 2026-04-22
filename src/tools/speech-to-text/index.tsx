@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useCallback } from 'react';
 import { pipeline } from '@huggingface/transformers';
 import { useFilePaste } from '@/hooks/useFilePaste';

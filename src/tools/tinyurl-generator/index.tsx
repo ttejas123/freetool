@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { Link2, Trash2, ArrowRight, Loader2, Unlink, Copy, Check, Terminal, Eye, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';

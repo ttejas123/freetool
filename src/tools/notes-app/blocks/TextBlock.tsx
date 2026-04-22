@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { BlockData } from '../types';
 import { useEditorStore } from '../store';

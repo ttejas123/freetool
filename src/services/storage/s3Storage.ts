@@ -20,18 +20,18 @@ export class S3Storage implements StorageService {
   private readonly publicUrl: string;
 
   constructor() {
-    this.bucket = import.meta.env.VITE_S3_BUCKET_NAME as string;
-    this.publicUrl = import.meta.env.VITE_S3_PUBLIC_URL as string;
+    this.bucket = process.env.NEXT_PUBLIC_S3_BUCKET_NAME as string;
+    this.publicUrl = process.env.NEXT_PUBLIC_S3_PUBLIC_URL as string;
   }
 
   private async getClient() {
     if (this.s3) return this.s3;
     const { S3Client } = await import('@aws-sdk/client-s3');
     this.s3 = new S3Client({
-      region: import.meta.env.VITE_S3_REGION as string,
+      region: process.env.NEXT_PUBLIC_S3_REGION as string,
       credentials: {
-        accessKeyId: import.meta.env.VITE_S3_ACCESS_KEY_ID as string,
-        secretAccessKey: import.meta.env.VITE_S3_SECRET_ACCESS_KEY as string,
+        accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY as string,
       },
     });
     return this.s3;

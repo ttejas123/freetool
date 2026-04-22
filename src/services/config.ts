@@ -10,10 +10,10 @@
  *   redirect : 'local' | 'cloudflare' | 'node'
  */
 export const config = {
-  database: (import.meta.env.VITE_DB_PROVIDER as string) || 'local',
-  storage: (import.meta.env.VITE_STORAGE_PROVIDER as string) || 'local',
-  compute: (import.meta.env.VITE_COMPUTE_PROVIDER as string) || 'worker',
-  redirect: (import.meta.env.VITE_REDIRECT_PROVIDER as string) || 'local',
+  database: (process.env.NEXT_PUBLIC_DB_PROVIDER as string) || 'local',
+  storage: (process.env.NEXT_PUBLIC_STORAGE_PROVIDER as string) || 'local',
+  compute: (process.env.NEXT_PUBLIC_COMPUTE_PROVIDER as string) || 'worker',
+  redirect: (process.env.NEXT_PUBLIC_REDIRECT_PROVIDER as string) || 'local',
 } as const;
 
 export type DatabaseProvider = 'local' | 'supabase' | 'firebase';

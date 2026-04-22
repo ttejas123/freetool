@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import { useFilePaste } from '@/hooks/useFilePaste';
 import { UploadCloud, Link as LinkIcon, FileHeart, Trash2, Clock, Check, Loader2, HardDrive } from 'lucide-react';
