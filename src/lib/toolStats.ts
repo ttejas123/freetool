@@ -61,8 +61,19 @@ export const upvoteTool = async (toolId: string) => {
 
 /**
  * Fetch all tool metrics from the global database.
+ * Uses a 5-minute TTL cache — renders instantly from cache, refreshes in background.
  */
 export const fetchAllToolMetrics = async (): Promise<Record<string, ToolMetric>> => {
+    // Return cached data immediately if it's fresh (< 5 min old)
+    const cached = getCachedMetrics();
+    if (typeof window !== 'undefined') {
+        const cachedAt = Number(localStorage.getItem('freetool_stats_cache_ts') || 0);
+        const age = Date.now() - cachedAt;
+        if (age < 5 * 60 * 1000 && Object.keys(cached).length > 0) {
+            return cached;
+        }
+    }
+
     try {
         const db = await getDatabase();
         const stats = await db.getAllToolStats();
@@ -72,15 +83,16 @@ export const fetchAllToolMetrics = async (): Promise<Record<string, ToolMetric>>
             metrics[s.id] = s;
         });
 
-        // Cache in localStorage for immediate sync access on next load
+        // Cache in localStorage with a timestamp for TTL checks
         if (typeof window !== 'undefined') {
             localStorage.setItem('freetool_stats_cache', JSON.stringify(metrics));
+            localStorage.setItem('freetool_stats_cache_ts', String(Date.now()));
         }
 
         return metrics;
     } catch (e) {
         console.error("Failed to fetch global metrics", e);
-        return getCachedMetrics();
+        return cached;
     }
 };
 

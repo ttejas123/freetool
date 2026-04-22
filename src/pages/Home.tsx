@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from '@/hooks/useInView';
 import { toolRegistry, type RegistryTool } from '../tools/toolRegistry';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { 
@@ -264,13 +264,7 @@ export const Home = () => {
     const catClass = getCategoryColor(tool.category);
 
     return (
-      <motion.div
-        layout
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -5 }}
-        className="group relative"
-      >
+      <div className="group relative hover:-translate-y-1 transition-transform duration-200">
         <a
           href={`/${tool.path}`}
           onClick={() => recordToolView(tool.id)}
@@ -280,17 +274,16 @@ export const Home = () => {
             <div className={`w-14 h-14 flex items-center justify-center rounded-2xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]} group-hover:scale-110 transition-transform shadow-sm`}>
               <Icon className="w-7 h-7" />
             </div>
-            
-            {/* Quick Actions overlay handles hover state */}
+
             <div className="flex flex-col items-end gap-2">
                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
+                  <button
                     className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
                     aria-label={`Copy link for ${tool.name}`}
                   >
                      <Copy className="w-3.5 h-3.5" />
                   </button>
-                  <button 
+                  <button
                     className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
                     aria-label={`Open ${tool.name} tool`}
                   >
@@ -339,22 +332,11 @@ export const Home = () => {
             </div>
           </div>
         </a>
-      </motion.div>
+      </div>
     );
   };
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.3 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const statsRef = useInView();
 
   return (
     <div className="flex-1 w-full bg-white dark:bg-[#050505] transition-colors duration-200 overflow-x-hidden">
@@ -368,80 +350,74 @@ export const Home = () => {
         <BackgroundEffects />
 
         <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div variants={container} initial="hidden" animate="show">
-            <motion.div variants={item} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black mb-10 border border-brand-500/20 uppercase tracking-[0.2em] shadow-sm">
-              <Sparkles className="w-4 h-4" />
-              <span>OVER <Counter value={100} duration={1.5} />+ FREE TOOLS FOR DEVELOPERS</span>
-            </motion.div>
-            
-            <motion.h1 variants={item} className="text-6xl md:text-8xl font-black tracking-tighter text-gray-900 dark:text-white mb-10 leading-[0.9]">
-              Scale your workflow.<br />
-              <span className="text-gradient drop-shadow-sm">
-                {"Fast. Free. Secure.".split(" ").map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 + (i * 0.2), type: 'spring' }}
-                    className="inline-block mr-4"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </span>
-            </motion.h1>
-            
-            <motion.p variants={item} className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-14 leading-relaxed font-medium">
-              <TypingText text="Professional-grade tools for modern engineers. No tracking, no accounts—just pure performance in the browser." />
-            </motion.p>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black mb-10 border border-brand-500/20 uppercase tracking-[0.2em] shadow-sm anim-fade-up anim-delay-0">
+            <Sparkles className="w-4 h-4" />
+            <span>OVER <Counter value={100} duration={1.5} />+ FREE TOOLS FOR DEVELOPERS</span>
+          </div>
 
-            <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <button 
-                onClick={() => document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto px-10 py-5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-500/20 active:shadow-none"
-              >
-                Explore All Tools
-                <ArrowRight className="w-6 h-6" />
-              </button>
-              <button 
-                onClick={() => {
-                  const newParams = new URLSearchParams(searchParams);
-                  newParams.set('tab', 'top');
-                  setSearchParams(newParams);
-                  document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-10 py-5 glass rounded-2xl font-black text-xl hover:bg-white dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 active:scale-95 shadow-xl"
-              >
-                View Popular
-              </button>
-            </motion.div>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-gray-900 dark:text-white mb-10 leading-[0.9] anim-fade-up anim-delay-1">
+            Scale your workflow.<br />
+            <span className="text-gradient drop-shadow-sm">
+              {"Fast. Free. Secure.".split(" ").map((word, i) => (
+                <span
+                  key={i}
+                  className={`inline-block mr-4 anim-fade-up`}
+                  style={{ animationDelay: `${0.2 + i * 0.08}s` }}
+                >
+                  {word}
+                </span>
+              ))}
+            </span>
+          </h1>
 
-            <motion.div variants={item} className="mt-20 flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-30 group-hover:opacity-100 transition-opacity">
-               <div className="flex items-center gap-2 font-bold text-xs hover:text-brand-500 transition-colors cursor-default">
-                  <Shield className="w-5 h-5 text-brand-500" />
-                  PRIVACY FIRST
-               </div>
-               <div className="flex items-center gap-2 font-bold text-xs hover:text-amber-500 transition-colors cursor-default">
-                  <Zap className="w-5 h-5 text-amber-500" />
-                  ULTRA FAST
-               </div>
-               <div className="flex items-center gap-2 font-bold text-xs hover:text-accent-purple transition-colors cursor-default">
-                  <Clock className="w-5 h-5 text-accent-purple" />
-                  NO LOGIN REQ.
-               </div>
-            </motion.div>
-          </motion.div>
+          <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-14 leading-relaxed font-medium anim-fade-up anim-delay-2">
+            <TypingText text="Professional-grade tools for modern engineers. No tracking, no accounts—just pure performance in the browser." />
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 anim-fade-up anim-delay-3">
+            <button
+              onClick={() => document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto px-10 py-5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-500/20 active:shadow-none"
+            >
+              Explore All Tools
+              <ArrowRight className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.set('tab', 'top');
+                setSearchParams(newParams);
+                document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full sm:w-auto px-10 py-5 glass rounded-2xl font-black text-xl hover:bg-white dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 active:scale-95 shadow-xl"
+            >
+              View Popular
+            </button>
+          </div>
+
+          <div className="mt-20 flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-30 anim-fade-up anim-delay-4">
+             <div className="flex items-center gap-2 font-bold text-xs hover:text-brand-500 transition-colors cursor-default">
+                <Shield className="w-5 h-5 text-brand-500" />
+                PRIVACY FIRST
+             </div>
+             <div className="flex items-center gap-2 font-bold text-xs hover:text-amber-500 transition-colors cursor-default">
+                <Zap className="w-5 h-5 text-amber-500" />
+                ULTRA FAST
+             </div>
+             <div className="flex items-center gap-2 font-bold text-xs hover:text-accent-purple transition-colors cursor-default">
+                <Clock className="w-5 h-5 text-accent-purple" />
+                NO LOGIN REQ.
+             </div>
+          </div>
         </div>
       </section>
 
       {/* Trust Stats Bar */}
       <div className="relative z-20 -mt-24 mb-32">
         <div className="container mx-auto px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="glass shadow-2xl rounded-[3rem] p-12 grid grid-cols-2 md:grid-cols-4 gap-12 text-center"
+          <div
+            ref={statsRef as React.RefObject<HTMLDivElement>}
+            className="glass shadow-2xl rounded-[3rem] p-12 grid grid-cols-2 md:grid-cols-4 gap-12 text-center on-scroll"
           >
             <div>
               <div className="text-5xl font-black text-gray-900 dark:text-white mb-2 tabular-nums">
@@ -465,18 +441,13 @@ export const Home = () => {
               <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">100%</div>
               <div className="text-[11px] text-gray-400 uppercase tracking-[0.3em] font-black">Privacy First</div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Recently Used Section */}
-      <AnimatePresence>
-        {recentTools.length > 0 && (
-          <motion.section 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="container mx-auto px-6 mb-32"
-          >
+      {recentTools.length > 0 && (
+          <section className="container mx-auto px-6 mb-32 anim-fade-up">
              <div className="flex items-center gap-4 mb-10">
                <div className="px-3 py-1 bg-brand-500/10 text-brand-500 text-[10px] font-black rounded-lg uppercase tracking-widest border border-brand-500/20">
                  HISTORY
@@ -500,9 +471,8 @@ export const Home = () => {
                   </a>
                 ))}
              </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
+          </section>
+      )}
 
       <section className="container mx-auto px-6 mb-40" id="browse">
         <div className="flex flex-col md:flex-row items-end justify-between mb-16 px-2 gap-8">
@@ -518,16 +488,14 @@ export const Home = () => {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-24">
            {/* All Tools Card */}
-           <motion.button 
-             whileHover={{ y: -5, scale: 1.02 }}
-             whileTap={{ scale: 0.98 }}
+           <button
              onClick={() => {
                setSelectedCategory('All');
                document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
              }}
-             className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] ${
-               selectedCategory === 'All' 
-                 ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-black shadow-2xl' 
+             className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
+               selectedCategory === 'All'
+                 ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-black shadow-2xl'
                  : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-brand-500/50'
              }`}
            >
@@ -539,43 +507,40 @@ export const Home = () => {
                 <span className="text-lg font-black leading-none">All Utils</span>
               </div>
               {selectedCategory === 'All' && (
-                <motion.div layoutId="active-pill" className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-500" />
+                <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-500" />
               )}
-           </motion.button>
+           </button>
 
            {categories.map((cat) => {
              const config = getCategoryConfig(cat.name);
              const Icon = config.icon;
              const isActive = selectedCategory === cat.name;
-             
+
              return (
-               <motion.button 
+               <button
                   key={cat.name}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     setSelectedCategory(cat.name);
                     document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] ${
+                  className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
                     isActive
-                      ? `bg-white dark:bg-[#0A0A0A] border-transparent shadow-2xl ${config.glow}` 
+                      ? `bg-white dark:bg-[#0A0A0A] border-transparent shadow-2xl ${config.glow}`
                       : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
                   }`}
                >
-                  {/* Background Aura for Active State */}
                   {isActive && (
                     <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${config.color} opacity-20 blur-2xl rounded-full`} />
                   )}
 
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ${
-                    isActive 
-                      ? `bg-gradient-to-br ${config.color} text-white shadow-lg` 
+                    isActive
+                      ? `bg-gradient-to-br ${config.color} text-white shadow-lg`
                       : 'bg-gray-100 dark:bg-white/5 text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-white/10'
                   }`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  
+
                   <div className="relative z-10">
                     <span className={`block text-[10px] font-black uppercase tracking-widest mb-1 ${isActive ? 'text-brand-500' : 'text-gray-400'}`}>
                       {cat.count} Tools
@@ -586,9 +551,9 @@ export const Home = () => {
                   </div>
 
                   {isActive && (
-                    <motion.div layoutId="active-pill" className={`absolute top-4 right-4 w-2 h-2 rounded-full bg-gradient-to-br ${config.color}`} />
+                    <div className={`absolute top-4 right-4 w-2 h-2 rounded-full bg-gradient-to-br ${config.color}`} />
                   )}
-               </motion.button>
+               </button>
              );
            })}
         </div>
@@ -632,26 +597,19 @@ export const Home = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-h-[400px]">
-          <AnimatePresence mode="popLayout">
             {filteredTools.length > 0 ? (
               filteredTools.map((tool) => (
                 <ToolCard key={tool.id} tool={tool} />
               ))
             ) : (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                key="no-results"
-                className="col-span-full flex flex-col items-center justify-center py-48 text-center"
-              >
+              <div className="col-span-full flex flex-col items-center justify-center py-48 text-center anim-fade-up">
                 <div className="w-24 h-24 bg-gray-100 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mb-10">
                    <Search className="w-10 h-10 text-gray-300" />
                 </div>
                 <h4 className="text-3xl font-black text-gray-900 dark:text-white mb-4">No tools found</h4>
                 <p className="text-gray-500 dark:text-gray-400 font-medium">Try searching for broader terms or categories.</p>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
       </section>
 
