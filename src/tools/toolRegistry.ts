@@ -30,7 +30,8 @@ import {
   Terminal, 
   Code2,
   ScanText,
-  Mic
+  Mic,
+  Film
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -787,6 +788,25 @@ export const toolRegistry: RegistryTool[] = [
       { question: "How does the transcription work?", answer: "We use OpenAI's Whisper model running locally via Transformers.js and WASM. It can even use your GPU (WebGPU) for faster processing." },
       { question: "What audio formats are supported?", answer: "You can upload almost any audio or video format, including MP3, WAV, M4A, OGG, and MP4." },
       { question: "Is there a file size limit?", answer: "For the best experience in the browser, we recommend files under 50MB. Larger files may cause the browser to become unresponsive during processing." }
+    ]
+  },
+  {
+    id: 'mp4-to-hls',
+    name: 'MP4 to HLS Converter',
+    description: 'Convert MP4 videos into HLS (.ts and .m3u8) format locally and test playback instantly.',
+    path: 'mp4-to-hls',
+    category: 'Media',
+    tags: ['video', 'hls', 'm3u8', 'mp4', 'stream', 'ffmpeg'],
+    inputType: ['any'],
+    outputType: ['any'],
+    icon: Film,
+    type: 'heavy',
+    component: lazy(() => import('./mp4-to-hls/index')),
+    faqIcon: Film,
+    faq: [
+      { question: "Is my video uploaded for processing?", answer: "No, all transcoding is driven by WebAssembly directly in your browser. Large files under 100MB process offline ensuring complete privacy." },
+      { question: "What is HLS?", answer: "HTTP Live Streaming (HLS) breaks video into smaller segments (chunks), which allows players to buffer faster and adapt to changing network speeds." },
+      { question: "How do I play the generated folder?", answer: "Simply drag and drop the extracted folder back into the Player section. We'll automatically wire the local segments to our embedded HLS player." }
     ]
   },
 ];
