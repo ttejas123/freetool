@@ -114,8 +114,6 @@ export const getCachedMetrics = (): Record<string, ToolMetric> => {
  * Returns cached data or seeded fallback.
  */
 export const getToolMetricsSync = (toolId: string): ToolMetric => {
-    const cache = getCachedMetrics();
-    if (cache[toolId]) return cache[toolId];
 
     const seed = generateSeedStats(toolId);
     return {

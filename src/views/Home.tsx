@@ -147,9 +147,9 @@ export const Home = () => {
   const tab = searchParams.get('tab') || 'all';
   
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchTerm, setSearchTerm] = useState<string>(searchParams.get('search') || '');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<'newest' | 'views' | 'upvotes'>('newest');
-  const [metrics, setMetrics] = useState<Record<string, ToolMetric>>(getCachedMetrics());
+  const [metrics, setMetrics] = useState<Record<string, ToolMetric>>({});
   const [recentTools, setRecentTools] = useState<RegistryTool[]>([]);
 
   useEffect(() => {
@@ -182,6 +182,7 @@ export const Home = () => {
   };
 
   useEffect(() => {
+    setMetrics(getCachedMetrics());
     const loadStats = async () => {
        const globalMetrics = await fetchAllToolMetrics();
        setMetrics(globalMetrics);
