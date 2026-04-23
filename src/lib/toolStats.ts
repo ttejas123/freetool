@@ -123,3 +123,40 @@ export const getToolMetricsSync = (toolId: string): ToolMetric => {
         uniqueUsers: seed.uniqueUsers
     };
 };
+
+/**
+ * Retrieve pinned tools from localStorage.
+ */
+export const getPinnedTools = (): string[] => {
+    if (typeof window === 'undefined') return [];
+    try {
+        const raw = localStorage.getItem('pinnedTools');
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+};
+
+/**
+ * Toggle a tool's pinned status (max 15).
+ * Returns true if pinned, false if unpinned, or throws error if limit reached.
+ */
+export const togglePinTool = (toolId: string): boolean => {
+    if (typeof window === 'undefined') return false;
+    
+    const pinned = getPinnedTools();
+    const isPinned = pinned.includes(toolId);
+    
+    if (isPinned) {
+        const next = pinned.filter(id => id !== toolId);
+        localStorage.setItem('pinnedTools', JSON.stringify(next));
+        return false;
+    } else {
+        if (pinned.length >= 15) {
+            throw new Error("You can only pin up to 15 tools.");
+        }
+        const next = [toolId, ...pinned];
+        localStorage.setItem('pinnedTools', JSON.stringify(next));
+        return true;
+    }
+};

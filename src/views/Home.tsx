@@ -30,10 +30,13 @@ import {
   Layers,
   Plus,
   ExternalLink,
-  Terminal
+  Terminal,
+  PinOff,
+  Bookmark
 } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, type ToolMetric } from '../lib/toolStats';
+import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, getPinnedTools, togglePinTool, type ToolMetric } from '../lib/toolStats';
+import { toast } from '../store/toastStore';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
 import { Counter } from '../components/ui/Counter';
@@ -151,6 +154,7 @@ export const Home = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'views' | 'upvotes'>('newest');
   const [metrics, setMetrics] = useState<Record<string, ToolMetric>>({});
   const [recentTools, setRecentTools] = useState<RegistryTool[]>([]);
+  const [pinnedToolIds, setPinnedToolIds] = useState<string[]>([]);
 
   useEffect(() => {
     trackPageView('/');
@@ -164,6 +168,7 @@ export const Home = () => {
          console.error('Failed to load recent tools', e);
        }
     }
+    setPinnedToolIds(getPinnedTools());
   }, []);
 
   useEffect(() => {
@@ -180,6 +185,21 @@ export const Home = () => {
      else newParams.delete('search');
      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
   };
+
+  const handleTogglePin = (toolId: string) => {
+    try {
+      togglePinTool(toolId);
+      setPinnedToolIds(getPinnedTools());
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  const pinnedTools = useMemo(() => {
+    return pinnedToolIds
+      .map(id => toolRegistry.find(t => t.id === id))
+      .filter((t): t is RegistryTool => !!t);
+  }, [pinnedToolIds]);
 
   useEffect(() => {
     setMetrics(getCachedMetrics());
@@ -270,6 +290,25 @@ export const Home = () => {
             <div className="flex flex-col items-end gap-2">
                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleTogglePin(tool.id);
+                    }}
+                    className={`p-2 rounded-lg bg-gray-100 dark:bg-white/5 transition-colors ${
+                      pinnedToolIds.includes(tool.id) ? 'text-brand-500' : 'text-gray-500 hover:text-brand-500'
+                    }`}
+                    aria-label={pinnedToolIds.includes(tool.id) ? `Unpin ${tool.name}` : `Pin ${tool.name}`}
+                  >
+                     <Bookmark className={`w-3.5 h-3.5 ${pinnedToolIds.includes(tool.id) ? 'fill-current' : ''}`} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(`${window.location.origin}/${tool.path}`);
+                      toast.success('Link copied to clipboard!');
+                    }}
                     className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
                     aria-label={`Copy link for ${tool.name}`}
                   >
@@ -433,32 +472,75 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* Recently Used Section */}
-      {recentTools.length > 0 && (
+      {/* Recently Used & Pinned Tools Section */}
+      {(recentTools.length > 0 || pinnedTools.length > 0) && (
           <section className="container mx-auto px-6 mb-32 anim-fade-up">
-             <div className="flex items-center gap-4 mb-10">
-               <div className="px-3 py-1 bg-brand-500/10 text-brand-500 text-[10px] font-black rounded-lg uppercase tracking-widest border border-brand-500/20">
-                 HISTORY
+             {pinnedTools.length > 0 && (
+               <div className="mb-20">
+                 <div className="flex items-center gap-4 mb-10">
+                   <div className="px-3 py-1 bg-brand-500/10 text-brand-500 text-[10px] font-black rounded-lg uppercase tracking-widest border border-brand-500/20">
+                     FAVORITES
+                   </div>
+                   <h2 className="text-3xl font-black text-gray-900 dark:text-white">Pinned Tools</h2>
+                 </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {pinnedTools.map(tool => (
+                      <div key={`pinned-${tool.id}`} className="relative group">
+                        <a 
+                          href={`/${tool.path}`}
+                          className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all shadow-sm hover:shadow-xl h-full"
+                        >
+                           <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
+                             <tool.icon className="w-6 h-6 text-current" />
+                           </div>
+                           <div className="flex-1 overflow-hidden">
+                             <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
+                             <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{tool.category}</div>
+                           </div>
+                        </a>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleTogglePin(tool.id);
+                          }}
+                          className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-white/10 flex items-center justify-center text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-95"
+                          aria-label={`Unpin ${tool.name}`}
+                        >
+                          <PinOff className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                 </div>
                </div>
-               <h2 className="text-3xl font-black text-gray-900 dark:text-white">Recent Activity</h2>
-             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {recentTools.slice(0, 4).map(tool => (
-                  <a 
-                    key={`recent-${tool.id}`}
-                    href={`/${tool.path}`}
-                    className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all group shadow-sm hover:shadow-xl"
-                  >
-                     <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
-                       <tool.icon className="w-6 h-6 text-current" />
-                     </div>
-                     <div className="flex-1 overflow-hidden">
-                       <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
-                       <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{tool.category}</div>
-                     </div>
-                  </a>
-                ))}
-             </div>
+             )}
+
+             {recentTools.length > 0 && (
+               <div>
+                 <div className="flex items-center gap-4 mb-10">
+                   <div className="px-3 py-1 bg-gray-500/10 text-gray-500 text-[10px] font-black rounded-lg uppercase tracking-widest border border-gray-500/20">
+                     HISTORY
+                   </div>
+                   <h2 className="text-3xl font-black text-gray-900 dark:text-white">Recent Activity</h2>
+                 </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {recentTools.slice(0, 4).map(tool => (
+                      <a 
+                        key={`recent-${tool.id}`}
+                        href={`/${tool.path}`}
+                        className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all group shadow-sm hover:shadow-xl"
+                      >
+                         <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
+                           <tool.icon className="w-6 h-6 text-current" />
+                         </div>
+                         <div className="flex-1 overflow-hidden">
+                           <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
+                           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{tool.category}</div>
+                         </div>
+                      </a>
+                    ))}
+                 </div>
+               </div>
+             )}
           </section>
       )}
 

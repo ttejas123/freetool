@@ -9,70 +9,93 @@ export interface SearchMatch {
 
 export const getSearchResults = (query: string, tools: RegistryTool[]): SearchMatch[] => {
   if (!query) return tools.map(tool => ({ tool, score: 0, matchField: '', matchSnippet: '' }));
-  const term = query.toLowerCase().trim();
-
+  
+  const rawQuery = query.toLowerCase().trim();
+  const queryWords = rawQuery.split(/\s+/).filter(word => word.length > 1);
+  
   return tools
     .map(tool => {
       let score = 0;
       let matchField = '';
       let matchSnippet = '';
 
-      // 1. Name match (Highest priority)
-      if (tool.name.toLowerCase() === term) {
-        score = 100;
-      } else if (tool.name.toLowerCase().includes(term)) {
-        score = 80;
+      const name = tool.name.toLowerCase();
+      const description = tool.description.toLowerCase();
+      const tags = tool.tags.map(t => t.toLowerCase());
+      const category = tool.category.toLowerCase();
+
+      // 1. Exact full query match (Ultimate priority)
+      if (name === rawQuery) {
+        score += 200;
+      } else if (name.includes(rawQuery)) {
+        score += 150;
       }
 
-      // 2. Tag match
-      const matchingTag = tool.tags.find(tag => tag.toLowerCase().includes(term));
-      if (matchingTag && score < 70) {
-        score = 70;
-        matchField = 'Tag';
-        matchSnippet = matchingTag;
+      // 2. Word-based matching
+      let wordsMatched = 0;
+      queryWords.forEach(word => {
+        let wordMatched = false;
+        
+        // Name match
+        if (name.includes(word)) {
+          score += 50;
+          wordMatched = true;
+        }
+
+        // Tag match (Synonyms)
+        const matchedTag = tags.find(tag => tag.includes(word));
+        if (matchedTag) {
+          score += 40;
+          wordMatched = true;
+          if (!matchField) {
+             matchField = 'Tag';
+             matchSnippet = matchedTag;
+          }
+        }
+
+        // Category match
+        if (category.includes(word)) {
+          score += 30;
+          wordMatched = true;
+        }
+
+        // Description match
+        if (description.includes(word)) {
+          score += 20;
+          wordMatched = true;
+          if (!matchField) {
+            matchField = 'Description';
+            const index = description.indexOf(word);
+            const start = Math.max(0, index - 20);
+            const end = Math.min(description.length, index + word.length + 30);
+            matchSnippet = (start > 0 ? '...' : '') + tool.description.slice(start, end) + (end < description.length ? '...' : '');
+          }
+        }
+
+        if (wordMatched) wordsMatched++;
+      });
+
+      // Bonus for matching all words in the query
+      if (queryWords.length > 1 && wordsMatched === queryWords.length) {
+        score += 100;
       }
 
-      // 3. Category match
-      if (tool.category.toLowerCase().includes(term) && score < 60) {
-        score = 60;
-        matchField = 'Category';
-        matchSnippet = tool.category;
-      }
-
-      // 4. Description match
-      if (tool.description.toLowerCase().includes(term) && score < 50) {
-        score = 50;
-        matchField = 'Description';
-        const index = tool.description.toLowerCase().indexOf(term);
-        const start = Math.max(0, index - 20);
-        const end = Math.min(tool.description.length, index + term.length + 30);
-        matchSnippet = (start > 0 ? '...' : '') + tool.description.slice(start, end) + (end < tool.description.length ? '...' : '');
-      }
-
-      // 5. FAQ match
-      if (tool.faq) {
+      // 3. FAQ match (fallback)
+      if (tool.faq && score < 40) {
         for (const item of tool.faq) {
-          if (item.question.toLowerCase().includes(term) || item.answer.toLowerCase().includes(term)) {
-            if (score < 40) {
-              score = 40;
-              matchField = 'FAQ';
-              const text = item.question.toLowerCase().includes(term) ? item.question : item.answer;
-              const index = text.toLowerCase().indexOf(term);
-              const start = Math.max(0, index - 20);
-              const end = Math.min(text.length, index + term.length + 30);
-              matchSnippet = (start > 0 ? '...' : '') + text.slice(start, end) + (end < text.length ? '...' : '');
-            }
+          const q = item.question.toLowerCase();
+          const a = item.answer.toLowerCase();
+          if (q.includes(rawQuery) || a.includes(rawQuery)) {
+            score += 40;
+            matchField = 'FAQ';
+            const text = q.includes(rawQuery) ? item.question : item.answer;
+            const index = text.toLowerCase().indexOf(rawQuery);
+            const start = Math.max(0, index - 20);
+            const end = Math.min(text.length, index + rawQuery.length + 30);
+            matchSnippet = (start > 0 ? '...' : '') + text.slice(start, end) + (end < text.length ? '...' : '');
             break;
           }
         }
-      }
-
-      // 6. Input/Output types
-      const matchingIO = [...tool.inputType, ...tool.outputType].find(type => type.toLowerCase().includes(term));
-      if (matchingIO && score < 30) {
-        score = 30;
-        matchField = 'Supports';
-        matchSnippet = matchingIO;
       }
 
       return { tool, score, matchField, matchSnippet };
