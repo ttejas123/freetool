@@ -13,7 +13,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      theme: 'dark', // Default to modern dark theme
+      theme: 'light', // Default to light mode as requested
       favorites: [],
       recentTools: [],
       toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),

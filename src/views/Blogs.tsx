@@ -13,43 +13,16 @@ import {
   Code
 } from 'lucide-react';
 
+const IconMap: Record<string, any> = {
+  Zap,
+  Shield,
+  Code
+};
+
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
-const blogPosts = [
-  {
-    id: 'future-of-dev-tools',
-    title: 'The Future of Web-Based Developer Tools',
-    excerpt: 'How local-first, browser-based utilities are transforming engineering workflows without compromising privacy.',
-    author: 'Tejas Thakare',
-    date: 'April 8, 2026',
-    readTime: '5 min read',
-    category: 'Productivity',
-    icon: Zap,
-    color: 'text-brand-500 bg-brand-500/10'
-  },
-  {
-    id: 'privacy-first-engineering',
-    title: 'Why Privacy First is the Only Path Forward',
-    excerpt: 'In an era of data breaches, FreeTool is built on a "zero-knowledge" principle. Learn how we keep your data local.',
-    author: 'Freetool Team',
-    date: 'April 5, 2026',
-    readTime: '4 min read',
-    category: 'Security',
-    icon: Shield,
-    color: 'text-emerald-500 bg-emerald-500/10'
-  },
-  {
-    id: 'mastering-json-workflows',
-    title: 'Mastering Complex JSON Workflows',
-    excerpt: 'Tips and tricks for using our JSON Formatter and Pipeline Builder to tame even the messiest data structures.',
-    author: 'Engineering',
-    date: 'April 2, 2026',
-    readTime: '6 min read',
-    category: 'Guides',
-    icon: Code,
-    color: 'text-indigo-500 bg-indigo-500/10'
-  }
-];
+import { blogPosts } from '@/data/blogs';
+
 
 export const Blogs = () => {
   return (
@@ -94,7 +67,14 @@ export const Blogs = () => {
             >
               <div className="flex items-center justify-between mb-8">
                 <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${post.color} border border-transparent transition-transform group-hover:scale-110`}>
-                  <post.icon className="w-6 h-6" />
+                  {IconMap[post.icon] ? (
+                    (() => {
+                      const Icon = IconMap[post.icon];
+                      return <Icon className="w-6 h-6" />;
+                    })()
+                  ) : (
+                    <Zap className="w-6 h-6" />
+                  )}
                 </div>
                 <div className="px-3 py-1 rounded-full bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-200 dark:border-white/10">
                   {post.category}

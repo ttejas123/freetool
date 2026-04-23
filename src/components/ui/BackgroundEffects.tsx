@@ -126,7 +126,7 @@ export const BackgroundEffects = () => {
     <div className="absolute inset-0 pointer-events-none z-0">
       {/* Background Mesh Grid (Maximum Visibility) */}
       <div className="absolute inset-0 mesh-grid opacity-[0.2] dark:opacity-[0.3]" />
-      <div className="absolute inset-0 mesh-grid opacity-[0.1] dark:opacity-[0.15] scale-[1.5]" />
+      <div className="absolute inset-0 mesh-grid opacity-[0.1] dark:opacity-[0.15]" />
       <div className="absolute inset-0 mesh-grid opacity-[0.05] dark:opacity-[0.1]" />
       
       <canvas

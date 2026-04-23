@@ -11,7 +11,6 @@ import {
   Sun, 
   Search, 
   Plus, 
-  CheckCircle2, 
   Menu, 
   X, 
   Github, 
@@ -155,7 +154,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505] ${isFullScreen ? 'h-screen overflow-hidden' : ''}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505] overflow-x-hidden ${isFullScreen ? 'h-screen overflow-hidden' : ''}`}>
       {/* Premium Navbar */}
       {!isFullScreen && (
         <header 
@@ -410,8 +409,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
               <a href="/" className="flex items-center gap-2.5 mb-6">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-500 shadow-md">
-                   <CheckCircle2 className="w-4 h-4 text-white" />
+                <div className="relative flex items-center justify-center w-8 h-8 text-white">
+                   <img src="/favicon.webp" alt="Logo" className="w-8 h-8" />
                 </div>
                 <span className="text-xl font-bold tracking-tight dark:text-white">
                   Free<span className="text-gradient">Tool</span>
