@@ -11,24 +11,26 @@ interface CounterProps {
 }
 
 export const Counter = ({ value, duration = 2, suffix = "", className = "" }: CounterProps) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(spanRef, { once: true });
 
   useEffect(() => {
-    if (isInView) {
+    if (isInView && spanRef.current) {
       const controls = animate(0, value, {
         duration,
-        onUpdate: (latest) => setCount(Math.floor(latest)),
+        onUpdate: (latest) => {
+          if (spanRef.current) {
+            spanRef.current.textContent = Math.floor(latest).toLocaleString() + suffix;
+          }
+        },
       });
       return () => controls.stop();
     }
-  }, [value, duration, isInView]);
+  }, [value, duration, isInView, suffix]);
 
   return (
-    <span ref={ref} className={className}>
-      {count.toLocaleString()}
-      {suffix}
+    <span ref={spanRef} className={className}>
+      0{suffix}
     </span>
   );
 };

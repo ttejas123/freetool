@@ -142,6 +142,118 @@ const getCategoryColor = (category: string) => {
 };
 
 import { getSearchResults } from '../utils/search';
+import React from 'react';
+
+const ToolCard = React.memo(({ 
+  tool, 
+  stats, 
+  globalRank, 
+  catClass, 
+  isPinned, 
+  onTogglePin 
+}: { 
+  tool: RegistryTool; 
+  stats: any; 
+  globalRank: number; 
+  catClass: string; 
+  isPinned: boolean; 
+  onTogglePin: (id: string) => void;
+}) => {
+  const Icon = tool.icon;
+
+  return (
+    <div className="group relative hover:-translate-y-1 transition-transform duration-200">
+      <a
+        href={`/${tool.path}`}
+        onClick={() => recordToolView(tool.id)}
+        className="group p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 flex flex-col relative overflow-hidden"
+      >
+        <div className="flex items-start justify-between mb-6">
+          <div className={`w-14 h-14 flex items-center justify-center rounded-2xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]} group-hover:scale-110 transition-transform shadow-sm`}>
+            <Icon className="w-7 h-7" />
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onTogglePin(tool.id);
+                  }}
+                  className={`p-2 rounded-lg bg-gray-100 dark:bg-white/5 transition-colors ${
+                    isPinned ? 'text-brand-500' : 'text-gray-500 hover:text-brand-500'
+                  }`}
+                  aria-label={isPinned ? `Unpin ${tool.name}` : `Pin ${tool.name}`}
+                >
+                   <Bookmark className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(`${window.location.origin}/${tool.path}`);
+                    toast.success('Link copied to clipboard!');
+                  }}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
+                  aria-label={`Copy link for ${tool.name}`}
+                >
+                   <Copy className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
+                  aria-label={`Open ${tool.name} tool`}
+                >
+                   <ExternalLink className="w-3.5 h-3.5" />
+                </button>
+             </div>
+             <div className="flex flex-col items-end gap-1.5">
+              {globalRank <= 3 && (
+                <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-tighter">
+                  <Flame className="w-2.5 h-2.5" />
+                  TRENDING
+                </div>
+              )}
+              {(stats?.upvotes || 0) > 10 && (
+                <div className="flex items-center gap-1 text-[9px] font-bold text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20 uppercase tracking-tighter">
+                  <Plus className="w-2.5 h-2.5" />
+                  POPULAR
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors">
+            {tool.name}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-2 leading-relaxed">
+            {tool.description}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-white/5">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <Eye className="w-4 h-4" />
+              <span className="font-bold tabular-nums"><Counter value={stats?.views || 0} duration={1} /></span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <ArrowUp className="w-4 h-4 text-brand-500" />
+              <span className="font-bold text-gray-700 dark:text-gray-300 tabular-nums">{stats?.upvotes || 0}</span>
+            </div>
+          </div>
+          <div className="text-[10px] font-bold px-2 py-1 rounded-md bg-gray-50 dark:bg-white/5 text-gray-400 uppercase tracking-widest border border-transparent group-hover:border-brand-500/20 group-hover:text-brand-500 transition-all">
+            {tool.category}
+          </div>
+        </div>
+      </a>
+    </div>
+  );
+});
+
+ToolCard.displayName = 'ToolCard';
 
 export const Home = () => {
   const searchParams = useSearchParams();
@@ -269,112 +381,17 @@ export const Home = () => {
     return tools;
   }, [selectedCategory, tab, searchTerm, sortBy, metrics]);
 
-  const ToolCard = ({ tool }: { tool: RegistryTool }) => {
-    const Icon = tool.icon;
-    const stats = metrics[tool.id] || getToolMetricsSync(tool.id);
-    const globalRank = rankedTools.findIndex(t => t.id === tool.id) + 1;
-    const catClass = getCategoryColor(tool.category);
 
-    return (
-      <div className="group relative hover:-translate-y-1 transition-transform duration-200">
-        <a
-          href={`/${tool.path}`}
-          onClick={() => recordToolView(tool.id)}
-          className="block p-6 rounded-3xl bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-500/10 active:scale-95"
-        >
-          <div className="flex items-start justify-between mb-6">
-            <div className={`w-14 h-14 flex items-center justify-center rounded-2xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]} group-hover:scale-110 transition-transform shadow-sm`}>
-              <Icon className="w-7 h-7" />
-            </div>
-
-            <div className="flex flex-col items-end gap-2">
-               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleTogglePin(tool.id);
-                    }}
-                    className={`p-2 rounded-lg bg-gray-100 dark:bg-white/5 transition-colors ${
-                      pinnedToolIds.includes(tool.id) ? 'text-brand-500' : 'text-gray-500 hover:text-brand-500'
-                    }`}
-                    aria-label={pinnedToolIds.includes(tool.id) ? `Unpin ${tool.name}` : `Pin ${tool.name}`}
-                  >
-                     <Bookmark className={`w-3.5 h-3.5 ${pinnedToolIds.includes(tool.id) ? 'fill-current' : ''}`} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      navigator.clipboard.writeText(`${window.location.origin}/${tool.path}`);
-                      toast.success('Link copied to clipboard!');
-                    }}
-                    className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
-                    aria-label={`Copy link for ${tool.name}`}
-                  >
-                     <Copy className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
-                    aria-label={`Open ${tool.name} tool`}
-                  >
-                     <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
-               </div>
-               <div className="flex flex-col items-end gap-1.5">
-                {globalRank <= 3 && (
-                  <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-tighter">
-                    <Flame className="w-2.5 h-2.5" />
-                    TRENDING
-                  </div>
-                )}
-                {(stats?.upvotes || 0) > 10 && (
-                  <div className="flex items-center gap-1 text-[9px] font-bold text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20 uppercase tracking-tighter">
-                    <Plus className="w-2.5 h-2.5" />
-                    POPULAR
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors">
-              {tool.name}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-2 leading-relaxed">
-              {tool.description}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-white/5">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <Eye className="w-4 h-4" />
-                <span className="font-bold tabular-nums"><Counter value={stats?.views || 0} duration={1} /></span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <ArrowUp className="w-4 h-4 text-brand-500" />
-                <span className="font-bold text-gray-700 dark:text-gray-300 tabular-nums">{stats?.upvotes || 0}</span>
-              </div>
-            </div>
-            <div className="text-[10px] font-bold px-2 py-1 rounded-md bg-gray-50 dark:bg-white/5 text-gray-400 uppercase tracking-widest border border-transparent group-hover:border-brand-500/20 group-hover:text-brand-500 transition-all">
-              {tool.category}
-            </div>
-          </div>
-        </a>
-      </div>
-    );
-  };
 
   const statsRef = useInView();
 
   return (
-    <div className="flex-1 w-full bg-white dark:bg-[#050505] transition-colors duration-200 overflow-x-hidden">
+    <div className="flex-1 w-full bg-transparent transition-colors duration-200 overflow-x-hidden">
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-48 overflow-hidden bg-glow">
-        <BackgroundEffects />
+      <section className="relative pt-32 pb-48 overflow-hidden">
+        {/* Title Highlight Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none z-0 opacity-40" />
 
         <div className="container mx-auto px-6 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black mb-10 border border-brand-500/20 uppercase tracking-[0.2em] shadow-sm anim-fade-up anim-delay-0">
@@ -388,8 +405,8 @@ export const Home = () => {
               {"Fast. Free. Secure.".split(" ").map((word, i) => (
                 <span
                   key={i}
-                  className={`inline-block mr-4 anim-fade-up`}
-                  style={{ animationDelay: `${0.2 + i * 0.08}s` }}
+                  className={`inline-block mr-4 text-gradient anim-fade-up`}
+                  style={{ animationDelay: `${0.2 + i * 0.04}s` }}
                 >
                   {word}
                 </span>
@@ -669,7 +686,15 @@ export const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-h-[400px]">
             {filteredTools.length > 0 ? (
               filteredTools.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} />
+                <ToolCard 
+                  key={tool.id} 
+                  tool={tool} 
+                  stats={metrics[tool.id] || getToolMetricsSync(tool.id)}
+                  globalRank={rankedTools.findIndex(t => t.id === tool.id) + 1}
+                  catClass={getCategoryColor(tool.category)}
+                  isPinned={pinnedToolIds.includes(tool.id)}
+                  onTogglePin={handleTogglePin}
+                />
               ))
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-48 text-center anim-fade-up">

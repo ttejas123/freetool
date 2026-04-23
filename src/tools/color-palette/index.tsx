@@ -678,7 +678,7 @@ export default function ColorPalette() {
                 </button>
             </div>
 
-            <div className="aspect-[16/10] bg-gray-50 dark:bg-gray-950 rounded-[2.5rem] p-4 border border-gray-100 dark:border-gray-800 shadow-inner group relative">
+            <div className="aspect-[16/10] bg-gray-50 dark:bg-gray-950 rounded-[1.5rem] p-4 border border-gray-100 dark:border-gray-800 shadow-inner group relative">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-3 py-1 rounded-full z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     LIVE PREVIEW
                 </div>

@@ -71,8 +71,7 @@ export const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
-      <BackgroundEffects />
+    <div className="min-h-screen bg-transparent py-16 px-4 sm:px-6 lg:px-8">
       
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}

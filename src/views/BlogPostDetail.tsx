@@ -20,12 +20,11 @@ interface BlogPostDetailProps {
 
 export const BlogPostDetail = ({ post }: BlogPostDetailProps) => {
   return (
-    <div className="min-h-screen w-full bg-white dark:bg-[#050505] transition-colors duration-300 overflow-x-clip">
+    <div className="min-h-screen w-full bg-transparent transition-colors duration-300 overflow-x-clip">
       <SEOHelmet 
         title={`${post.title} | FreeTool Blog`} 
         description={post.excerpt}
       />
-      <BackgroundEffects />
       
       {/* Article Header */}
       <section className="relative pt-32 pb-16 overflow-hidden">

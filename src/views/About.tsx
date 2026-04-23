@@ -5,11 +5,10 @@ import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const About = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505]">
+    <div className="min-h-screen bg-transparent">
       
       {/* Hero Section */}
       <section className="relative pt-50 pb-50 overflow-hidden">
-        <BackgroundEffects />
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-brand-500/10 dark:bg-brand-500/5 rounded-full blur-[120px] animate-pulse-slow"></div>
           <div className="absolute top-[20%] -right-[10%] w-[35%] h-[35%] bg-accent-purple/10 dark:bg-accent-purple/5 rounded-full blur-[100px] animate-float-slow"></div>

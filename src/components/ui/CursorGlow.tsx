@@ -44,17 +44,6 @@ export const CursorGlow = () => {
       >
         <div className="w-full h-full rounded-full bg-radial from-brand-500/80 via-transparent to-transparent blur-[80px]" />
       </motion.div>
-      
-      {/* Precision pointer dot */}
-      <motion.div
-        style={{
-          x: springX,
-          y: springY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        className="absolute w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]"
-      />
     </div>
   );
 };

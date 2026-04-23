@@ -251,7 +251,7 @@ export default function JavaScriptRunner() {
         </div>
 
         <div 
-          className="w-full flex flex-col h-[800px] shrink-0 overflow-hidden font-sans selection:bg-brand-500/30 shadow-2xl rounded-[2.5rem] border border-gray-100 dark:border-gray-800"
+          className="w-full flex flex-col h-[800px] shrink-0 overflow-hidden font-sans selection:bg-brand-500/30 shadow-2xl rounded-[1.5rem] border border-gray-100 dark:border-gray-800"
           style={{ backgroundColor: sidebarBg, color: textColor }}
         >
         <div className="flex-1 flex overflow-hidden">

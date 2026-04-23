@@ -132,7 +132,7 @@ export default function CurlConverter() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Input Area */}
           <div className="lg:col-span-12 xl:col-span-5 space-y-6">
-            <Card className="rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-white dark:bg-gray-800/40">
+            <Card className="rounded-[1.5rem] overflow-hidden border-none shadow-2xl bg-white dark:bg-gray-800/40">
               <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-1.5">
@@ -167,7 +167,7 @@ export default function CurlConverter() {
 
           {/* Output Area */}
           <div className="lg:col-span-12 xl:col-span-7 space-y-6">
-            <Card className="rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-[#0d1117]">
+            <Card className="rounded-[1.5rem] overflow-hidden border-none shadow-2xl bg-[#0d1117]">
               {/* Tab Selector */}
               <div className="px-4 py-2 bg-white/5 dark:bg-white/5 border-b border-white/10 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center gap-1 min-w-max">
@@ -235,7 +235,7 @@ export default function CurlConverter() {
             </div>
           </div>
 
-          <Card className="p-8 bg-brand-600 rounded-[2.5rem] text-white flex flex-col justify-between shadow-2xl shadow-brand-500/20">
+          <Card className="p-8 bg-brand-600 rounded-[1.5rem] text-white flex flex-col justify-between shadow-2xl shadow-brand-500/20">
              <div className="space-y-4">
                 <Share2 className="w-10 h-10 opacity-50" />
                 <h3 className="text-2xl font-black leading-tight">Secure & Private Conversion</h3>

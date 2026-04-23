@@ -26,12 +26,11 @@ import { blogPosts } from '@/data/blogs';
 
 export const Blogs = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] transition-colors duration-300">
+    <div className="min-h-screen bg-transparent transition-colors duration-300">
       <SEOHelmet 
         title="Engineering Blogs & Guides" 
         description="Deep dives into developer productivity, security, and the FreeTool platform."
       />
-      <BackgroundEffects />
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 overflow-hidden">
         <div className="container mx-auto px-6 text-center">
@@ -63,7 +62,7 @@ export const Blogs = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="group flex flex-col p-8 rounded-[2.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
+              className="group flex flex-col p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${post.color} border border-transparent transition-transform group-hover:scale-110`}>
@@ -115,7 +114,7 @@ export const Blogs = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="p-10 rounded-[2.5rem] bg-gray-900 dark:bg-white text-white dark:text-black flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
+            className="p-10 rounded-[1.5rem] bg-gray-900 dark:bg-white text-white dark:text-black flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/20 blur-[60px] translate-x-1/2 -translate-y-1/2" />
             <div className="w-16 h-16 rounded-2xl bg-brand-500 flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 transition-transform">

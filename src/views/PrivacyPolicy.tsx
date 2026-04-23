@@ -5,8 +5,7 @@ import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] py-16 px-4 sm:px-6 lg:px-8">
-      <BackgroundEffects />
+    <div className="min-h-screen bg-transparent py-16 px-4 sm:px-6 lg:px-8">
       
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16 px-4 animate-fade-in">

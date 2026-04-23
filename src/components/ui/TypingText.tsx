@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TypingTextProps {
   text: string;
@@ -10,19 +10,27 @@ interface TypingTextProps {
 }
 
 export const TypingText = ({ text, className = "", delay = 0 }: TypingTextProps) => {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const textRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (currentIndex < text.length) {
-        setDisplayText((prev) => prev + text[currentIndex]);
-        setCurrentIndex((prev) => prev + 1);
-      }
-    }, 40);
+    let currentIndex = 0;
+    let timeoutId: any;
 
-    return () => clearTimeout(timeout);
-  }, [currentIndex, text, delay]);
+    const type = () => {
+      if (currentIndex <= text.length && textRef.current) {
+        textRef.current.textContent = text.slice(0, currentIndex);
+        currentIndex++;
+        timeoutId = setTimeout(type, 40);
+      }
+    };
+
+    const startTimeout = setTimeout(type, delay);
+
+    return () => {
+      clearTimeout(startTimeout);
+      clearTimeout(timeoutId);
+    };
+  }, [text, delay]);
 
   return (
     <motion.span
@@ -30,7 +38,7 @@ export const TypingText = ({ text, className = "", delay = 0 }: TypingTextProps)
       animate={{ opacity: 1 }}
       className={className}
     >
-      {displayText}
+      <span ref={textRef}></span>
       <motion.span
         animate={{ opacity: [1, 0] }}
         transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}

@@ -28,8 +28,8 @@ import { ToastContainer } from '../ui/Toast';
 import { trackPageView } from '@/lib/analytics';
 import { CookieConsent } from '../ui/CookieConsent';
 import { getCachedMetrics } from '@/lib/toolStats';
+import { BackgroundEffects } from '../ui/BackgroundEffects';
 import { CommandPalette } from '../ui/CommandPalette';
-import { CursorGlow } from '../ui/CursorGlow';
 import { RichToolDescription } from '../ui/RichToolDescription';
 
 const getCategoryColor = (category: string) => {
@@ -144,7 +144,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (isPopup) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#050505]">
+      <div className="min-h-screen bg-transparent">
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
@@ -154,7 +154,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-[#050505] overflow-x-hidden ${isFullScreen ? 'h-screen overflow-hidden' : ''}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 bg-transparent overflow-x-hidden ${isFullScreen ? 'h-screen overflow-hidden' : ''}`}>
+      <BackgroundEffects />
       {/* Premium Navbar */}
       {!isFullScreen && (
         <header 
@@ -467,7 +468,6 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <CommandPalette />
       <ToastContainer />
       <CookieConsent />
-      <CursorGlow />
 
       {/* Floating Discovery Button */}
       <AnimatePresence>

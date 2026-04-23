@@ -61,12 +61,11 @@ export const TechNews = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] transition-colors duration-300">
+    <div className="min-h-screen bg-transparent transition-colors duration-300">
       <SEOHelmet 
         title="Engineering & Tech News Feed" 
         description="Stay updated with the latest in tech, engineering, and startups. Real-time RSS feed integration."
       />
-         <BackgroundEffects />
       {/* Header Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="container mx-auto px-6 text-center">
@@ -145,7 +144,7 @@ export const TechNews = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-[280px] rounded-[2.5rem] bg-gray-50 dark:bg-white/5 animate-pulse" />
+                <div key={i} className="h-[280px] rounded-[1.5rem] bg-gray-50 dark:bg-white/5 animate-pulse" />
               ))}
             </motion.div>
           ) : (
@@ -161,7 +160,7 @@ export const TechNews = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group relative flex flex-col p-8 rounded-[2.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
+                  className="group relative flex flex-col p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-brand-500/10 text-brand-500 border border-brand-500/10">
