@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
-import { RichToolDescription } from '@/components/ui/RichToolDescription';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { OutputConsole } from '@/components/ui/OutputConsole';
@@ -248,8 +247,6 @@ export default function CurlConverter() {
              </Button>
           </Card>
         </div>
-
-        <RichToolDescription tool={tool} />
       </div>
     </>
   );

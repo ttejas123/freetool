@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
-import { RichToolDescription } from '@/components/ui/RichToolDescription';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -16,6 +15,7 @@ import { trackEvent } from '../../lib/analytics';
 import { Toggle } from '../../components/ui/Toggle';
 import { Search, X, CheckCircle, Code2, CornerDownRight, ChevronRight, ChevronDown, Check, Copy } from 'lucide-react';
 import { cn } from '../../components/ui/Button';
+import { FixedSizeList as List } from 'react-window';
 
 // --- Utilities ---
 
@@ -212,6 +212,19 @@ export default function JsonFormatter() {
   const tool = toolRegistry.find(t => t.id === 'json-formatter')!;
   const [needsFix, setNeedsFix] = useState(false);
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
+
+  const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!containerNode) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setContainerSize({ width, height });
+    });
+    observer.observe(containerNode);
+    return () => observer.disconnect();
+  }, [containerNode]);
 
   // Consume global input once
 
@@ -454,9 +467,9 @@ export default function JsonFormatter() {
               <CopyButton size="sm" className="h-8 text-xs" value={formattedString} onClick={() => trackEvent('copy_clicked', { tool: 'json-formatter' })} />
             </div>
           </CardHeader>
-          <CardContent className="flex-1 p-0 overflow-auto bg-white dark:bg-[#0d1117] scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+          <CardContent className="flex-1 p-0 overflow-hidden bg-white dark:bg-[#0d1117] relative">
             {!debouncedInput.trim() ? (
-              <div className="h-full flex items-center justify-center text-gray-400 italic bg-gray-50 dark:bg-gray-900/20">
+              <div className="absolute inset-0 flex items-center justify-center text-gray-400 italic bg-gray-50 dark:bg-gray-900/20">
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-12 h-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center">
                     <Code2 className="w-6 h-6 opacity-20" />
@@ -465,7 +478,7 @@ export default function JsonFormatter() {
                 </div>
               </div>
             ) : !isValid ? (
-              <div className="h-full flex items-center justify-center text-red-500 flex-col gap-3 p-8 bg-red-50/30 dark:bg-red-950/10">
+              <div className="absolute inset-0 flex items-center justify-center text-red-500 flex-col gap-3 p-8 bg-red-50/30 dark:bg-red-950/10">
                 <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-2xl">
                   <AlertTriangle className="w-8 h-8 opacity-50" />
                 </div>
@@ -475,31 +488,52 @@ export default function JsonFormatter() {
                 </span>
               </div>
             ) : (
-              <div className="p-2 font-mono text-[13px] leading-6 min-w-max">
-                {filteredRows.length > 0 ? (
-                  filteredRows.map((row, i) => {
-                    const isCollapsed = collapsedPaths.has(row.path);
-                    const canToggle = row.type === 'object_start' || row.type === 'array_start';
-                    
-                    return (
-                      <div key={`${row.path}-${i}`} className="flex items-start">
-                        <div className="w-6 flex items-center justify-center pt-1.5 cursor-pointer text-gray-400 hover:text-brand-500" onClick={() => canToggle && toggleCollapse(row.path)}>
-                          {canToggle && (
-                            isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />
-                          )}
+              <div ref={setContainerNode} className="absolute inset-0">
+                {filteredRows.length > 0 && containerSize.width > 0 ? (
+                  <List
+                    height={containerSize.height}
+                    itemCount={filteredRows.length}
+                    itemSize={28} // ~28px row height
+                    width={containerSize.width}
+                    itemData={{
+                      rows: filteredRows,
+                      collapsedPaths,
+                      toggleCollapse,
+                      showTypes,
+                      showPaths,
+                      searchTerm,
+                      copyPath,
+                    }}
+                    className="scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800"
+                  >
+                    {({ index, style, data }) => {
+                      const row = data.rows[index];
+                      const isCollapsed = data.collapsedPaths.has(row.path);
+                      const canToggle = row.type === 'object_start' || row.type === 'array_start';
+
+                      return (
+                        <div style={style} className="flex items-center min-w-max pr-4">
+                          <div
+                            className="w-6 h-full flex items-center justify-center cursor-pointer text-gray-400 hover:text-brand-500 shrink-0"
+                            onClick={() => canToggle && data.toggleCollapse(row.path)}
+                          >
+                            {canToggle && (
+                              isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />
+                            )}
+                          </div>
+                          <ValueDisplay
+                            row={row}
+                            showTypes={data.showTypes}
+                            showPaths={data.showPaths}
+                            searchTerm={data.searchTerm}
+                            onCopyPath={data.copyPath}
+                          />
                         </div>
-                        <ValueDisplay 
-                          row={row} 
-                          showTypes={showTypes} 
-                          showPaths={showPaths}
-                          searchTerm={searchTerm}
-                          onCopyPath={copyPath}
-                        />
-                      </div>
-                    );
-                  })
+                      );
+                    }}
+                  </List>
                 ) : (
-                  <div className="p-8 text-center text-gray-400 italic">No matches found for "{searchTerm}"</div>
+                  containerSize.width > 0 && <div className="p-8 text-center text-gray-400 italic">No matches found for "{searchTerm}"</div>
                 )}
               </div>
             )}
@@ -508,8 +542,6 @@ export default function JsonFormatter() {
       </div>
 
       <ToolChainer currentToolId="json-formatter" />
-
-      <RichToolDescription tool={tool} />
     </div>
   );
 }

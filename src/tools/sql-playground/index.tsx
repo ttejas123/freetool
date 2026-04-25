@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
-import { RichToolDescription } from '@/components/ui/RichToolDescription';
 
 const Editor = React.lazy(() => import('@monaco-editor/react'));
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -84,8 +83,11 @@ interface ResultTab {
 
 export default function SQLPlayground() {
   const [files, setFiles] = useState<File[]>(() => {
-    const saved = localStorage.getItem('sql-editor-files-v1');
-    return saved ? JSON.parse(saved) : DEFAULT_FILES;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sql-editor-files-v1');
+      return saved ? JSON.parse(saved) : DEFAULT_FILES;
+    }
+    return DEFAULT_FILES;
   });
   const [activeFileId, setActiveFileId] = useState<string>(files[0]?.id || 'init-sql');
   const [tabs, setTabs] = useState<ResultTab[]>([]);
@@ -95,13 +97,19 @@ export default function SQLPlayground() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTerminalOpen, setIsTerminalOpen] = useState(true);
   const [terminalHeight, setTerminalHeight] = useState(() => {
-    const saved = localStorage.getItem('sql-editor-term-height');
-    return saved ? parseInt(saved) : 320;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sql-editor-term-height');
+      return saved ? parseInt(saved) : 320;
+    }
+    return 320;
   });
   const [editingFileId, setEditingFileId] = useState<string | null>(null);
   const [activeActivity, setActiveActivity] = useState<string>('files');
   const [theme, setTheme] = useState<ThemeMode>(() => {
-    return (localStorage.getItem('sql-editor-theme') as ThemeMode) || 'vs-dark';
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('sql-editor-theme') as ThemeMode) || 'vs-dark';
+    }
+    return 'vs-dark';
   });
 
   
@@ -662,8 +670,6 @@ export default function SQLPlayground() {
             </div>
           </div>
         </div>
-
-        <RichToolDescription tool={tool} />
       </div>
     </>
   );

@@ -55,14 +55,14 @@ export const Blogs = () => {
 
       {/* Blog Listing */}
       <section className="container mx-auto px-6 pb-40">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {blogPosts.map((post, i) => (
             <motion.article
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="group flex flex-col p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
+              className="group flex flex-col p-6 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 h-full"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${post.color} border border-transparent transition-transform group-hover:scale-110`}>

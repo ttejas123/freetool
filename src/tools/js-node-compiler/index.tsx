@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
 import { toolRegistry } from '@/tools/toolRegistry';
-import { RichToolDescription } from '@/components/ui/RichToolDescription';
 
 const Editor = React.lazy(() => import('@monaco-editor/react'));
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -43,8 +42,11 @@ type ThemeMode = 'vs-dark' | 'light' | 'hc-black' | 'github-dark';
 
 export default function JavaScriptRunner() {
   const [files, setFiles] = useState<File[]>(() => {
-    const saved = localStorage.getItem('js-editor-files-v3');
-    return saved ? JSON.parse(saved) : DEFAULT_FILES;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('js-editor-files-v3');
+      return saved ? JSON.parse(saved) : DEFAULT_FILES;
+    }
+    return DEFAULT_FILES;
   });
   const [activeFileId, setActiveFileId] = useState<string>(files[0]?.id || 'main-js');
   const [logs, setLogs] = useState<{ type: 'log' | 'error' | 'warn'; content: string; time: string }[]>([]);
@@ -52,13 +54,19 @@ export default function JavaScriptRunner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTerminalOpen, setIsTerminalOpen] = useState(true);
   const [terminalHeight, setTerminalHeight] = useState(() => {
-    const saved = localStorage.getItem('js-editor-term-height');
-    return saved ? parseInt(saved) : 320;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('js-editor-term-height');
+      return saved ? parseInt(saved) : 320;
+    }
+    return 320;
   });
   const [editingFileId, setEditingFileId] = useState<string | null>(null);
   const [activeActivity, setActiveActivity] = useState<string>('files');
   const [theme, setTheme] = useState<ThemeMode>(() => {
-    return (localStorage.getItem('js-editor-theme') as ThemeMode) || 'vs-dark';
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('js-editor-theme') as ThemeMode) || 'vs-dark';
+    }
+    return 'vs-dark';
   });
   const [exeTime, setExeTime] = useState(0);
 
@@ -497,8 +505,6 @@ export default function JavaScriptRunner() {
             </div>
           </div>
         </div>
-
-        <RichToolDescription tool={tool} />
       </div>
     </>
   );

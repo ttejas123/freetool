@@ -141,7 +141,7 @@ export const TechNews = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
             >
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="h-[280px] rounded-[1.5rem] bg-gray-50 dark:bg-white/5 animate-pulse" />
@@ -152,7 +152,7 @@ export const TechNews = () => {
               key="content"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
             >
               {filteredNews.map((item, i) => (
                 <motion.article
@@ -160,7 +160,7 @@ export const TechNews = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="group relative flex flex-col p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10"
+                  className="group relative flex flex-col p-6 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 h-full"
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-brand-500/10 text-brand-500 border border-brand-500/10">
@@ -169,11 +169,11 @@ export const TechNews = () => {
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{selectedFeed.name}</span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-3 group-hover:text-brand-500 transition-colors cursor-pointer" onClick={() => window.open(item.link, '_blank')}>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-3 group-hover:text-brand-500 transition-colors cursor-pointer flex-1" onClick={() => window.open(item.link, '_blank')}>
                     {item.title}
                   </h3>
 
-                  <div className="flex-1 overflow-hidden mb-8">
+                  <div className="overflow-hidden mb-8">
                      <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
                         {item.content.replace(/<[^>]*>?/gm, '').substring(0, 120)}...
                      </p>

@@ -166,11 +166,11 @@ const ToolCard = React.memo(({
       <a
         href={`/${tool.path}`}
         onClick={() => recordToolView(tool.id)}
-        className="group p-8 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 flex flex-col relative overflow-hidden"
+        className="group p-5 sm:p-6 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 flex flex-col relative overflow-hidden h-full"
       >
-        <div className="flex items-start justify-between mb-6">
-          <div className={`w-14 h-14 flex items-center justify-center rounded-2xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]} group-hover:scale-110 transition-transform shadow-sm`}>
-            <Icon className="w-7 h-7" />
+        <div className="flex items-start justify-between mb-5">
+          <div className={`w-11 h-11 flex items-center justify-center rounded-xl ${catClass.split(' ')[0]} ${catClass.split(' ')[1]} border ${catClass.split(' ')[2]} group-hover:scale-110 transition-transform shadow-sm`}>
+            <Icon className="w-5 h-5" />
           </div>
 
           <div className="flex flex-col items-end gap-2">
@@ -200,51 +200,39 @@ const ToolCard = React.memo(({
                 >
                    <Copy className="w-3.5 h-3.5" />
                 </button>
-                <button
-                  className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 hover:text-brand-500 transition-colors"
-                  aria-label={`Open ${tool.name} tool`}
-                >
-                   <ExternalLink className="w-3.5 h-3.5" />
-                </button>
              </div>
              <div className="flex flex-col items-end gap-1.5">
               {globalRank <= 3 && (
-                <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-tighter">
+                <div className="flex items-center gap-1 text-[8px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-tighter">
                   <Flame className="w-2.5 h-2.5" />
                   TRENDING
                 </div>
               )}
-              {(stats?.upvotes || 0) > 10 && (
-                <div className="flex items-center gap-1 text-[9px] font-bold text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20 uppercase tracking-tighter">
-                  <Plus className="w-2.5 h-2.5" />
-                  POPULAR
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors">
+        <div className="mb-4 flex-1">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors leading-snug">
             {tool.name}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-2 leading-relaxed">
+          <p className="text-[13px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-2 leading-relaxed">
             {tool.description}
           </p>
         </div>
 
-        <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-white/5">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <Eye className="w-4 h-4" />
-              <span className="font-bold tabular-nums"><Counter value={stats?.views || 0} duration={1} /></span>
+        <div className="flex items-center justify-between pt-5 border-t border-gray-50 dark:border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-medium">
+              <Eye className="w-3.5 h-3.5" />
+              <span className="tabular-nums"><Counter value={stats?.views || 0} duration={1} /></span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <ArrowUp className="w-4 h-4 text-brand-500" />
-              <span className="font-bold text-gray-700 dark:text-gray-300 tabular-nums">{stats?.upvotes || 0}</span>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-medium">
+              <ArrowUp className="w-3.5 h-3.5 text-brand-500" />
+              <span className="text-gray-600 dark:text-gray-300 tabular-nums">{stats?.upvotes || 0}</span>
             </div>
           </div>
-          <div className="text-[10px] font-bold px-2 py-1 rounded-md bg-gray-50 dark:bg-white/5 text-gray-400 uppercase tracking-widest border border-transparent group-hover:border-brand-500/20 group-hover:text-brand-500 transition-all">
+          <div className="text-[9px] font-black px-2 py-0.5 rounded-md bg-gray-50 dark:bg-white/5 text-gray-400 uppercase tracking-widest border border-transparent group-hover:border-brand-500/20 group-hover:text-brand-500 transition-all">
             {tool.category}
           </div>
         </div>
@@ -500,15 +488,15 @@ export const Home = () => {
                    </div>
                    <h2 className="text-3xl font-black text-gray-900 dark:text-white">Pinned Tools</h2>
                  </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {pinnedTools.map(tool => (
                       <div key={`pinned-${tool.id}`} className="relative group">
                         <a 
                           href={`/${tool.path}`}
-                          className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all shadow-sm hover:shadow-xl h-full"
+                          className="flex items-center gap-5 p-4 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all shadow-sm hover:shadow-xl h-full"
                         >
-                           <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
-                             <tool.icon className="w-6 h-6 text-current" />
+                           <div className={`w-11 h-11 flex items-center justify-center rounded-xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform shadow-sm`}>
+                             <tool.icon className="w-5 h-5 text-current" />
                            </div>
                            <div className="flex-1 overflow-hidden">
                              <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
@@ -539,15 +527,15 @@ export const Home = () => {
                    </div>
                    <h2 className="text-3xl font-black text-gray-900 dark:text-white">Recent Activity</h2>
                  </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {recentTools.slice(0, 4).map(tool => (
                       <a 
                         key={`recent-${tool.id}`}
                         href={`/${tool.path}`}
-                        className="flex items-center gap-5 p-5 rounded-[2rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all group shadow-sm hover:shadow-xl"
+                        className="flex items-center gap-5 p-4 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all shadow-sm hover:shadow-xl h-full"
                       >
-                         <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform`}>
-                           <tool.icon className="w-6 h-6 text-current" />
+                         <div className={`w-11 h-11 flex items-center justify-center rounded-xl ${getCategoryColor(tool.category).split(' ')[0]} ${getCategoryColor(tool.category).split(' ')[1]} text-gray-400 group-hover:scale-110 transition-transform shadow-sm`}>
+                           <tool.icon className="w-5 h-5 text-current" />
                          </div>
                          <div className="flex-1 overflow-hidden">
                            <div className="font-extrabold text-sm text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors truncate">{tool.name}</div>
@@ -573,24 +561,24 @@ export const Home = () => {
            </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-24">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-24">
            {/* All Tools Card */}
            <button
              onClick={() => {
                setSelectedCategory('All');
                document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
              }}
-             className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
+             className={`relative overflow-hidden group p-6 rounded-[1.5rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
                selectedCategory === 'All'
                  ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-black shadow-2xl'
                  : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-brand-500/50'
              }`}
            >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${selectedCategory === 'All' ? 'bg-brand-500 text-white' : 'bg-gray-100 dark:bg-white/5 text-gray-400'} group-hover:scale-110 transition-transform`}>
-                <Layers className="w-6 h-6" />
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-6 ${selectedCategory === 'All' ? 'bg-brand-500 text-white' : 'bg-gray-100 dark:bg-white/5 text-gray-400'} group-hover:scale-110 transition-transform`}>
+                <Layers className="w-5 h-5" />
               </div>
               <div>
-                <span className="block text-sm font-black uppercase tracking-widest mb-1">Standard</span>
+                <span className="block text-xs font-black uppercase tracking-widest mb-1">Standard</span>
                 <span className="text-lg font-black leading-none">All Utils</span>
               </div>
               {selectedCategory === 'All' && (
@@ -610,7 +598,7 @@ export const Home = () => {
                     setSelectedCategory(cat.name);
                     document.getElementById('tool-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className={`relative overflow-hidden group p-6 rounded-[2rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
+                  className={`relative overflow-hidden group p-6 rounded-[1.5rem] border-2 transition-all flex flex-col items-start text-left min-h-[160px] hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] ${
                     isActive
                       ? `bg-white dark:bg-[#0A0A0A] border-transparent shadow-2xl ${config.glow}`
                       : 'bg-white dark:bg-[#0A0A0A] border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
@@ -620,16 +608,16 @@ export const Home = () => {
                     <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${config.color} opacity-20 blur-2xl rounded-full`} />
                   )}
 
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ${
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ${
                     isActive
                       ? `bg-gradient-to-br ${config.color} text-white shadow-lg`
                       : 'bg-gray-100 dark:bg-white/5 text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-white/10'
                   }`}>
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5" />
                   </div>
 
                   <div className="relative z-10">
-                    <span className={`block text-[10px] font-black uppercase tracking-widest mb-1 ${isActive ? 'text-brand-500' : 'text-gray-400'}`}>
+                    <span className={`block text-[9px] font-black uppercase tracking-widest mb-1 ${isActive ? 'text-brand-500' : 'text-gray-400'}`}>
                       {cat.count} Tools
                     </span>
                     <span className={`text-lg font-black leading-none ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
