@@ -177,7 +177,6 @@ export function generateValue(type: FieldType, config: Record<string, any> = {})
     case 'productMaterial': return faker.commerce.productMaterial();
     case 'isbn': {
       try {
-        // @ts-ignore - isbn might be moved or missing in some versions
         return (faker as any).commerce?.isbn?.() || (faker as any).helpers?.replaceSymbols?.('###-##########') || faker.string.numeric(13);
       } catch {
         return faker.string.numeric(13);

@@ -91,7 +91,11 @@ function drawPattern(
             const angle = (Math.PI / 3) * i;
             const hx = cx + s * 0.5 * Math.cos(angle);
             const hy = cy + s * 0.5 * Math.sin(angle);
-            i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+            if(i === 0) {
+              ctx.moveTo(hx, hy);
+            } else {
+              ctx.lineTo(hx, hy);
+            }
           }
           ctx.closePath();
           ctx.stroke();
@@ -157,7 +161,11 @@ function drawPattern(
         const y0 = row * (s / 2);
         for (let x = -w; x < w * 2; x += 1) {
           const y = y0 + (s * 0.3) * Math.sin((x / s) * Math.PI * 2);
-          x === -w ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          if(x === -w) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
         }
         ctx.stroke();
       }

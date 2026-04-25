@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Type, Heading1, Heading2, Heading3, Image, Table, FileText, Video } from 'lucide-react';
 import { useEditorStore } from '../store';
 import type { BlockType } from '../types';
@@ -29,6 +29,22 @@ export function SlashMenu({ blockId, onClose, position }: SlashMenuProps) {
   const activePage = pages.find(p => p.id === activePageId);
   const currentBlock = activePage?.blocks.find(b => b.id === blockId);
 
+  const selectItem = useCallback((type: BlockType) => {
+    let content = currentBlock?.content || '';
+    if (typeof content === 'string') {
+      // Remove the slash that triggered the menu
+      content = content.replace(/\/$/, '').trim();
+    }
+
+    // Reset content for complex blocks if it was just text
+    if (['table', 'image', 'video', 'file'].includes(type) && typeof content === 'string') {
+      content = []; // Use empty array for table or appropriate default
+    }
+
+    updateBlock(blockId, { type, content });
+    onClose();
+  }, [blockId, currentBlock, updateBlock, onClose]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
@@ -46,23 +62,7 @@ export function SlashMenu({ blockId, onClose, position }: SlashMenuProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedIndex, blockId]);
-
-  const selectItem = (type: BlockType) => {
-    let content = currentBlock?.content || '';
-    if (typeof content === 'string') {
-      // Remove the slash that triggered the menu
-      content = content.replace(/\/$/, '').trim();
-    }
-
-    // Reset content for complex blocks if it was just text
-    if (['table', 'image', 'video', 'file'].includes(type) && typeof content === 'string') {
-      content = []; // Use empty array for table or appropriate default
-    }
-
-    updateBlock(blockId, { type, content });
-    onClose();
-  };
+  }, [selectedIndex, selectItem, onClose]);
 
   return (
     <div 

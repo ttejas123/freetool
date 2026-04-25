@@ -63,6 +63,7 @@ export default function TextParticle() {
   const animRef = useRef<number>(0);
   const particlesRef = useRef<Particle[]>([]);
   const playingRef = useRef(true);
+  const settingsRef = useRef({ scattered: false, speed: 6, shape: 'circle' as ParticleShape, drawParticle: (null as unknown as (ctx: CanvasRenderingContext2D, p: Particle, s: ParticleShape) => void) });
 
   const [text, setText] = useState('FREETOOL');
   const [fontSize, setFontSize] = useState(120);
@@ -136,18 +137,25 @@ export default function TextParticle() {
     ctx.globalAlpha = 1;
   }, []);
 
-  const tick = useCallback(() => {
+  // Sync settings to ref for stable tick function
+  useEffect(() => {
+    settingsRef.current = { scattered, speed, shape, drawParticle };
+  }, [scattered, speed, shape, drawParticle]);
+
+  const tick = useCallback(function loop() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
 
+    const { scattered: isScattered, speed: currentSpeed, shape: currentShape, drawParticle: currentDraw } = settingsRef.current;
+
     ctx.fillStyle = 'rgba(10,10,20,0.18)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
-    const ease = speed / 100;
+    const ease = currentSpeed / 100;
 
     for (const p of particlesRef.current) {
-      if (scattered) {
+      if (isScattered) {
         p.vx *= 0.96;
         p.vy += 0.05; // gravity
         p.x += p.vx;
@@ -159,11 +167,11 @@ export default function TextParticle() {
         p.x += p.vx;
         p.y += p.vy;
       }
-      drawParticle(ctx, p, shape);
+      currentDraw(ctx, p, currentShape);
     }
 
-    if (playingRef.current) animRef.current = requestAnimationFrame(tick);
-  }, [scattered, speed, shape, drawParticle]);
+    if (playingRef.current) animRef.current = requestAnimationFrame(loop);
+  }, []); // tick is now stable
 
   // Boot animation on text/options change
   useEffect(() => {

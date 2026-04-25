@@ -1,7 +1,7 @@
 import { getDatabase } from '../services';
 import type { ToolStats } from '../services/database/types';
 
-export interface ToolMetric extends ToolStats {}
+export type ToolMetric = ToolStats;
 
 // Seed math for fallback/initial look
 const generateSeedStats = (id: string) => {

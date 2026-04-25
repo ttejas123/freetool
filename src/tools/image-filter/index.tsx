@@ -144,16 +144,16 @@ export default function ImageFilter() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const srcCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  useFilePaste((files) => {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) handleFile(file);
-  });
-
   const handleFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
     setImageUrl(url);
     setOutputUrl(null);
   }, []);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const applyEffect = useCallback(() => {
     if (!imageUrl || !srcCanvasRef.current) return;
@@ -173,7 +173,9 @@ export default function ImageFilter() {
     img.src = imageUrl;
   }, [imageUrl, activeFilter, strength]);
 
-  useEffect(() => { if (imageUrl) applyEffect(); }, [activeFilter, strength, imageUrl]);
+  useEffect(() => { 
+    if (imageUrl) applyEffect(); 
+  }, [imageUrl, applyEffect]);
 
   return (
     <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 pb-16">
@@ -200,7 +202,11 @@ export default function ImageFilter() {
               <div
                 className="border-2 border-dashed border-pink-300 dark:border-pink-700/50 rounded-xl p-8 text-center cursor-pointer hover:bg-pink-50/50 dark:hover:bg-pink-900/10 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
-                onDrop={e => { e.preventDefault(); e.dataTransfer.files[0] && handleFile(e.dataTransfer.files[0]); }}
+                onDrop={e => { 
+                  e.preventDefault(); 
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFile(file); 
+                }}
                 onDragOver={e => e.preventDefault()}
               >
                 <Upload className="w-12 h-12 text-pink-400 mx-auto mb-3" />

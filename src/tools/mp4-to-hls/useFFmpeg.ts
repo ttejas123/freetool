@@ -129,8 +129,12 @@ export function useFFmpeg() {
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     
     // Clean up residual files
-    try { await ffmpeg.deleteFile('input.mp4'); } catch { }
-    try { await ffmpeg.deleteFile('output.m3u8'); } catch { }
+    try { await ffmpeg.deleteFile('input.mp4'); } catch (_e) {
+      // eslint-disable-next-line no-empty
+    }
+    try { await ffmpeg.deleteFile('output.m3u8'); } catch (_e) {
+      // eslint-disable-next-line no-empty
+    }
     
     setStatus('Ready');
     setProgress(100);

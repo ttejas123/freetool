@@ -13,7 +13,6 @@ import {
   MessageSquare,
   ArrowRight
 } from 'lucide-react';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 interface NewsItem {
   title: string;

@@ -1,7 +1,6 @@
 'use client';
 
 import { FileText, ShieldCheck, Scale, AlertCircle } from 'lucide-react';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const Terms = () => {
   return (

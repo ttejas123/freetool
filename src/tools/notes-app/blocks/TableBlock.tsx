@@ -27,7 +27,7 @@ export function TableBlock({ block }: TableBlockProps) {
         handleDataUpdate(json);
         return true;
       }
-    } catch (e) {
+    } catch (_e) {
       Papa.parse(text, {
         complete: (results) => {
           if (results.data && results.data.length > 0) {
@@ -58,7 +58,7 @@ export function TableBlock({ block }: TableBlockProps) {
         try {
           const json = JSON.parse(content);
           if (Array.isArray(json)) handleDataUpdate(json);
-        } catch (e) {
+        } catch (_e) {
           alert('Invalid JSON file. Must be an array of objects.');
         }
       }

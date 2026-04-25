@@ -29,7 +29,6 @@ import {
   Sparkles,
   Layers,
   Plus,
-  ExternalLink,
   Terminal,
   PinOff,
   Bookmark
@@ -40,7 +39,6 @@ import { toast } from '../store/toastStore';
 import { trackPageView } from '../lib/analytics';
 import { TypingText } from '../components/ui/TypingText';
 import { Counter } from '../components/ui/Counter';
-import { BackgroundEffects } from '../components/ui/BackgroundEffects';
 import { UpcomingTools } from '../components/home/UpcomingTools';
 
 const getCategoryConfig = (category: string) => {
@@ -153,7 +151,7 @@ const ToolCard = React.memo(({
   onTogglePin 
 }: { 
   tool: RegistryTool; 
-  stats: any; 
+  stats: ToolMetric | undefined; 
   globalRank: number; 
   catClass: string; 
   isPinned: boolean; 
@@ -249,6 +247,7 @@ export const Home = () => {
   const router = useRouter();
   const tab = searchParams.get('tab') || 'all';
   
+  const [mounted, setMounted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<'newest' | 'views' | 'upvotes'>('newest');
@@ -257,26 +256,39 @@ export const Home = () => {
   const [pinnedToolIds, setPinnedToolIds] = useState<string[]>([]);
 
   useEffect(() => {
-    trackPageView('/');
-    const saved = localStorage.getItem('recentTools');
-    if (saved) {
-       try {
-         const ids = JSON.parse(saved);
-         const tools = ids.map((id: string) => toolRegistry.find(t => t.id === id)).filter(Boolean);
-         setRecentTools(tools);
-       } catch (e) {
-         console.error('Failed to load recent tools', e);
-       }
-    }
-    setPinnedToolIds(getPinnedTools());
-  }, []);
+    // Defer state updates to avoid cascading render lint error during hydration
+    const timer = setTimeout(() => {
+      setMounted(true);
+      
+      // Load client-only data
+      const query = searchParams.get('search') || '';
+      setSearchTerm(query);
+      setMetrics(getCachedMetrics());
+      setPinnedToolIds(getPinnedTools());
+
+      const saved = localStorage.getItem('recentTools');
+      if (saved) {
+        try {
+          const ids = JSON.parse(saved);
+          const tools = ids.map((id: string) => toolRegistry.find(t => t.id === id)).filter((t: RegistryTool | undefined): t is RegistryTool => !!t);
+          setRecentTools(tools);
+        } catch (e) {
+          console.error('Failed to load recent tools', e);
+        }
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   useEffect(() => {
-    const query = searchParams.get('search');
-    if (query !== null) {
-      setSearchTerm(query);
-    }
-  }, [searchParams]);
+    trackPageView('/');
+  }, []);
+
+  const queryFromUrl = searchParams.get('search');
+  if (queryFromUrl !== null && queryFromUrl !== searchTerm) {
+    setSearchTerm(queryFromUrl);
+  }
 
   const handleLocalSearch = (val: string) => {
      setSearchTerm(val);
@@ -290,8 +302,8 @@ export const Home = () => {
     try {
       togglePinTool(toolId);
       setPinnedToolIds(getPinnedTools());
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'An error occurred');
     }
   };
 
@@ -302,7 +314,6 @@ export const Home = () => {
   }, [pinnedToolIds]);
 
   useEffect(() => {
-    setMetrics(getCachedMetrics());
     const loadStats = async () => {
        const globalMetrics = await fetchAllToolMetrics();
        setMetrics(globalMetrics);
@@ -478,7 +489,7 @@ export const Home = () => {
       </div>
 
       {/* Recently Used & Pinned Tools Section */}
-      {(recentTools.length > 0 || pinnedTools.length > 0) && (
+      {mounted && (recentTools.length > 0 || pinnedTools.length > 0) && (
           <section className="container mx-auto px-6 mb-32 anim-fade-up">
              {pinnedTools.length > 0 && (
                <div className="mb-20">
@@ -659,7 +670,7 @@ export const Home = () => {
                 <select 
                   id="sort-select"
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={(e) => setSortBy(e.target.value as 'newest' | 'views' | 'upvotes')}
                   className="appearance-none pl-6 pr-14 py-4 bg-gray-100/50 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-2xl text-sm font-black uppercase tracking-widest focus:outline-none cursor-pointer dark:text-white shadow-inner hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all"
                 >
                   <option value="newest">Newest</option>

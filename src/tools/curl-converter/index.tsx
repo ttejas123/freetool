@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { SEOHelmet } from '@/components/SEOHelmet';
-import { toolRegistry } from '@/tools/toolRegistry';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { OutputConsole } from '@/components/ui/OutputConsole';
@@ -44,8 +43,6 @@ export default function CurlConverter() {
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  const tool = toolRegistry.find(t => t.id === 'curl-converter')!;
-
   // Initialize curlconverter
   useEffect(() => {
     const init = async () => {
@@ -80,11 +77,11 @@ export default function CurlConverter() {
         const result = curlConverterModule.default[selectedLang.fn](curl);
         setOutput(result);
       }
-    } catch (err: any) {
-      setError(err.message || 'Invalid cURL command');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid cURL command');
       setOutput('');
     }
-  }, [curl, selectedLang, isInitializing]);
+  }, [curl, selectedLang]);
 
   useEffect(() => {
     if (!isInitializing) {

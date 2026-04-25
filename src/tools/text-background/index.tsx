@@ -60,7 +60,11 @@ function applyMaskClip(ctx: CanvasRenderingContext2D, mask: MaskShape, w: number
         const a = (Math.PI / 3) * i - Math.PI / 6;
         const x = cx + rx * 1.1 * Math.cos(a);
         const y = cy + rx * 1.1 * Math.sin(a);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.closePath();
       break;

@@ -111,7 +111,9 @@ export const analyzeInput = (input: string): AnalysisResult => {
     try {
       JSON.parse(decoded);
       isJson = true;
-    } catch (e) {}
+    } catch (e) {
+      // eslint-disable-next-line no-empty
+    }
 
     // Image signature check (simple)
     if (decoded.startsWith('\xFF\xD8\xFF')) mimeType = 'image/jpeg';
@@ -134,7 +136,9 @@ export const analyzeInput = (input: string): AnalysisResult => {
   try {
     JSON.parse(trimmedInput);
     isJson = true;
-  } catch (e) {}
+  } catch (e) {
+    // eslint-disable-next-line no-empty
+  }
 
   return {
     type: 'text',

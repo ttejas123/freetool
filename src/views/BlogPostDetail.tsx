@@ -7,12 +7,10 @@ import {
   User, 
   Share2,
   Bookmark,
-  MessageCircle,
   Link2
 } from 'lucide-react';
 import { BlogPost } from '@/data/blogs';
 import { SEOHelmet } from '../components/SEOHelmet';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 interface BlogPostDetailProps {
   post: BlogPost;

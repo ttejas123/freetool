@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import { useFilePaste } from '@/hooks/useFilePaste';
 import { FileDown, Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import * as mammoth from 'mammoth';
-// @ts-ignore
 import html2pdf from 'html2pdf.js';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

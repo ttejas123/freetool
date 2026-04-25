@@ -188,45 +188,6 @@ export default function BmiCalculator() {
     setUnit(newUnit);
   };
 
-  // --- UI Components ---
-
-  const Gauge = () => {
-    const minBmi = 15;
-    const maxBmi = 40;
-    const clampedBmi = Math.min(Math.max(bmiValue, minBmi), maxBmi);
-    const percentage = ((clampedBmi - minBmi) / (maxBmi - minBmi)) * 100;
-
-    return (
-      <div className="relative w-full h-12 mt-6 mb-10">
-        <div className="absolute inset-0 flex rounded-full overflow-hidden shadow-inner h-4 top-4">
-          <div className="h-full bg-blue-400" style={{ width: '14%' }}></div> {/* Underweight */}
-          <div className="h-full bg-green-400" style={{ width: '25.6%' }}></div> {/* Normal */}
-          <div className="h-full bg-yellow-400" style={{ width: '20%' }}></div> {/* Overweight */}
-          <div className="h-full bg-red-400" style={{ width: '40.4%' }}></div> {/* Obese */}
-        </div>
-        <div className="absolute top-10 inset-0 flex justify-between text-[10px] font-medium text-gray-400 px-1">
-          <span>15</span>
-          <span>18.5</span>
-          <span>25</span>
-          <span>30</span>
-          <span>40+</span>
-        </div>
-        <motion.div 
-          className="absolute top-0 flex flex-col items-center"
-          initial={false}
-          animate={{ left: `${percentage}%` }}
-          transition={{ type: "spring", stiffness: 100, damping: 15 }}
-          style={{ transform: 'translateX(-50%)' }}
-        >
-          <div className="bg-white dark:bg-gray-800 border-2 border-brand-500 rounded-full px-2 py-0.5 text-xs font-bold shadow-lg mb-1">
-            {bmiValue > 0 ? bmiValue.toFixed(1) : '–'}
-          </div>
-          <div className="w-1 h-8 bg-brand-500 rounded-full shadow-sm"></div>
-        </motion.div>
-      </div>
-    );
-  };
-
   return (
     <div className="w-full mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-700">
       <SEOHelmet title="Advanced BMI Calculator" description="Compute your BMI, set goals, and get health insights with our visual tool." />
@@ -569,7 +530,7 @@ export default function BmiCalculator() {
                 {/* Visual Scale Gauge */}
                 <Card className="border-none shadow-lg bg-white dark:bg-gray-900 overflow-visible">
                   <CardContent className="p-8">
-                    <Gauge />
+                    <Gauge bmi={bmiValue} category={currentCategory} />
                   </CardContent>
                 </Card>
 
@@ -625,3 +586,42 @@ export default function BmiCalculator() {
     </div>
   );
 }
+
+// --- UI Components ---
+
+const Gauge = ({ bmi, category }: { bmi: number; category: any }) => {
+  const minBmi = 15;
+  const maxBmi = 40;
+  const clampedBmi = Math.min(Math.max(bmi, minBmi), maxBmi);
+  const percentage = ((clampedBmi - minBmi) / (maxBmi - minBmi)) * 100;
+
+  return (
+    <div className="relative w-full h-12 mt-6 mb-10">
+      <div className="absolute inset-0 flex rounded-full overflow-hidden shadow-inner h-4 top-4">
+        <div className="h-full bg-blue-400" style={{ width: '14%' }}></div> {/* Underweight */}
+        <div className="h-full bg-green-400" style={{ width: '25.6%' }}></div> {/* Normal */}
+        <div className="h-full bg-yellow-400" style={{ width: '20%' }}></div> {/* Overweight */}
+        <div className="h-full bg-red-400" style={{ width: '40.4%' }}></div> {/* Obese */}
+      </div>
+      <div className="absolute top-10 inset-0 flex justify-between text-[10px] font-medium text-gray-400 px-1">
+        <span>15</span>
+        <span>18.5</span>
+        <span>25</span>
+        <span>30</span>
+        <span>40+</span>
+      </div>
+      <motion.div 
+        className="absolute top-0 flex flex-col items-center"
+        initial={false}
+        animate={{ left: `${percentage}%` }}
+        transition={{ type: "spring", stiffness: 100, damping: 15 }}
+        style={{ transform: 'translateX(-50%)' }}
+      >
+        <div className="bg-white dark:bg-gray-800 border-2 border-brand-500 rounded-full px-2 py-0.5 text-xs font-bold shadow-lg mb-1 text-gray-900 dark:text-white">
+          {bmi > 0 ? bmi.toFixed(1) : '–'}
+        </div>
+        <div className="w-1 h-8 bg-brand-500 rounded-full shadow-sm"></div>
+      </motion.div>
+    </div>
+  );
+};

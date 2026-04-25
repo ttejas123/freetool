@@ -90,6 +90,7 @@ export default function QrGenerator() {
   const [vcardData, setVcardData] = useState({ 
     firstName: '', lastName: '', org: '', title: '', phone: '', email: '', url: '', address: '' 
   });
+    const [activeTab, setActiveTab] = useState<'content' | 'style' | 'logo' | 'colors'>('content');
 
   const qrRef = useRef<HTMLDivElement>(null);
   const [qrCode] = useState(() => new QRCodeStyling(options));
@@ -162,8 +163,6 @@ export default function QrGenerator() {
       qrCode.download({ name: 'qr-code', extension: ext as FileExtension });
     }
   };
-
-  const [activeTab, setActiveTab] = useState<'content' | 'style' | 'logo' | 'colors'>('content');
 
   const qrTypes = [
     { id: 'url', icon: LinkIcon, label: 'URL' },

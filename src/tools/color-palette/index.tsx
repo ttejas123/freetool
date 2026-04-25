@@ -65,13 +65,6 @@ export default function ColorPalette() {
   const { copyToClipboard } = useCopyToClipboard();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useFilePaste((files) => {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) {
-      extractColorsFromImage(file);
-    }
-  });
-
   // --- New Picker State ---
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [pickedColor, setPickedColor] = useState<string>('#2563eb');
@@ -82,6 +75,78 @@ export default function ColorPalette() {
     show: false
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const applyPalette = (hexArray: string[]) => {
+    const newColors = ROLES.map((role, i) => ({
+      role,
+      hex: hexArray[i] || '#000000',
+    }));
+    setColors(newColors);
+  };
+
+  const generateHarmoniousPalette = (seed: chroma.Color) => {
+    return [
+      seed.hex(),
+      seed.set('hsl.h', '+30').hex(),
+      seed.set('hsl.h', '+180').hex(), // Complement
+      seed.brighten(2.5).hex(),
+      seed.darken(3).hex(),
+    ];
+  };
+
+
+  const extractColorsFromImage = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        setSelectedImage(img.src);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        canvas.width = 100;
+        canvas.height = 100;
+        ctx.drawImage(img, 0, 0, 100, 100);
+
+        const imageData = ctx.getImageData(0, 0, 100, 100).data;
+        const colorCounts: Record<string, number> = {};
+
+        for (let i = 0; i < imageData.length; i += 4) {
+          const r = imageData[i];
+          const g = imageData[i + 1];
+          const b = imageData[i + 2];
+          const hex = chroma(r, g, b).hex();
+          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+        }
+
+        const sortedColors = Object.entries(colorCounts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([hex]) => hex);
+
+        // Filter for distinct colors
+        const distinct: string[] = [];
+        for (const hex of sortedColors) {
+          if (distinct.length >= 5) break;
+          // Use deltaE if available, otherwise just check hex
+          if (distinct.every(d => chroma.deltaE(d, hex) > 20)) {
+            distinct.push(hex);
+          }
+        }
+
+        if (distinct.length > 0) applyPalette(distinct);
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      extractColorsFromImage(file);
+    }
+  });
+
 
   // Draw image to canvas for picking
   useEffect(() => {
@@ -146,23 +211,6 @@ export default function ColorPalette() {
     }
   };
 
-  const generateHarmoniousPalette = (seed: chroma.Color) => {
-    return [
-      seed.hex(),
-      seed.set('hsl.h', '+30').hex(),
-      seed.set('hsl.h', '+180').hex(), // Complement
-      seed.brighten(2.5).hex(),
-      seed.darken(3).hex(),
-    ];
-  };
-
-  const applyPalette = (hexArray: string[]) => {
-    const newColors = ROLES.map((role, i) => ({
-      role,
-      hex: hexArray[i] || '#000000',
-    }));
-    setColors(newColors);
-  };
 
   const shufflePalette = () => {
     const randomHue = Math.floor(Math.random() * 360);
@@ -175,51 +223,6 @@ export default function ColorPalette() {
     setColors(prev => prev.map(c => c.role === role ? { ...c, hex: newHex } : c));
   };
 
-  const extractColorsFromImage = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        setSelectedImage(img.src);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        canvas.width = 100;
-        canvas.height = 100;
-        ctx.drawImage(img, 0, 0, 100, 100);
-
-        const imageData = ctx.getImageData(0, 0, 100, 100).data;
-        const colorCounts: Record<string, number> = {};
-
-        for (let i = 0; i < imageData.length; i += 4) {
-          const r = imageData[i];
-          const g = imageData[i + 1];
-          const b = imageData[i + 2];
-          const hex = chroma(r, g, b).hex();
-          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
-        }
-
-        const sortedColors = Object.entries(colorCounts)
-          .sort((a, b) => b[1] - a[1])
-          .map(([hex]) => hex);
-
-        // Filter for distinct colors
-        const distinct: string[] = [];
-        for (const hex of sortedColors) {
-          if (distinct.length >= 5) break;
-          // Use deltaE if available, otherwise just check hex
-          if (distinct.every(d => chroma.deltaE(d, hex) > 20)) {
-            distinct.push(hex);
-          }
-        }
-
-        if (distinct.length > 0) applyPalette(distinct);
-      };
-      img.src = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleImageMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -279,171 +282,6 @@ export default function ColorPalette() {
   };
 
   // --- Sub-Components ---
-
-  const PreviewComponent = () => {
-    const p = colors.find(c => c.role === 'primary')?.hex || '#000';
-    const s = colors.find(c => c.role === 'secondary')?.hex || '#000';
-    const a = colors.find(c => c.role === 'accent')?.hex || '#000';
-    const surf = colors.find(c => c.role === 'surface')?.hex || '#fff';
-    const bg = colors.find(c => c.role === 'background')?.hex || '#fff';
-    const isDark = chroma(bg).luminance() < 0.5;
-    const text = isDark ? '#ffffff' : '#0f172a';
-
-    const renderPreview = () => {
-      if (activePreview === 'website') {
-        return (
-          <div className="w-full h-full p-8 rounded-xl overflow-auto border border-gray-200 dark:border-gray-800 transition-colors" style={{ backgroundColor: bg, color: text }}>
-            <nav className="flex justify-between items-center mb-12">
-              <div className="font-bold text-xl flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: p }} />
-                FreeTool
-              </div>
-              <div className="flex gap-4 text-sm font-medium">
-                <span className="opacity-70">Features</span>
-                <span className="opacity-70">Pricing</span>
-                <button className="px-4 py-2 rounded-full text-white" style={{ backgroundColor: s }}>Sign Up</button>
-              </div>
-            </nav>
-            <div className="w-full mx-auto text-center space-y-6">
-              <h2 className="text-4xl font-extrabold tracking-tight">Level up your <span style={{ color: p }}>workflow</span> today.</h2>
-              <p className="text-lg opacity-80">Everything you need to build, scale, and thrive in the modern web era.</p>
-              <div className="flex justify-center gap-4">
-                <button className="px-6 py-3 rounded-lg font-bold text-white shadow-lg" style={{ backgroundColor: p }}>Get Started</button>
-                <button className="px-6 py-3 rounded-lg font-bold border" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>Learn More</button>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-6 mt-16">
-              <div className="p-6 rounded-2xl shadow-sm border border-black/5" style={{ backgroundColor: surf }}>
-                <div className="w-10 h-10 rounded-full mb-4 flex items-center justify-center text-white" style={{ backgroundColor: a }}>
-                  <Monitor className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold mb-2">Cross Platform</h3>
-                <p className="text-sm opacity-70">Run your apps anywhere with seamless synchronization.</p>
-              </div>
-              <div className="p-6 rounded-2xl shadow-sm border border-black/5" style={{ backgroundColor: surf }}>
-                <div className="w-10 h-10 rounded-full mb-4 flex items-center justify-center text-white" style={{ backgroundColor: s }}>
-                  <Settings className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold mb-2">Fully Managed</h3>
-                <p className="text-sm opacity-70">Don't worry about infrastructure, we handle the hard parts.</p>
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      if (activePreview === 'dashboard') {
-        return (
-          <div className="w-full h-full flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800" style={{ backgroundColor: bg, color: text }}>
-            <div className="w-64 p-6 border-r border-black/5 flex flex-col gap-6" style={{ backgroundColor: surf }}>
-              <div className="font-bold text-lg mb-4">Admin Pro</div>
-              {['Overview', 'Analytics', 'Customers', 'Messages', 'Settings'].map((item, i) => (
-                <div key={item} className={`flex items-center gap-3 text-sm p-3 rounded-xl transition-colors ${i === 1 ? 'text-white' : 'opacity-70'}`} 
-                  style={i === 1 ? { backgroundColor: p } : {}}>
-                  <Layout className="w-4 h-4" />
-                  {item}
-                </div>
-              ))}
-            </div>
-            <div className="flex-1 p-8 space-y-8 overflow-auto">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Analytics</h2>
-                <div className="flex gap-2">
-                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: surf }} />
-                  <div className="w-10 h-10 rounded-full" style={{ backgroundColor: p }} />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-6">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="p-6 rounded-2xl border border-black/5" style={{ backgroundColor: surf }}>
-                    <div className="text-sm opacity-60 mb-1">Monthly Growth</div>
-                    <div className="text-2xl font-bold" style={{ color: i === 1 ? p : text }}>+$24,500</div>
-                    <div className="mt-4 h-2 w-full rounded-full bg-black/5 overflow-hidden">
-                      <div className="h-full rounded-full" style={{ backgroundColor: i === 1 ? p : a, width: i === 1 ? '70%' : '40%' }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="w-full h-64 rounded-2xl border border-black/5 p-6" style={{ backgroundColor: surf }}>
-                <div className="font-bold mb-4">Traffic Performance</div>
-                <div className="flex items-end gap-2 h-32">
-                  {[40, 70, 45, 90, 65, 80, 50, 85].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-lg transition-transform hover:scale-105" 
-                      style={{ height: `${h}%`, backgroundColor: i % 2 === 0 ? p : s }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      if (activePreview === 'mobile') {
-          return (
-            <div className="w-full h-full flex items-center justify-center p-8 bg-gray-100 dark:bg-gray-900 rounded-xl">
-               <div className="w-[300px] h-[600px] rounded-[3rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden flex flex-col" style={{ backgroundColor: bg }}>
-                  <div className="absolute top-0 inset-x-0 h-6 flex justify-center pt-1">
-                    <div className="w-20 h-5 bg-gray-800 rounded-b-2xl" />
-                  </div>
-                  
-                  <div className="mt-12 px-6 flex-1 flex flex-col">
-                      <div className="mb-8">
-                          <div className="w-12 h-12 rounded-2xl mb-4 flex items-center justify-center text-white" style={{ backgroundColor: p }}>
-                              <Palette className="w-6 h-6" />
-                          </div>
-                          <h2 className="text-2xl font-bold" style={{ color: text }}>Welcome back!</h2>
-                          <p className="text-sm opacity-60" style={{ color: text }}>Login to continue your journey.</p>
-                      </div>
-      
-                      <div className="space-y-4 mb-8">
-                          <div className="h-12 w-full rounded-xl border border-black/5 px-4 flex items-center text-sm" style={{ backgroundColor: surf, color: text }}>
-                              Email Address
-                          </div>
-                          <div className="h-12 w-full rounded-xl border border-black/5 px-4 flex items-center text-sm" style={{ backgroundColor: surf, color: text }}>
-                              Password
-                          </div>
-                      </div>
-      
-                      <button className="w-full h-12 rounded-xl text-white font-bold shadow-lg" style={{ backgroundColor: p }}>
-                          Sign In
-                      </button>
-      
-                      <div className="mt-6 flex flex-col gap-3">
-                          <div className="text-center text-xs opacity-50 font-medium uppercase tracking-widest">Or login with</div>
-                          <div className="flex gap-4">
-                              <div className="flex-1 h-12 rounded-xl border border-black/5" style={{ backgroundColor: surf }} />
-                              <div className="flex-1 h-12 rounded-xl border border-black/5" style={{ backgroundColor: surf }} />
-                          </div>
-                      </div>
-                  </div>
-      
-                  <div className="p-6 border-t border-black/5 bg-gray-50/10 flex justify-between">
-                      {[1,2,3,4].map(i => (
-                          <div key={i} className="w-6 h-6 rounded-lg opacity-40" style={{ backgroundColor: i === 1 ? p : text }} />
-                      ))}
-                  </div>
-               </div>
-            </div>
-          );
-        }
-      return null;
-    };
-
-    return (
-      <AnimatePresence mode="wait">
-        <motion.div 
-          key={activePreview}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-          className="w-full h-full"
-        >
-          {renderPreview()}
-        </motion.div>
-      </AnimatePresence>
-    );
-  };
 
   // --- Render ---
 
@@ -682,7 +520,7 @@ export default function ColorPalette() {
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-3 py-1 rounded-full z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     LIVE PREVIEW
                 </div>
-                <PreviewComponent />
+                <PreviewComponent colors={colors} activePreview={activePreview} />
             </div>
 
             {/* Accessibility / Stats Card */}
@@ -723,3 +561,169 @@ export default function ColorPalette() {
     </div>
   );
 }
+// --- Sub-Components ---
+
+const PreviewComponent = ({ colors, activePreview }: { colors: ColorInfo[], activePreview: 'website' | 'dashboard' | 'mobile' }) => {
+  const p = colors.find(c => c.role === 'primary')?.hex || '#000';
+  const s = colors.find(c => c.role === 'secondary')?.hex || '#000';
+  const a = colors.find(c => c.role === 'accent')?.hex || '#000';
+  const surf = colors.find(c => c.role === 'surface')?.hex || '#fff';
+  const bg = colors.find(c => c.role === 'background')?.hex || '#fff';
+  const isDark = chroma(bg).luminance() < 0.5;
+  const text = isDark ? '#ffffff' : '#0f172a';
+
+  const renderPreview = () => {
+    if (activePreview === 'website') {
+      return (
+        <div className="w-full h-full p-8 rounded-xl overflow-auto border border-gray-200 dark:border-gray-800 transition-colors" style={{ backgroundColor: bg, color: text }}>
+          <nav className="flex justify-between items-center mb-12">
+            <div className="font-bold text-xl flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: p }} />
+              FreeTool
+            </div>
+            <div className="flex gap-4 text-sm font-medium">
+              <span className="opacity-70">Features</span>
+              <span className="opacity-70">Pricing</span>
+              <button className="px-4 py-2 rounded-full text-white" style={{ backgroundColor: s }}>Sign Up</button>
+            </div>
+          </nav>
+          <div className="w-full mx-auto text-center space-y-6">
+            <h2 className="text-4xl font-extrabold tracking-tight">Level up your <span style={{ color: p }}>workflow</span> today.</h2>
+            <p className="text-lg opacity-80">Everything you need to build, scale, and thrive in the modern web era.</p>
+            <div className="flex justify-center gap-4">
+              <button className="px-6 py-3 rounded-lg font-bold text-white shadow-lg" style={{ backgroundColor: p }}>Get Started</button>
+              <button className="px-6 py-3 rounded-lg font-bold border" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>Learn More</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-6 mt-16">
+            <div className="p-6 rounded-2xl shadow-sm border border-black/5" style={{ backgroundColor: surf }}>
+              <div className="w-10 h-10 rounded-full mb-4 flex items-center justify-center text-white" style={{ backgroundColor: a }}>
+                <Monitor className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold mb-2">Cross Platform</h3>
+              <p className="text-sm opacity-70">Run your apps anywhere with seamless synchronization.</p>
+            </div>
+            <div className="p-6 rounded-2xl shadow-sm border border-black/5" style={{ backgroundColor: surf }}>
+              <div className="w-10 h-10 rounded-full mb-4 flex items-center justify-center text-white" style={{ backgroundColor: s }}>
+                <Settings className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold mb-2">Fully Managed</h3>
+              <p className="text-sm opacity-70">Don't worry about infrastructure, we handle the hard parts.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activePreview === 'dashboard') {
+      return (
+        <div className="w-full h-full flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800" style={{ backgroundColor: bg, color: text }}>
+          <div className="w-64 p-6 border-r border-black/5 flex flex-col gap-6" style={{ backgroundColor: surf }}>
+            <div className="font-bold text-lg mb-4">Admin Pro</div>
+            {['Overview', 'Analytics', 'Customers', 'Messages', 'Settings'].map((item, i) => (
+              <div key={item} className={`flex items-center gap-3 text-sm p-3 rounded-xl transition-colors ${i === 1 ? 'text-white' : 'opacity-70'}`} 
+                style={i === 1 ? { backgroundColor: p } : {}}>
+                <Layout className="w-4 h-4" />
+                {item}
+              </div>
+            ))}
+          </div>
+          <div className="flex-1 p-8 space-y-8 overflow-auto">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Analytics</h2>
+              <div className="flex gap-2">
+                <div className="w-10 h-10 rounded-full" style={{ backgroundColor: surf }} />
+                <div className="w-10 h-10 rounded-full" style={{ backgroundColor: p }} />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="p-6 rounded-2xl border border-black/5" style={{ backgroundColor: surf }}>
+                  <div className="text-sm opacity-60 mb-1">Monthly Growth</div>
+                  <div className="text-2xl font-bold" style={{ color: i === 1 ? p : text }}>+$24,500</div>
+                  <div className="mt-4 h-2 w-full rounded-full bg-black/5 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ backgroundColor: i === 1 ? p : a, width: i === 1 ? '70%' : '40%' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="w-full h-64 rounded-2xl border border-black/5 p-6" style={{ backgroundColor: surf }}>
+              <div className="font-bold mb-4">Traffic Performance</div>
+              <div className="flex items-end gap-2 h-32">
+                {[40, 70, 45, 90, 65, 80, 50, 85].map((h, i) => (
+                  <div key={i} className="flex-1 rounded-t-lg transition-transform hover:scale-105" 
+                    style={{ height: `${h}%`, backgroundColor: i % 2 === 0 ? p : s }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activePreview === 'mobile') {
+        return (
+          <div className="w-full h-full flex items-center justify-center p-8 bg-gray-100 dark:bg-gray-900 rounded-xl">
+             <div className="w-[300px] h-[600px] rounded-[3rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden flex flex-col" style={{ backgroundColor: bg }}>
+                <div className="absolute top-0 inset-x-0 h-6 flex justify-center pt-1">
+                  <div className="w-20 h-5 bg-gray-800 rounded-b-2xl" />
+                </div>
+                
+                <div className="mt-12 px-6 flex-1 flex flex-col">
+                    <div className="mb-8">
+                        <div className="w-12 h-12 rounded-2xl mb-4 flex items-center justify-center text-white" style={{ backgroundColor: p }}>
+                            <Palette className="w-6 h-6" />
+                        </div>
+                        <h2 className="text-2xl font-bold" style={{ color: text }}>Welcome back!</h2>
+                        <p className="text-sm opacity-60" style={{ color: text }}>Login to continue your journey.</p>
+                    </div>
+    
+                    <div className="space-y-4 mb-8">
+                        <div className="h-12 w-full rounded-xl border border-black/5 px-4 flex items-center text-sm" style={{ backgroundColor: surf, color: text }}>
+                            Email Address
+                        </div>
+                        <div className="h-12 w-full rounded-xl border border-black/5 px-4 flex items-center text-sm" style={{ backgroundColor: surf, color: text }}>
+                            Password
+                        </div>
+                    </div>
+    
+                    <button className="w-full h-12 rounded-xl text-white font-bold shadow-lg" style={{ backgroundColor: p }}>
+                        Sign In
+                    </button>
+    
+                    <div className="mt-6 flex flex-col gap-3">
+                        <div className="text-center text-xs opacity-50 font-medium uppercase tracking-widest">Or login with</div>
+                        <div className="flex gap-4">
+                            <div className="flex-1 h-12 rounded-xl border border-black/5" style={{ backgroundColor: surf }} />
+                            <div className="flex-1 h-12 rounded-xl border border-black/5" style={{ backgroundColor: surf }} />
+                        </div>
+                    </div>
+                </div>
+    
+                <div className="p-6 border-t border-black/5 bg-gray-50/10 flex justify-between">
+                    {[1,2,3,4].map(i => (
+                        <div key={i} className="w-6 h-6 rounded-lg opacity-40" style={{ backgroundColor: i === 1 ? p : text }} />
+                    ))}
+                </div>
+             </div>
+          </div>
+        );
+      }
+    return null;
+  };
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div 
+        key={activePreview}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="w-full h-full"
+      >
+        {renderPreview()}
+      </motion.div>
+    </AnimatePresence>
+  );
+};

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SEOHelmet } from '../../components/SEOHelmet';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -20,15 +20,13 @@ interface TimeDuration {
 
 export default function TimestampConverter() {
   const [inputTs, setInputTs] = useState('');
-  const [outputDate, setOutputDate] = useState('');
-  const [currentTs, setCurrentTs] = useState(Math.floor(Date.now() / 1000));
+  const [currentTs, setCurrentTs] = useState(Math.floor(new Date().getTime() / 1000));
   const [formatType, setFormatType] = useState<FormatType>('utc');
   const [showDiff, setShowDiff] = useState(false);
   const [ts2, setTs2] = useState('');
-  const [diffResult, setDiffResult] = useState('');
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTs(Math.floor(Date.now() / 1000)), 1000);
+    const timer = setInterval(() => setCurrentTs(Math.floor(new Date().getTime() / 1000)), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -72,16 +70,10 @@ export default function TimestampConverter() {
     return isNegative ? `${timeStr} ago` : `in ${timeStr}`;
   };
 
-  useEffect(() => {
-    if (!inputTs) {
-      setOutputDate('');
-      return;
-    }
+  const outputDate = useMemo(() => {
+    if (!inputTs) return '';
     const val = Number(inputTs);
-    if (isNaN(val)) {
-      setOutputDate('Invalid timestamp');
-      return;
-    }
+    if (isNaN(val)) return 'Invalid timestamp';
     const isMillis = val > 1e11;
     const date = new Date(isMillis ? val : val * 1000);
     const timestamp = Math.floor(date.getTime() / 1000);
@@ -97,22 +89,16 @@ export default function TimestampConverter() {
       `relative:     ${relativeTime}`,
     ];
 
-    setOutputDate(outputs.join('\n'));
+    return outputs.join('\n');
   }, [inputTs, currentTs]);
 
-  useEffect(() => {
-    if (!showDiff || !inputTs || !ts2) {
-      setDiffResult('');
-      return;
-    }
+  const diffResult = useMemo(() => {
+    if (!showDiff || !inputTs || !ts2) return '';
 
     const val1 = Number(inputTs);
     const val2 = Number(ts2);
 
-    if (isNaN(val1) || isNaN(val2)) {
-      setDiffResult('Invalid timestamp');
-      return;
-    }
+    if (isNaN(val1) || isNaN(val2)) return 'Invalid timestamp';
 
     const isMillis1 = val1 > 1e11;
     const isMillis2 = val2 > 1e11;
@@ -142,7 +128,7 @@ export default function TimestampConverter() {
       `  ${duration.seconds} seconds`,
     ];
 
-    setDiffResult(results.join('\n'));
+    return results.join('\n');
   }, [showDiff, inputTs, ts2]);
 
   return (

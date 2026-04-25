@@ -25,7 +25,7 @@ export function Redirect() {
           // If not found, go back home
           window.location.replace('/tinyurl-generator');
         }
-      } catch (err) {
+      } catch {
         window.location.replace('/tinyurl-generator');
       }
     }

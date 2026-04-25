@@ -43,7 +43,7 @@ export function reconstructLayout(words: Block[]): string {
     const wHeight = w.bbox.y1 - w.bbox.y0;
     
     // Find an existing line where this word belongs (significant vertical overlap)
-    let foundLine = lines.find(l => {
+    const foundLine = lines.find(l => {
       const overlap = Math.max(0, Math.min(w.bbox.y1, l.bottom) - Math.max(w.bbox.y0, l.top));
       const lHeight = l.bottom - l.top;
       // Overlap must be at least 40% of the smaller height
@@ -155,7 +155,7 @@ export async function preprocessImage(imageSrc: string, config: PreprocessConfig
 
       // 3. Advanced Pixel Manipulation (Thresholding)
       if (config.threshold !== undefined || config.useOtsu) {
-        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         
         if (config.useOtsu) {
           const threshold = getOtsuThreshold(imageData);

@@ -19,8 +19,6 @@ const IconMap: Record<string, any> = {
   Code
 };
 
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
-
 import { blogPosts } from '@/data/blogs';
 
 

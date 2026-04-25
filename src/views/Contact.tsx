@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Mail, MessageCircle, Phone, MapPin, Send, Twitter, Github, Linkedin, CheckCircle2, Loader2 } from 'lucide-react';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 import { supabase } from '@/lib/supabase';
 
 export const Contact = () => {

@@ -35,15 +35,15 @@ export default function PixelArt() {
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useFilePaste((files) => {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) handleFile(file);
-  });
-
   const handleFile = useCallback((file: File) => {
     setImageUrl(URL.createObjectURL(file));
     setOutputUrl(null);
   }, []);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const generate = useCallback(() => {
     if (!imageUrl) return;
@@ -131,7 +131,11 @@ export default function PixelArt() {
             <Card className="p-10 dark:bg-gray-800/50">
               <div className="border-2 border-dashed border-emerald-300 dark:border-emerald-700/50 rounded-xl p-10 text-center cursor-pointer hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
-                onDrop={e => { e.preventDefault(); e.dataTransfer.files[0] && handleFile(e.dataTransfer.files[0]); }}
+                onDrop={e => { 
+                  e.preventDefault(); 
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFile(file); 
+                }}
                 onDragOver={e => e.preventDefault()}>
                 <Upload className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
                 <p className="font-semibold text-gray-700 dark:text-gray-300">Drop an image or click to upload</p>

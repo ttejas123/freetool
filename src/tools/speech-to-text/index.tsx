@@ -87,7 +87,7 @@ export default function SpeechToText() {
       const result = await transcriber(audioUrl!, {
         chunk_length_s: 30,
         stride_length_s: 5,
-        callback_function: (_output: any) => {
+        callback_function: () => {
           // Streaming partial results if possible
           // setTranscription(prev => prev + output.text);
         }

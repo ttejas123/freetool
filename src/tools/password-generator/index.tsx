@@ -27,22 +27,27 @@ export default function PasswordGenerator() {
     return { label: 'Strong', color: 'bg-green-500' };
   };
 
-  const generatePassword = useCallback(() => {
+  const generatePassword = useCallback((len?: number, opt?: typeof options) => {
+    const l = len ?? length;
+    const o = opt ?? options;
     let charset = '';
-    if (options.uppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (options.lowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (options.numbers) charset += '0123456789';
-    if (options.symbols) charset += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+    if (o.uppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (o.lowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+    if (o.numbers) charset += '0123456789';
+    if (o.symbols) charset += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
 
     if (!charset) return setPassword('');
     let newPassword = '';
-    const array = new Uint32Array(length);
+    const array = new Uint32Array(l);
     window.crypto.getRandomValues(array);
-    for (let i = 0; i < length; i++) newPassword += charset[array[i] % charset.length];
+    for (let i = 0; i < l; i++) newPassword += charset[array[i] % charset.length];
     setPassword(newPassword);
   }, [length, options]);
 
-  useEffect(() => { generatePassword(); }, [generatePassword]);
+  useEffect(() => { 
+    generatePassword(); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const strength = calculateStrength(password);
 
@@ -62,7 +67,7 @@ export default function PasswordGenerator() {
                 {password || 'Select options'}
               </span>
               <div className="absolute right-4 md:right-6 flex items-center gap-2">
-                <Button onClick={generatePassword} variant="ghost" size="sm" className="px-2">
+                <Button onClick={() => generatePassword()} variant="ghost" size="sm" className="px-2">
                   <RefreshCw className="w-5 h-5" />
                 </Button>
                 <CopyButton value={password} />
@@ -89,16 +94,20 @@ export default function PasswordGenerator() {
               </div>
               <input
                 type="range" min="4" max="64" value={length}
-                onChange={(e) => setLength(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setLength(val);
+                  generatePassword(val);
+                }}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-brand-600"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4 pt-2">
-              <Toggle checked={options.uppercase} onChange={() => setOptions(p => ({...p, uppercase: !p.uppercase}))} label="Uppercase (A-Z)" />
-              <Toggle checked={options.lowercase} onChange={() => setOptions(p => ({...p, lowercase: !p.lowercase}))} label="Lowercase (a-z)" />
-              <Toggle checked={options.numbers} onChange={() => setOptions(p => ({...p, numbers: !p.numbers}))} label="Numbers (0-9)" />
-              <Toggle checked={options.symbols} onChange={() => setOptions(p => ({...p, symbols: !p.symbols}))} label="Symbols (!@#$)" />
+              <Toggle checked={options.uppercase} onChange={() => { const o = {...options, uppercase: !options.uppercase}; setOptions(o); generatePassword(length, o); }} label="Uppercase (A-Z)" />
+              <Toggle checked={options.lowercase} onChange={() => { const o = {...options, lowercase: !options.lowercase}; setOptions(o); generatePassword(length, o); }} label="Lowercase (a-z)" />
+              <Toggle checked={options.numbers} onChange={() => { const o = {...options, numbers: !options.numbers}; setOptions(o); generatePassword(length, o); }} label="Numbers (0-9)" />
+              <Toggle checked={options.symbols} onChange={() => { const o = {...options, symbols: !options.symbols}; setOptions(o); generatePassword(length, o); }} label="Symbols (!@#$)" />
             </div>
           </div>
         </CardContent>

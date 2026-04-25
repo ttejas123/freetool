@@ -1,7 +1,6 @@
 'use client';
 
 import { Shield, Eye, Lock, Globe, Bell, UserCheck } from 'lucide-react';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const PrivacyPolicy = () => {
   return (

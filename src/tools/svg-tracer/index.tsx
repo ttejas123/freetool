@@ -62,17 +62,17 @@ export default function SvgTracer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useFilePaste((files) => {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) handleFile(file);
-  });
-
   const handleFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
     setImageUrl(url);
     setSvgOutput(null);
     setSvgDataUrl(null);
   }, []);
+
+  useFilePaste((files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();

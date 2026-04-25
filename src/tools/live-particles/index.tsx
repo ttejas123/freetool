@@ -195,6 +195,17 @@ export default function LiveParticles() {
 
   const W = 700, H = 700;
 
+  // Settings Ref for stable animation loop
+  const settingsRef = useRef({
+    pattern, shape, colorMode, baseColor, bgColor, speed, hoverMode
+  });
+
+  useEffect(() => {
+    settingsRef.current = {
+      pattern, shape, colorMode, baseColor, bgColor, speed, hoverMode
+    };
+  }, [pattern, shape, colorMode, baseColor, bgColor, speed, hoverMode]);
+
   // ── Init particles ────────────────────────────────────────────────────────
   const initParticles = useCallback((pat: PatternType, txt: string, count: number, sz: number) => {
     const pts = pat === 'text' && txt ? getTextPoints(txt, W, H, count) : null;
@@ -216,16 +227,26 @@ export default function LiveParticles() {
   }, []);
 
   // ── Animation tick ────────────────────────────────────────────────────────
-  const tick = useCallback(() => {
+  const tick = useCallback(function loop() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
 
-    timeRef.current += 0.016 * speed;
+    const {
+      pattern: pType,
+      shape: pShape,
+      colorMode: pCMode,
+      baseColor: pBColor,
+      bgColor: pBgColor,
+      speed: pSpeed,
+      hoverMode: pHMode
+    } = settingsRef.current;
+
+    timeRef.current += 0.016 * pSpeed;
     const t = timeRef.current;
 
     // Trail effect
-    ctx.fillStyle = bgColor + 'cc'; // semi-transparent background
+    ctx.fillStyle = pBgColor + 'cc'; // semi-transparent background
     ctx.fillRect(0, 0, W, H);
 
     const mx = mouseRef.current.x;
@@ -236,7 +257,7 @@ export default function LiveParticles() {
     for (const p of particlesRef.current) {
       let ax = 0, ay = 0;
 
-      if (pattern === 'text') {
+      if (pType === 'text') {
         // Spring toward target
         const spring = 0.04;
         ax = (p.tx - p.x) * spring;
@@ -244,10 +265,10 @@ export default function LiveParticles() {
         // mild noise disturbance
         ax += Math.sin(p.x * 0.02 + t) * 0.3;
         ay += Math.cos(p.y * 0.02 + t) * 0.3;
-      } else if (pattern === 'starfield') {
+      } else if (pType === 'starfield') {
         // Move radially outward, wrap back to center
-        const angle = flowAngle(pattern, p.x, p.y, t, W, H);
-        const spd = p.speed * speed * (0.5 + p.phase * 1.5);
+        const angle = flowAngle(pType, p.x, p.y, t, W, H);
+        const spd = p.speed * pSpeed * (0.5 + p.phase * 1.5);
         ax = Math.cos(angle) * spd;
         ay = Math.sin(angle) * spd;
         p.x += ax; p.y += ay;
@@ -258,23 +279,23 @@ export default function LiveParticles() {
           p.x = W / 2 + Math.cos(a2) * r;
           p.y = H / 2 + Math.sin(a2) * r;
         }
-        drawParticle(ctx, p, shape, particleColor(p, colorMode, baseColor, t));
+        drawParticle(ctx, p, pShape, particleColor(p, pCMode, pBColor, t));
         continue;
       } else {
         // Flow field
-        const angle = flowAngle(pattern, p.x, p.y, t, W, H);
-        const spd = p.speed * speed;
+        const angle = flowAngle(pType, p.x, p.y, t, W, H);
+        const spd = p.speed * pSpeed;
         ax = Math.cos(angle) * spd;
         ay = Math.sin(angle) * spd;
       }
 
       // Hover force
-      if (mActive && hoverMode !== 'none') {
+      if (mActive && pHMode !== 'none') {
         const ddx = p.x - mx, ddy = p.y - my;
         const dist = Math.sqrt(ddx * ddx + ddy * ddy);
         if (dist < HOVER_R && dist > 0) {
           const force = (HOVER_R - dist) / HOVER_R;
-          const forceAmt = hoverMode === 'repel' ? force * 4 : -force * 3;
+          const forceAmt = pHMode === 'repel' ? force * 4 : -force * 3;
           ax += (ddx / dist) * forceAmt;
           ay += (ddy / dist) * forceAmt;
         }
@@ -289,11 +310,11 @@ export default function LiveParticles() {
       if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
 
-      drawParticle(ctx, p, shape, particleColor(p, colorMode, baseColor, t));
+      drawParticle(ctx, p, pShape, particleColor(p, pCMode, pBColor, t));
     }
 
-    if (playingRef.current) animRef.current = requestAnimationFrame(tick);
-  }, [pattern, shape, colorMode, baseColor, bgColor, speed, hoverMode]);
+    if (playingRef.current) animRef.current = requestAnimationFrame(loop);
+  }, []);
 
   // Re-init when key params change
   useEffect(() => {

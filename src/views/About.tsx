@@ -1,7 +1,6 @@
 'use client';
 
 import { Rocket, Shield, Zap, Heart, Globe, Cpu, Plus } from 'lucide-react';
-import { BackgroundEffects } from '@/components/ui/BackgroundEffects';
 
 export const About = () => {
   return (

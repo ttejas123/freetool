@@ -128,7 +128,7 @@ export default function OCRTool() {
         const resultConf = data.confidence;
         
         // Parse nested output format into a flat word array
-        let extractedWords: any[] = [];
+        const extractedWords: any[] = [];
         if (data.blocks && data.blocks.length > 0) {
            data.blocks.forEach((b: any) => {
              if (b.paragraphs) {
