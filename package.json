@@ -7,7 +7,8 @@
     "build": "node scripts/copy-wasm-assets.mjs && next build",
     "start": "npx serve@latest out",
     "preview": "npx serve@latest out",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy:models": "node scripts/upload-models.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1015.0",
@@ -18,6 +19,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@huggingface/transformers": "^4.1.0",
     "@imgly/background-removal": "^1.7.0",
+    "@imgly/background-removal-data": "^1.4.5",
     "@monaco-editor/react": "^4.7.0",
     "@supabase/supabase-js": "^2.100.0",
     "@types/chroma-js": "^3.1.2",
@@ -28,6 +30,7 @@
     "curlconverter": "^4.12.0",
     "date-fns": "^4.1.0",
     "diff": "^8.0.4",
+    "dotenv": "^17.4.2",
     "firebase": "^12.11.0",
     "framer-motion": "^12.38.0",
     "gif.js": "^0.2.0",

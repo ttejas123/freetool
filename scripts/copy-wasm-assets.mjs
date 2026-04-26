@@ -31,19 +31,6 @@ const assetsToCopy = [
     from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs',
     to: 'ort-wasm-simd-threaded.jsep.mjs'
   },
-  // Neural Network Models from the data package
-  {
-    from: 'node_modules/@imgly/background-removal-data/dist/isnet.onnx',
-    to: 'isnet.onnx'
-  },
-  {
-    from: 'node_modules/@imgly/background-removal-data/dist/isnet_fp16.onnx',
-    to: 'isnet_fp16.onnx'
-  },
-  {
-    from: 'node_modules/@imgly/background-removal-data/dist/isnet_quint8.onnx',
-    to: 'isnet_quint8.onnx'
-  },
   // Tree Sitter (for cURL Converter)
   {
     from: 'node_modules/curlconverter/dist/tree-sitter-bash.wasm',
@@ -53,6 +40,11 @@ const assetsToCopy = [
     from: 'node_modules/web-tree-sitter/tree-sitter.wasm',
     to: 'tree-sitter.wasm'
   }
+];
+
+// Special handling for directory copies
+const directoriesToCopy = [
+  // Add other directories here if needed
 ];
 
 function run() {
@@ -77,6 +69,31 @@ function run() {
       successCount++;
     } else {
       console.warn(`⚠️ Warning: Source file not found: ${asset.from}`);
+      warnCount++;
+    }
+  });
+
+  directoriesToCopy.forEach(dir => {
+    const sourcePath = path.resolve(PROJECT_ROOT, dir.from);
+    const destPath = path.resolve(PUBLIC_WASM_DIR, dir.to);
+
+    if (fs.existsSync(sourcePath)) {
+      if (!fs.existsSync(destPath)) {
+        fs.mkdirSync(destPath, { recursive: true });
+      }
+      
+      const files = fs.readdirSync(sourcePath);
+      files.forEach(file => {
+        const s = path.join(sourcePath, file);
+        const d = path.join(destPath, file);
+        if (fs.statSync(s).isFile()) {
+           fs.copyFileSync(s, d);
+        }
+      });
+      console.log(`✅ Copied directory: ${dir.to} (${files.length} files)`);
+      successCount++;
+    } else {
+      console.warn(`⚠️ Warning: Source directory not found: ${dir.from}`);
       warnCount++;
     }
   });

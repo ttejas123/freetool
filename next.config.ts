@@ -20,8 +20,24 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // Handle WASM files
-    config.experiments = { ...config.experiments, asyncWebAssembly: true };
+    // Handle WASM files and modern JS features
+    config.experiments = { 
+      ...config.experiments, 
+      asyncWebAssembly: true,
+      topLevelAwait: true,
+      layers: true,
+    };
+
+    // Silence "Critical dependency: Accessing import.meta directly is unsupported"
+    // This happens in @huggingface/transformers and is safe to ignore in this context
+    config.module.rules.push({
+      test: /transformers\.web\.js$/,
+      parser: {
+        javascript: {
+          importMeta: false,
+        },
+      },
+    });
 
     // Polyfill Node.js built-ins that some packages try to require in the browser
     if (!isServer) {
