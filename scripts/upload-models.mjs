@@ -17,21 +17,33 @@ const BUCKET_NAME = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET?.trim() || '
 
 if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_KEY === 'YOUR_SERVICE_ROLE_KEY') {
   console.error('❌ Error: Supabase URL or Service Role Key missing in .env.local');
-  console.log('Current URL:', SUPABASE_URL);
-  console.log('Key Status:', SUPABASE_KEY ? (SUPABASE_KEY === 'YOUR_SERVICE_ROLE_KEY' ? 'Placeholder detected' : 'Present') : 'Missing');
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Assets to upload (matching copy-wasm-assets.mjs)
+const assetsToUpload = [
+  { from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm', to: 'wasm/ort-wasm-simd-threaded.wasm' },
+  { from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm', to: 'wasm/ort-wasm-simd-threaded.jsep.wasm' },
+  { from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs', to: 'wasm/ort-wasm-simd-threaded.mjs' },
+  { from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs', to: 'wasm/ort-wasm-simd-threaded.jsep.mjs' },
+  { from: 'node_modules/curlconverter/dist/tree-sitter-bash.wasm', to: 'wasm/tree-sitter-bash.wasm' },
+  { from: 'node_modules/web-tree-sitter/tree-sitter.wasm', to: 'wasm/tree-sitter.wasm' }
+];
+
 const MODELS_DIR = path.resolve(PROJECT_ROOT, 'node_modules/@imgly/background-removal-data/dist');
 
 async function uploadFile(filePath, bucketPath) {
   const fileBuffer = fs.readFileSync(filePath);
+  const contentType = bucketPath.endsWith('.json') ? 'application/json' : 
+                    bucketPath.endsWith('.wasm') ? 'application/wasm' :
+                    bucketPath.endsWith('.mjs') ? 'application/javascript' : 'application/octet-stream';
+
   const { error } = await supabase.storage
     .from(BUCKET_NAME)
     .upload(bucketPath, fileBuffer, {
-      contentType: filePath.endsWith('.json') ? 'application/json' : 'application/octet-stream',
+      contentType,
       upsert: true
     });
 
@@ -43,24 +55,32 @@ async function uploadFile(filePath, bucketPath) {
 }
 
 async function run() {
-  if (!fs.existsSync(MODELS_DIR)) {
-    console.error('❌ Error: Background removal data not found in node_modules');
-    return;
-  }
+  console.log(`🚀 Syncing ALL WASM & AI assets to Supabase Bucket: "${BUCKET_NAME}"...`);
 
-  console.log(`🚀 Uploading AI models to Supabase Bucket: "${BUCKET_NAME}"...`);
-
-  const files = fs.readdirSync(MODELS_DIR);
-  
-  for (const file of files) {
-    const fullPath = path.join(MODELS_DIR, file);
-    if (fs.statSync(fullPath).isFile()) {
-      // We upload to 'wasm/' prefix in the bucket
-      await uploadFile(fullPath, `wasm/${file}`);
+  // 1. Upload individual assets
+  for (const asset of assetsToUpload) {
+    const fullPath = path.resolve(PROJECT_ROOT, asset.from);
+    if (fs.existsSync(fullPath)) {
+      await uploadFile(fullPath, asset.to);
+    } else {
+      console.warn(`⚠️ Warning: Source file not found: ${asset.from}`);
     }
   }
 
-  console.log('\n✨ Upload complete!');
+  // 2. Upload hashed models
+  if (fs.existsSync(MODELS_DIR)) {
+    const files = fs.readdirSync(MODELS_DIR);
+    for (const file of files) {
+      const fullPath = path.join(MODELS_DIR, file);
+      if (fs.statSync(fullPath).isFile()) {
+        await uploadFile(fullPath, `wasm/${file}`);
+      }
+    }
+  } else {
+    console.warn('⚠️ Warning: Background removal data folder not found.');
+  }
+
+  console.log('\n✨ All assets synced to Supabase!');
   console.log(`🔗 Public Path: ${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/wasm/`);
 }
 

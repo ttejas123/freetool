@@ -13,24 +13,6 @@ if (!fs.existsSync(PUBLIC_WASM_DIR)) {
 }
 
 const assetsToCopy = [
-  // ONNX Runtime WASM (for Background Removal)
-  {
-    from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm',
-    to: 'ort-wasm-simd-threaded.wasm'
-  },
-  {
-    from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm',
-    to: 'ort-wasm-simd-threaded.jsep.wasm'
-  },
-  // Ensure we copy the MJS files as well
-  {
-    from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs',
-    to: 'ort-wasm-simd-threaded.mjs'
-  },
-  {
-    from: 'node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs',
-    to: 'ort-wasm-simd-threaded.jsep.mjs'
-  },
   // Tree Sitter (for cURL Converter)
   {
     from: 'node_modules/curlconverter/dist/tree-sitter-bash.wasm',
