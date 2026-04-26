@@ -50,6 +50,12 @@
   body {
     @apply bg-white text-gray-900 dark:bg-[#050505] dark:text-gray-100 antialiased selection:bg-brand-500/30;
   }
+  
+  /* Focus Mode Overrides */
+  body.playground-focus-mode header,
+  body.playground-focus-mode footer {
+    display: none !important;
+  }
 }
 
 @layer utilities {
