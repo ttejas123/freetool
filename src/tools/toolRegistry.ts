@@ -685,7 +685,6 @@ export const toolRegistry: RegistryTool[] = [
     type: 'light',
     component: lazy(() => import('./js-node-compiler')),
     faqIcon: Code2,
-    longDescription: 'js-compiler',
     faq: [
       { question: "Is my code executed on a server?", answer: "No, the JavaScript IDE Pro executes your code natively in your browser's sandboxed environment. This ensures 100% privacy and zero latency." },
       { question: "What is the 'Result Pane'?", answer: "The Result Pane is a custom-built output console that captures all 'console.log' statements, errors, and execution metrics in a clean, visual format inspired by professional IDEs." },
@@ -705,7 +704,6 @@ export const toolRegistry: RegistryTool[] = [
     type: 'light',
     component: lazy(() => import('./sql-playground')),
     faqIcon: Database,
-    longDescription: 'sql-playground',
     faq: [
       { question: "Is my database hosted on a server?", answer: "No, the SQL Playground runs completely locally inside your browser using a WebAssembly (WASM) build of PostgreSQL. Fast, scalable, and 100% private." },
       { question: "Can I persist my database between sessions?", answer: "Currently, databases run in an ephemeral sandbox to ensure a clean testing slate every time you run. It's meant for rapid prototyping, learning, and testing logic." },
@@ -725,7 +723,6 @@ export const toolRegistry: RegistryTool[] = [
     type: 'light',
     component: lazy(() => import('./curl-converter')),
     faqIcon: Terminal,
-    longDescription: 'curl-converter',
     faq: [
       { question: "How does the conversion work?", answer: "We use a port of the popular 'curlconverter' library that parses the raw cURL command and generates idiomatic code snippets for your target language." },
       { question: "Are my API keys and tokens safe?", answer: "Yes. All processing is done locally in your browser. Your sensitive headers and credentials never leave your machine, making it safe for production workflows." },

@@ -36,11 +36,11 @@ export const RichToolDescription = ({ tool }: RichToolDescriptionProps) => {
           <Settings2 className="w-4 h-4" />
           <span>In-Depth Guide</span>
         </div>
-        <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
-          Complete Guide to the {tool.name} Utility
+        <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">
+          Mastering the {tool.name}
         </h2>
         
-        <div className="prose prose-lg dark:prose-invert max-w-none mb-10 text-gray-600 dark:text-gray-300">
+        <div className="tool-description max-w-none mb-10">
           {displayDescription ? (
              <div dangerouslySetInnerHTML={{ __html: displayDescription }} />
           ) : (

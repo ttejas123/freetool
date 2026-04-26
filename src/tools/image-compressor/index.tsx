@@ -84,8 +84,8 @@ export default function ImageCompressor() {
     setProgress(20);
     setError(null);
 
-    // Fallback to Edge Function if > 5MB
-    if (originalFile.size > 5 * 1024 * 1024) {
+    // Fallback to Edge Function if > 50MB (increased from 5MB)
+    if (originalFile.size > 50 * 1024 * 1024) {
       handleEdgeCompression();
       return;
     }
@@ -355,8 +355,8 @@ export default function ImageCompressor() {
                         id="target-size"
                         type="range"
                         min="10"
-                        max="2000"
-                        step="10"
+                        max="10000"
+                        step="50"
                         value={settings.targetSizeKB}
                         onChange={(e) => setSettings({ ...settings, targetSizeKB: Number(e.target.value) })}
                         className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg accent-blue-600 appearance-none cursor-pointer"

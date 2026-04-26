@@ -93,7 +93,11 @@ export default function QrGenerator() {
     const [activeTab, setActiveTab] = useState<'content' | 'style' | 'logo' | 'colors'>('content');
 
   const qrRef = useRef<HTMLDivElement>(null);
-  const [qrCode] = useState(() => new QRCodeStyling(options));
+  const [qrCode, setQrCode] = useState<QRCodeStyling | null>(null);
+
+  useEffect(() => {
+    setQrCode(new QRCodeStyling(options));
+  }, []);
 
   useFilePaste((files) => {
     const file = files[0];
@@ -121,6 +125,8 @@ export default function QrGenerator() {
         finalContent = `BEGIN:VCARD\nVERSION:3.0\nN:${vcardData.lastName};${vcardData.firstName}\nFN:${vcardData.firstName} ${vcardData.lastName}\nORG:${vcardData.org}\nTITLE:${vcardData.title}\nTEL;TYPE=CELL:${vcardData.phone}\nEMAIL:${vcardData.email}\nURL:${vcardData.url}\nADR:;;${vcardData.address}\nEND:VCARD`;
         break;
     }
+    if (!qrCode) return;
+
     qrCode.update({ 
       ...options,
       data: finalContent || ' ' 
@@ -128,7 +134,7 @@ export default function QrGenerator() {
   }, [type, urlData, textData, emailData, phoneData, whatsappData, wifiData, vcardData, options, qrCode]);
 
   useEffect(() => {
-    if (qrRef.current) {
+    if (qrRef.current && qrCode) {
       qrRef.current.innerHTML = '';
       qrCode.append(qrRef.current);
     }
@@ -146,6 +152,8 @@ export default function QrGenerator() {
   };
 
   const download = (ext: FileExtension | 'pdf') => {
+    if (!qrCode) return;
+
     if (ext === 'pdf') {
       const doc = new jsPDF();
       qrCode.getRawData('png').then((blob) => {
