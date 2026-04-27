@@ -84,7 +84,10 @@ export default function JavaScriptRunner() {
       log: (...args: any[]) => {
         capturedLogs.push({
           type: 'log',
-          content: args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '),
+          content: args.map(a => {
+            if (typeof a === 'object' && a !== null) return JSON.stringify(a, null, 2);
+            return String(a);
+          }).join(' '),
           time: getTime()
         });
       },
@@ -102,10 +105,17 @@ export default function JavaScriptRunner() {
           time: getTime()
         });
       },
+      info: (...args: any[]) => {
+        capturedLogs.push({
+          type: 'log',
+          content: args.map(a => String(a)).join(' '),
+          time: getTime()
+        });
+      },
       table: (data: any) => {
         capturedLogs.push({
           type: 'log',
-          content: `TABLE VIEW:\n${JSON.stringify(data, null, 2)}`,
+          content: `TABLE:\n${JSON.stringify(data, null, 2)}`,
           time: getTime()
         });
       }
@@ -516,29 +526,50 @@ export default function JavaScriptRunner() {
                   </div>
                </div>
                
-               <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+               <div className="flex-1 overflow-y-auto p-0 flex flex-col font-mono custom-scrollbar">
                   {logs.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center opacity-20 select-none">
+                    <div className="flex-1 flex flex-col items-center justify-center opacity-20 select-none py-12">
                        <Code2 className="w-12 h-12 mb-4" />
                        <p className="text-xs font-bold uppercase tracking-widest">Awaiting execution...</p>
                     </div>
                   ) : (
                     logs.map((log, i) => (
-                      <div key={i} className="flex gap-4 animate-in slide-in-from-left-4 duration-300">
-                        <div className="w-10 pt-1 shrink-0 text-[10px] font-bold opacity-30 font-mono tracking-tighter">{log.time}</div>
-                        <div className="flex-1 flex flex-col gap-1.5">
-                           <div className={`p-4 rounded-2xl border flex gap-3 ${
-                             log.type === 'error' ? 'bg-red-500/5 border-red-500/20 text-red-500' : 
-                             log.type === 'warn' ? 'bg-yellow-500/5 border-yellow-500/20 text-yellow-500' :
-                             'bg-brand-500/5 border-brand-500/10 text-brand-500'
-                           }`}>
-                              {log.type === 'error' ? <AlertCircle className="w-4 h-4 shrink-0" /> : <CheckCircle2 className="w-4 h-4 shrink-0" />}
-                              <pre className="text-xs font-mono font-medium whitespace-pre-wrap">{log.content}</pre>
-                           </div>
+                      <div 
+                        key={i} 
+                        className={`group flex items-start gap-3 px-4 py-1.5 border-b transition-colors ${
+                          log.type === 'error' ? 'bg-red-500/5 hover:bg-red-500/10' : 
+                          log.type === 'warn' ? 'bg-yellow-500/5 hover:bg-yellow-500/10' :
+                          'hover:bg-white/5'
+                        }`}
+                        style={{ borderColor: borderColor }}
+                      >
+                        <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                           {log.type === 'error' ? (
+                             <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                           ) : log.type === 'warn' ? (
+                             <AlertCircle className="w-3.5 h-3.5 text-yellow-500" />
+                           ) : (
+                             <ChevronDown className="w-3.5 h-3.5 opacity-20 -rotate-90 group-hover:rotate-0 transition-transform" />
+                           )}
                         </div>
+                        <div className="flex-1 text-[12px] leading-relaxed break-words whitespace-pre-wrap py-0.5">
+                           <span className={`${
+                             log.type === 'error' ? 'text-red-500' : 
+                             log.type === 'warn' ? 'text-yellow-600 dark:text-yellow-400' :
+                             'text-gray-900 dark:text-gray-300'
+                           }`}>
+                             {log.content}
+                           </span>
+                        </div>
+                        <div className="shrink-0 text-[10px] opacity-30 pt-0.5 tabular-nums">{log.time}</div>
                       </div>
                     ))
                   )}
+                  {/* Prompt Mockup */}
+                  <div className="px-4 py-2 flex items-center gap-2 opacity-30 border-b border-transparent">
+                     <ChevronDown className="w-3.5 h-3.5 -rotate-90" />
+                     <div className="w-2 h-4 bg-brand-500/50 animate-pulse" />
+                  </div>
                </div>
             </div>
           </div>
