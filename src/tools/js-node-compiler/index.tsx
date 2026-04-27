@@ -41,34 +41,18 @@ const DEFAULT_FILES: File[] = [
 type ThemeMode = 'vs-dark' | 'light' | 'hc-black' | 'github-dark';
 
 export default function JavaScriptRunner() {
-  const [files, setFiles] = useState<File[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('js-editor-files-v3');
-      return saved ? JSON.parse(saved) : DEFAULT_FILES;
-    }
-    return DEFAULT_FILES;
-  });
-  const [activeFileId, setActiveFileId] = useState<string>(files[0]?.id || 'main-js');
+  const [files, setFiles] = useState<File[]>(DEFAULT_FILES);
+  const [activeFileId, setActiveFileId] = useState<string>(DEFAULT_FILES[0].id);
   const [logs, setLogs] = useState<{ type: 'log' | 'error' | 'warn'; content: string; time: string }[]>([]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTerminalOpen, setIsTerminalOpen] = useState(true);
-  const [terminalHeight, setTerminalHeight] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('js-editor-term-height');
-      return saved ? parseInt(saved) : 320;
-    }
-    return 320;
-  });
+  const [terminalHeight, setTerminalHeight] = useState(320);
   const [editingFileId, setEditingFileId] = useState<string | null>(null);
   const [activeActivity, setActiveActivity] = useState<string>('files');
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('js-editor-theme') as ThemeMode) || 'vs-dark';
-    }
-    return 'vs-dark';
-  });
+  const [theme, setTheme] = useState<ThemeMode>('vs-dark');
   const [exeTime, setExeTime] = useState(0);
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   const tool = toolRegistry.find(t => t.id === 'js-compiler')!;
   const activeFile = files.find(f => f.id === activeFileId) || files[0];
@@ -142,8 +126,41 @@ export default function JavaScriptRunner() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // Load persisted state
+    const savedFiles = localStorage.getItem('js-editor-files-v3');
+    if (savedFiles) {
+      try {
+        const parsed = JSON.parse(savedFiles);
+        setFiles(parsed);
+        setActiveFileId(parsed[0]?.id || 'main-js');
+      } catch (e) {}
+    }
+
+    const savedHeight = localStorage.getItem('js-editor-term-height');
+    if (savedHeight) setTerminalHeight(parseInt(savedHeight));
+
+    const savedTheme = localStorage.getItem('js-editor-theme');
+    if (savedTheme) setTheme(savedTheme as ThemeMode);
+
     setIsMounted(true);
   }, []);
+
+  // Focus Mode Body Class Handling
+  useEffect(() => {
+    if (isMounted) {
+      if (isFocusMode) {
+        document.body.classList.add('playground-focus-mode');
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.classList.remove('playground-focus-mode');
+        document.body.style.overflow = '';
+      }
+    }
+    return () => {
+      document.body.classList.remove('playground-focus-mode');
+      document.body.style.overflow = '';
+    };
+  }, [isFocusMode, isMounted]);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -151,6 +168,9 @@ export default function JavaScriptRunner() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         runCode();
+      }
+      if (e.key === 'Escape' && isFocusMode) {
+        setIsFocusMode(false);
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
         e.preventDefault();
@@ -163,7 +183,7 @@ export default function JavaScriptRunner() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [runCode]);
+  }, [runCode, isFocusMode]);
 
   // Resizing Logic
   useEffect(() => {
@@ -242,7 +262,16 @@ export default function JavaScriptRunner() {
       <div className="w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 px-4">
         <Breadcrumbs />
         
-        {/* Header */}
+        {!isMounted ? (
+          <div className="w-full h-[800px] flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-[1.5rem] border border-dashed border-gray-300 dark:border-gray-700">
+             <div className="flex flex-col items-center gap-4 text-gray-400">
+                <div className="w-8 h-8 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin" />
+                <p className="text-sm font-medium uppercase tracking-widest">Waking up JS Engine...</p>
+             </div>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-brand-500/20">
@@ -259,9 +288,43 @@ export default function JavaScriptRunner() {
         </div>
 
         <div 
-          className="w-full flex flex-col h-[800px] shrink-0 overflow-hidden font-sans selection:bg-brand-500/30 shadow-2xl rounded-[1.5rem] border border-gray-100 dark:border-gray-800"
+          onClick={() => !isFocusMode && setIsFocusMode(true)}
+          className={`w-full flex flex-col shrink-0 overflow-hidden font-sans selection:bg-brand-500/30 shadow-2xl transition-all duration-500 ease-in-out ${
+            isFocusMode 
+              ? 'fixed inset-0 z-[10000] w-screen h-screen rounded-none border-none' 
+              : 'w-full h-[800px] rounded-[1.5rem] border border-gray-100 dark:border-gray-800'
+          }`}
           style={{ backgroundColor: sidebarBg, color: textColor }}
         >
+          {/* Focus Mode Header / Click-to-Start Overlay */}
+          {!isFocusMode && (
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/5 dark:bg-black/20 backdrop-blur-[2px] opacity-0 hover:opacity-100 transition-all duration-500 group cursor-pointer border-2 border-transparent hover:border-brand-500/50 rounded-[1.5rem]">
+              <div className="bg-white dark:bg-gray-900 px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 scale-90 group-hover:scale-100 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center animate-pulse">
+                  <Play className="w-5 h-5 text-white fill-white ml-1" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-black uppercase tracking-widest text-gray-900 dark:text-white">Click to Start Coding</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">Active IDE Pro Environment</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isFocusMode && (
+             <div className="h-10 flex items-center justify-between px-4 border-b bg-brand-500/5 backdrop-blur-md sticky top-0 z-[60]" style={{ borderColor }}>
+                <div className="flex items-center gap-3">
+                   <Code2 className="w-4 h-4 text-brand-500" />
+                   <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Zen Focus Mode</span>
+                </div>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setIsFocusMode(false); }}
+                  className="flex items-center gap-2 px-4 py-1 bg-white/10 hover:bg-red-500/10 hover:text-red-500 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border border-white/5"
+                >
+                  Exit Focus (Esc)
+                </button>
+             </div>
+          )}
         <div className="flex-1 flex overflow-hidden">
           {/* 1. Activity Bar */}
           <div 
@@ -482,10 +545,10 @@ export default function JavaScriptRunner() {
         </div>
 
         {/* 5. Status Bar */}
-        <div 
-           className="h-8 flex items-center justify-between px-3 border-t text-[11px] font-medium shrink-0"
-           style={{ backgroundColor: activityBarBg, borderColor: borderColor, color: textColor }}
-        >
+         <div 
+            className="h-8 flex items-center justify-between px-3 border-t text-[11px] font-medium shrink-0 z-50 relative"
+            style={{ backgroundColor: activityBarBg, borderColor: borderColor, color: textColor }}
+         >
            <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 px-3 py-1 bg-brand-500/10 text-brand-500 rounded-full font-black uppercase text-[9px]">
                  <Box className="w-3 h-3" />
@@ -505,7 +568,9 @@ export default function JavaScriptRunner() {
             </div>
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    )}
+  </div>
+</>
+);
 }
