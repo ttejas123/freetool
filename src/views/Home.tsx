@@ -31,7 +31,8 @@ import {
   Plus,
   Terminal,
   PinOff,
-  Bookmark
+  Bookmark,
+  PinIcon
 } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { getToolMetricsSync, recordToolView, fetchAllToolMetrics, getCachedMetrics, getPinnedTools, togglePinTool, type ToolMetric } from '../lib/toolStats';
@@ -162,7 +163,7 @@ const ToolCard = React.memo(({
   return (
     <div className="group relative hover:-translate-y-1 transition-transform duration-200">
       <a
-        href={`/${tool.path}`}
+        href={`/${tool.path}/`}
         onClick={() => recordToolView(tool.id)}
         className="group p-5 sm:p-6 rounded-[1.5rem] bg-white dark:bg-[#0A0A0A] border border-gray-100 dark:border-white/5 hover:border-brand-500/50 transition-all hover:shadow-2xl hover:shadow-brand-500/10 flex flex-col relative overflow-hidden h-full"
       >
@@ -172,7 +173,7 @@ const ToolCard = React.memo(({
           </div>
 
           <div className="flex flex-col items-end gap-2">
-             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+             <div className="flex gap-2 transition-opacity">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -184,7 +185,7 @@ const ToolCard = React.memo(({
                   }`}
                   aria-label={isPinned ? `Unpin ${tool.name}` : `Pin ${tool.name}`}
                 >
-                   <Bookmark className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
+                   <PinIcon className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
                 </button>
                 <button
                   onClick={(e) => {
