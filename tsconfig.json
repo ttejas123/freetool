@@ -28,7 +28,8 @@
         "src/*"
       ]
     },
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": ["@webgpu/types"]
   },
   "include": [
     "next-env.d.ts",
