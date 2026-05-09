@@ -5,6 +5,7 @@ export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://www.freetool.shop';
+  // Uses the current build date dynamically, so it's always up to date (e.g., 2026-05-06)
   const today = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [

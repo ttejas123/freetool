@@ -17,7 +17,12 @@ import {
   AlertCircle,
   Hash,
   Palette,
-  Type
+  Type,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  Trash2
 } from 'lucide-react';
 import chroma from 'chroma-js';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -66,11 +71,14 @@ export default function ColorPalette() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- New Picker State ---
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [pickedColor, setPickedColor] = useState<string>('#2563eb');
-  const [magnifier, setMagnifier] = useState<{ x: number, y: number, color: string, show: boolean }>({
-    x: 0,
-    y: 0,
+  const [magnifier, setMagnifier] = useState<{ clientX: number, clientY: number, color: string, show: boolean }>({
+    clientX: 0,
+    clientY: 0,
     color: '#000000',
     show: false
   });
@@ -94,48 +102,58 @@ export default function ColorPalette() {
   };
 
 
-  const extractColorsFromImage = (file: File) => {
+  const processImageColors = (src: string) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = 100;
+      canvas.height = 100;
+      ctx.drawImage(img, 0, 0, 100, 100);
+
+      const imageData = ctx.getImageData(0, 0, 100, 100).data;
+      const colorCounts: Record<string, number> = {};
+
+      for (let i = 0; i < imageData.length; i += 4) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        const hex = chroma(r, g, b).hex();
+        colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+      }
+
+      const sortedColors = Object.entries(colorCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([hex]) => hex);
+
+      // Filter for distinct colors
+      const distinct: string[] = [];
+      for (const hex of sortedColors) {
+        if (distinct.length >= 5) break;
+        // Use deltaE if available, otherwise just check hex
+        if (distinct.every(d => chroma.deltaE(d, hex) > 20)) {
+          distinct.push(hex);
+        }
+      }
+
+      if (distinct.length > 0) applyPalette(distinct);
+    };
+    img.src = src;
+  };
+
+  const handleImageUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        setSelectedImage(img.src);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        canvas.width = 100;
-        canvas.height = 100;
-        ctx.drawImage(img, 0, 0, 100, 100);
-
-        const imageData = ctx.getImageData(0, 0, 100, 100).data;
-        const colorCounts: Record<string, number> = {};
-
-        for (let i = 0; i < imageData.length; i += 4) {
-          const r = imageData[i];
-          const g = imageData[i + 1];
-          const b = imageData[i + 2];
-          const hex = chroma(r, g, b).hex();
-          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
-        }
-
-        const sortedColors = Object.entries(colorCounts)
-          .sort((a, b) => b[1] - a[1])
-          .map(([hex]) => hex);
-
-        // Filter for distinct colors
-        const distinct: string[] = [];
-        for (const hex of sortedColors) {
-          if (distinct.length >= 5) break;
-          // Use deltaE if available, otherwise just check hex
-          if (distinct.every(d => chroma.deltaE(d, hex) > 20)) {
-            distinct.push(hex);
-          }
-        }
-
-        if (distinct.length > 0) applyPalette(distinct);
-      };
-      img.src = e.target?.result as string;
+      const src = e.target?.result as string;
+      setSelectedImages(prev => {
+        const newArr = [...prev, src];
+        setCurrentImageIndex(newArr.length - 1);
+        return newArr;
+      });
+      processImageColors(src);
+      setZoomLevel(1);
     };
     reader.readAsDataURL(file);
   };
@@ -143,14 +161,16 @@ export default function ColorPalette() {
   useFilePaste((files) => {
     const file = files[0];
     if (file && file.type.startsWith('image/')) {
-      extractColorsFromImage(file);
+      handleImageUpload(file);
     }
   });
+
+  const activeImage = selectedImages[currentImageIndex];
 
 
   // Draw image to canvas for picking
   useEffect(() => {
-    if (selectedImage && canvasRef.current) {
+    if (activeImage && canvasRef.current) {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -175,11 +195,12 @@ export default function ColorPalette() {
 
             canvas.width = width;
             canvas.height = height;
+            setCanvasSize({ width, height });
             ctx.drawImage(img, 0, 0, width, height);
         };
-        img.src = selectedImage;
+        img.src = activeImage;
     }
-  }, [selectedImage]);
+  }, [activeImage]);
 
   // --- Logic ---
 
@@ -244,7 +265,7 @@ export default function ColorPalette() {
     try {
       const pixel = ctx.getImageData(actualX, actualY, 1, 1).data;
       const hex = chroma(pixel[0], pixel[1], pixel[2]).hex();
-      setMagnifier({ x, y, color: hex, show: true });
+      setMagnifier({ clientX: e.clientX, clientY: e.clientY, color: hex, show: true });
     } catch (err) {
       // Out of bounds or other canvas issue
     }
@@ -287,6 +308,25 @@ export default function ColorPalette() {
 
   return (
     <div className="w-full mx-auto space-y-12 pb-20 animate-in fade-in duration-500">
+      <AnimatePresence>
+        {magnifier.show && (
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="fixed pointer-events-none z-50 flex flex-col items-center gap-2"
+                style={{ left: magnifier.clientX, top: magnifier.clientY, transform: 'translate(-50%, -100%)', marginTop: '-15px' }}
+            >
+                <div 
+                    className="w-20 h-20 rounded-full border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden"
+                    style={{ backgroundColor: magnifier.color }}
+                >
+                    <div className="bg-white/90 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm text-gray-900">{magnifier.color}</div>
+                </div>
+                <div className="w-1 h-8 bg-blue-500/50 rounded-full" />
+            </motion.div>
+        )}
+      </AnimatePresence>
       <SEOHelmet 
         title="Smart Color Palette V2 | FreeTool" 
         description="Professional color palette generator. keyword to palette, image to palette, and real-time UI preview with contrast checker." 
@@ -318,6 +358,186 @@ export default function ColorPalette() {
             </button>
         </div>
       </section>
+
+      {/* Image Color Picker (Full Width, Top) */}
+      <div className="w-full p-8 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl space-y-6">
+          <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold flex items-center gap-2 dark:text-white">
+                  <ImageIcon className="w-5 h-5 text-blue-500" /> Image Color Picker
+              </h3>
+              {selectedImages.length > 0 && (
+                  <button 
+                      onClick={() => {
+                          setSelectedImages([]);
+                          setCurrentImageIndex(0);
+                      }} 
+                      className="text-sm text-red-500 font-bold hover:underline"
+                  >
+                      Clear All
+                  </button>
+              )}
+          </div>
+
+          {selectedImages.length === 0 ? (
+              <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-48 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all group"
+              >
+                  <ImageIcon className="w-10 h-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                  <span className="text-xs font-medium text-gray-400">Click or Paste Image to Pick Colors</span>
+                  <input 
+                      type="file" 
+                      hidden 
+                      ref={fileInputRef} 
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                              Array.from(e.target.files).forEach(handleImageUpload);
+                          }
+                      }}
+                  />
+              </div>
+          ) : (
+              <div className="space-y-6">
+                  {/* Toolbar for image and zoom controls */}
+                  <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-2">
+                          <button 
+                              disabled={currentImageIndex === 0}
+                              onClick={() => setCurrentImageIndex(prev => prev - 1)}
+                              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300"
+                          >
+                              <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-xs font-bold font-mono text-gray-700 dark:text-gray-300">
+                              {currentImageIndex + 1} / {selectedImages.length}
+                          </span>
+                          <button 
+                              disabled={currentImageIndex === selectedImages.length - 1}
+                              onClick={() => setCurrentImageIndex(prev => prev + 1)}
+                              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300"
+                          >
+                              <ChevronRight className="w-4 h-4" />
+                          </button>
+                          
+                          <button 
+                              onClick={() => fileInputRef.current?.click()}
+                              className="ml-2 p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-500"
+                              title="Add more images"
+                          >
+                              <ImageIcon className="w-4 h-4" />
+                              <input 
+                                  type="file" 
+                                  hidden 
+                                  ref={fileInputRef} 
+                                  accept="image/*"
+                                  multiple
+                                  onChange={(e) => {
+                                      if (e.target.files && e.target.files.length > 0) {
+                                          Array.from(e.target.files).forEach(handleImageUpload);
+                                      }
+                                  }}
+                              />
+                          </button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                          <button onClick={() => setZoomLevel(prev => Math.max(1, prev - 0.5))} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                              <ZoomOut className="w-4 h-4" />
+                          </button>
+                          <span className="text-xs font-bold w-10 text-center text-gray-700 dark:text-gray-300">{Math.round(zoomLevel * 100)}%</span>
+                          <button onClick={() => setZoomLevel(prev => Math.min(5, prev + 0.5))} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
+                              <ZoomIn className="w-4 h-4" />
+                          </button>
+                          <button 
+                              onClick={() => {
+                                  const newArr = [...selectedImages];
+                                  newArr.splice(currentImageIndex, 1);
+                                  setSelectedImages(newArr);
+                                  if (newArr.length === 0) {
+                                      setCurrentImageIndex(0);
+                                  } else if (currentImageIndex >= newArr.length) {
+                                      setCurrentImageIndex(newArr.length - 1);
+                                  }
+                                  setZoomLevel(1);
+                              }}
+                              className="ml-2 p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              title="Remove current image"
+                          >
+                              <Trash2 className="w-4 h-4" />
+                          </button>
+                      </div>
+                  </div>
+
+                  <div className="relative rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 max-h-[500px] overflow-auto shadow-inner">
+                      <div style={{ 
+                          width: canvasSize.width * zoomLevel || '100%', 
+                          height: canvasSize.height * zoomLevel || 'auto', 
+                          margin: '0 auto', 
+                          transition: 'all 0.1s ease-out' 
+                      }}>
+                          <canvas 
+                              ref={canvasRef}
+                              onMouseMove={handleImageMouseMove}
+                              onMouseLeave={() => setMagnifier(prev => ({ ...prev, show: false }))}
+                              onClick={handleImageClick}
+                              className="block mx-auto max-w-full h-auto rounded-2xl cursor-crosshair"
+                              style={{ width: '100%', height: '100%' }}
+                          />
+                      </div>
+                  </div>
+
+                  {/* Picked Color & Shades */}
+                  <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                          <div 
+                              className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white dark:border-gray-800"
+                              style={{ backgroundColor: pickedColor }}
+                          />
+                          <div>
+                              <div className="text-xs font-bold text-gray-400 uppercase mb-1">Selected Color</div>
+                              <div className="text-lg font-black dark:text-white font-mono">{pickedColor}</div>
+                          </div>
+                          <div className="ml-auto flex gap-2">
+                              {ROLES.slice(0, 3).map(role => (
+                                  <button 
+                                      key={role}
+                                      onClick={() => handleColorChange(role, pickedColor)}
+                                      className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-[10px] font-bold uppercase hover:bg-blue-600 hover:text-white transition-all dark:text-white"
+                                  >
+                                      Use as {role}
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
+
+                      {/* Shades Gallery */}
+                      <div className="space-y-2">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase">Tints & Shades</p>
+                          <div className="flex h-12 rounded-xl overflow-hidden shadow-sm">
+                              {[
+                                  ...chroma.scale(['white', pickedColor]).colors(6).slice(1, 5),
+                                  pickedColor,
+                                  ...chroma.scale([pickedColor, 'black']).colors(6).slice(1, 5)
+                              ].map((color, i) => (
+                                  <button 
+                                      key={i}
+                                      onClick={() => setPickedColor(color)}
+                                      className="flex-1 transition-all hover:flex-[1.5] group relative"
+                                      style={{ backgroundColor: color }}
+                                  >
+                                      <div className="absolute inset-x-0 bottom-1 opacity-0 group-hover:opacity-100 text-[8px] font-mono text-center mix-blend-difference invert">
+                                          {color}
+                                      </div>
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          )}
+      </div>
 
       {/* Toolbox Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -371,116 +591,7 @@ export default function ColorPalette() {
                     })}
                 </div>
 
-                <div className="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-6">
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Image Color Picker</p>
-                        {selectedImage && (
-                            <button 
-                                onClick={() => setSelectedImage(null)} 
-                                className="text-xs text-blue-500 font-bold hover:underline"
-                            >
-                                Clear Image
-                            </button>
-                        )}
-                    </div>
 
-                    {!selectedImage ? (
-                        <div 
-                            onClick={() => fileInputRef.current?.click()}
-                            className="h-48 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all group"
-                        >
-                            <ImageIcon className="w-10 h-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                            <span className="text-xs font-medium text-gray-400">Click or Paste Image to Pick Colors</span>
-                            <input 
-                                type="file" 
-                                hidden 
-                                ref={fileInputRef} 
-                                accept="image/*"
-                                onChange={(e) => e.target.files?.[0] && extractColorsFromImage(e.target.files[0])}
-                            />
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 cursor-crosshair">
-                                <canvas 
-                                    ref={canvasRef}
-                                    onMouseMove={handleImageMouseMove}
-                                    onMouseLeave={() => setMagnifier(prev => ({ ...prev, show: false }))}
-                                    onClick={handleImageClick}
-                                    className="block mx-auto max-w-full h-auto shadow-sm"
-                                />
-                                
-                                <AnimatePresence>
-                                    {magnifier.show && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, scale: 0.5 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.5 }}
-                                            className="absolute pointer-events-none z-20 flex flex-col items-center gap-2"
-                                            style={{ left: magnifier.x - 40, top: magnifier.y - 100 }}
-                                        >
-                                            <div 
-                                                className="w-20 h-20 rounded-full border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden"
-                                                style={{ backgroundColor: magnifier.color }}
-                                            >
-                                                <div className="bg-white/90 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm text-gray-900">{magnifier.color}</div>
-                                            </div>
-                                            <div className="w-1 h-8 bg-blue-500/50 rounded-full" />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            {/* Picked Color & Shades */}
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4">
-                                    <div 
-                                        className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white dark:border-gray-800"
-                                        style={{ backgroundColor: pickedColor }}
-                                    />
-                                    <div>
-                                        <div className="text-xs font-bold text-gray-400 uppercase mb-1">Selected Color</div>
-                                        <div className="text-lg font-black dark:text-white font-mono">{pickedColor}</div>
-                                    </div>
-                                    <div className="ml-auto flex gap-2">
-                                        {ROLES.slice(0, 3).map(role => (
-                                            <button 
-                                                key={role}
-                                                onClick={() => handleColorChange(role, pickedColor)}
-                                                className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-[10px] font-bold uppercase hover:bg-blue-600 hover:text-white transition-all dark:text-white"
-                                            >
-                                                Use as {role}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Shades Gallery */}
-                                <div className="space-y-2">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Tints & Shades</p>
-                                    <div className="flex h-12 rounded-xl overflow-hidden shadow-sm">
-                                        {[
-                                            ...chroma.scale(['white', pickedColor]).colors(6).slice(1, 5),
-                                            pickedColor,
-                                            ...chroma.scale([pickedColor, 'black']).colors(6).slice(1, 5)
-                                        ].map((color, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => setPickedColor(color)}
-                                                className="flex-1 transition-all hover:flex-[1.5] group relative"
-                                                style={{ backgroundColor: color }}
-                                            >
-                                                <div className="absolute inset-x-0 bottom-1 opacity-0 group-hover:opacity-100 text-[8px] font-mono text-center mix-blend-difference invert">
-                                                    {color}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
                     <button onClick={() => copyFormat('css')} className="flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 text-sm font-bold transition-colors dark:text-white">

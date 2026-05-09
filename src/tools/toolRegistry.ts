@@ -57,6 +57,25 @@ export interface RegistryTool {
 
 export const toolRegistry: RegistryTool[] = [
   {
+    id: 'color-palette',
+    name: 'Color Palette & Image Extractor',
+    description: 'Generate stunning color palettes and extract colors directly from multiple images with contrast ratios. The <strong>Color Palette Generator</strong> functions as a mission-critical visual harmony engineering suite purposely optimized for advanced user interface (UI) designers, expansive frontend engineering architects, and localized branding logic integrators. Constructing deeply harmonious, mathematically unified chromatic structures usually requires exhausting manual adjustments traversing aggressive hue, saturation, and luminance (HSL) spectrums dynamically. Attempting to balance robust visual intensity alongside explicitly mandated accessibility parameter thresholds frequently collapses into profound aesthetic regression without deploying dedicated structural analysis natively. This sophisticated utility actively leverages advanced mathematical color theory logic matrices intelligently identifying profoundly complementary, distinctly analogous, precisely triadic, and aggressively monochromatic structural combinations effortlessly. Instantly deploy randomized configuration arrays structurally designed to force-generate visually captivating base schemas smoothly or directly input fixed hex-code starting variables aggressively anchoring complex palette evolution tightly. Seamlessly translating visual aesthetics universally across completely disparate frontend architectures natively enables instant generation regarding universally adaptable HEX, fundamental RGB, advanced HSL, and specific CMYK strings securely mapped dynamically without calculation variance fundamentally. A critical, uncompromised structural element integrated seamlessly inside our configuration architecture explicitly mandates absolute Web Content Accessibility Guidelines (WCAG) contrast ratio logic natively. Developing beautiful user interface arrays is essentially useless if specialized structural components heavily fail localized readability compliance metrics globally. The platform intrinsically evaluates dynamic color inversion matrices instantly, analyzing foreground textual placements heavily mapped against varying background shadow variables to explicitly calculate AA or AAA compliance vector thresholds natively. Consequently, frontend deployment metrics actively circumvent disastrous post-production accessibility legal audits effectively. Echoing the intense commitment governing total FreeTool logic infrastructure perfectly, your specialized corporate branding variables, unreleased visual prototype schemas, and distinctly targeted application color palettes bypass totally all remote database synchronization telemetry structures confidently. Producing expansive theme architectures executes smoothly without enduring localized remote processing lag or external telemetry interception risk safely exclusively locked down securely natively inside completely isolated localized browser architecture parameters securely without exposure logic inherently.',
+    path: 'color-palette',
+    category: 'Design',
+    tags: ['color', 'palette', 'design', 'ui', 'hex', 'rgb', 'contrast', 'accessibility', 'color picker from image', 'image color extractor', 'generate palette'],
+    inputType: ['image'],
+    outputType: ['text'],
+    icon: Palette,
+    type: 'light',
+    component: lazy(()=> import('./color-palette')),
+    faqIcon: Palette,
+    faq: [
+      { question: "How do I check for accessibility?", answer: "Every color card includes a contrast ratio indicator. Ensure your text-to-background ratio is at least 4.5:1 to meet WCAG AA standards." },
+      { question: "Can I export my palette to Figma?", answer: "Yes, you can copy the HEX, RGB, or HSL codes with a single click and paste them directly into your design tools." },
+      { question: "How are the harmonic colors generated?", answer: "We use mathematical algorithms (Analogous, Monochromatic, Triadic) based on the color wheel to ensure your palette is always visually balanced." }
+    ]
+  },
+  {
     id: 'pipeline-builder',
     name: 'Pipeline Builder',
     description: 'Visually connect tools to form a powerful data processing pipeline.',
@@ -218,25 +237,6 @@ export const toolRegistry: RegistryTool[] = [
       { question: "What is a 'healthy' BMI range?", answer: "For most adults, a BMI between 18.5 and 24.9 is considered within the healthy weight category according to WHO guidelines." },
       { question: "Is BMI accurate for everyone?", answer: "BMI is a general screening tool. It may not be accurate for athletes with high muscle mass, pregnant women, or the elderly, as it doesn't distinguish between muscle and fat." },
       { question: "Does this tool save my health data?", answer: "No. Your height and weight inputs are used only for the current calculation and are cleared as soon as you refresh or close the page." }
-    ]
-  },
-  {
-    id: 'color-palette',
-    name: 'Color Palette',
-    description: 'Generate stunning color palettes with contrast ratios. The <strong>Color Palette Generator</strong> functions as a mission-critical visual harmony engineering suite purposely optimized for advanced user interface (UI) designers, expansive frontend engineering architects, and localized branding logic integrators. Constructing deeply harmonious, mathematically unified chromatic structures usually requires exhausting manual adjustments traversing aggressive hue, saturation, and luminance (HSL) spectrums dynamically. Attempting to balance robust visual intensity alongside explicitly mandated accessibility parameter thresholds frequently collapses into profound aesthetic regression without deploying dedicated structural analysis natively. This sophisticated utility actively leverages advanced mathematical color theory logic matrices intelligently identifying profoundly complementary, distinctly analogous, precisely triadic, and aggressively monochromatic structural combinations effortlessly. Instantly deploy randomized configuration arrays structurally designed to force-generate visually captivating base schemas smoothly or directly input fixed hex-code starting variables aggressively anchoring complex palette evolution tightly. Seamlessly translating visual aesthetics universally across completely disparate frontend architectures natively enables instant generation regarding universally adaptable HEX, fundamental RGB, advanced HSL, and specific CMYK strings securely mapped dynamically without calculation variance fundamentally. A critical, uncompromised structural element integrated seamlessly inside our configuration architecture explicitly mandates absolute Web Content Accessibility Guidelines (WCAG) contrast ratio logic natively. Developing beautiful user interface arrays is essentially useless if specialized structural components heavily fail localized readability compliance metrics globally. The platform intrinsically evaluates dynamic color inversion matrices instantly, analyzing foreground textual placements heavily mapped against varying background shadow variables to explicitly calculate AA or AAA compliance vector thresholds natively. Consequently, frontend deployment metrics actively circumvent disastrous post-production accessibility legal audits effectively. Echoing the intense commitment governing total FreeTool logic infrastructure perfectly, your specialized corporate branding variables, unreleased visual prototype schemas, and distinctly targeted application color palettes bypass totally all remote database synchronization telemetry structures confidently. Producing expansive theme architectures executes smoothly without enduring localized remote processing lag or external telemetry interception risk safely exclusively locked down securely natively inside completely isolated localized browser architecture parameters securely without exposure logic inherently.',
-    path: 'color-palette',
-    category: 'Design',
-    tags: ['color', 'palette', 'design', 'ui', 'hex', 'rgb', 'contrast', 'accessibility'],
-    inputType: [],
-    outputType: ['text'],
-    icon: Palette,
-    type: 'light',
-    component: lazy(()=> import('./color-palette')),
-    faqIcon: Palette,
-    faq: [
-      { question: "How do I check for accessibility?", answer: "Every color card includes a contrast ratio indicator. Ensure your text-to-background ratio is at least 4.5:1 to meet WCAG AA standards." },
-      { question: "Can I export my palette to Figma?", answer: "Yes, you can copy the HEX, RGB, or HSL codes with a single click and paste them directly into your design tools." },
-      { question: "How are the harmonic colors generated?", answer: "We use mathematical algorithms (Analogous, Monochromatic, Triadic) based on the color wheel to ensure your palette is always visually balanced." }
     ]
   },
   {
